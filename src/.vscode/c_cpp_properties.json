@@ -1,0 +1,35 @@
+{
+  "configurations": [
+    {
+      "browse": {
+        "databaseFilename": "${default}",
+        "limitSymbolsToIncludedHeaders": false
+      },
+      "includePath": [
+        "/home/ztr/Pipline-Swarm-Formation/devel/include/**",
+        "/opt/ros/noetic/include/**",
+        "/home/ztr/Pipline-Swarm-Formation/src/planner/drone_detect/include/**",
+        "/home/ztr/Pipline-Swarm-Formation/src/planner/plan_manage/include/**",
+        "/home/ztr/Pipline-Swarm-Formation/src/planner/frob_test/include/**",
+        "/home/ztr/Pipline-Swarm-Formation/src/uav_simulator/mockamap/include/**",
+        "/home/ztr/Pipline-Swarm-Formation/src/planner/path_searching/include/**",
+        "/home/ztr/Pipline-Swarm-Formation/src/planner/plan_env/include/**",
+        "/home/ztr/Pipline-Swarm-Formation/src/Utils/pose_utils/include/**",
+        "/home/ztr/Pipline-Swarm-Formation/src/Utils/quadrotor_msgs/include/**",
+        "/home/ztr/Pipline-Swarm-Formation/src/uav_simulator/so3_control/include/**",
+        "/home/ztr/Pipline-Swarm-Formation/src/uav_simulator/so3_quadrotor_simulator/include/**",
+        "/home/ztr/Pipline-Swarm-Formation/src/planner/traj_opt/include/**",
+        "/home/ztr/Pipline-Swarm-Formation/src/planner/traj_utils/include/**",
+        "/home/ztr/Pipline-Swarm-Formation/src/Utils/uav_utils/include/**",
+        "/home/ztr/Pipline-Swarm-Formation/src/vrb_planner/include/**",
+        "/usr/include/**"
+      ],
+      "name": "ROS",
+      "intelliSenseMode": "gcc-x64",
+      "compilerPath": "/usr/bin/gcc",
+      "cStandard": "gnu11",
+      "cppStandard": "c++14"
+    }
+  ],
+  "version": 4
+}
