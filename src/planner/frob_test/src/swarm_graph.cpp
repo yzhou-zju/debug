@@ -9,6 +9,7 @@ bool SwarmGraph::updateGraph( const std::vector<Eigen::Vector3d> &swarm )
     nodes_ = swarm;
     if(nodes_.size() != nodes_des_.size()){
         std::cout <<"swarm size : " << nodes_.size() << std::endl;
+        std::cout <<"swarm size2 : " << nodes_des_.size() << std::endl;
         ROS_WARN("Size of swarm formation vector is incorrect. ");
         return false;
     }
@@ -38,6 +39,7 @@ bool SwarmGraph::updatePartGraphAndGetGrad( const int idx, const std::vector<Eig
     nodes_ = swarm;
     if(nodes_.size() != nodes_des_.size()){
         std::cout <<"swarm size : " << nodes_.size() << std::endl;
+        std::cout <<"swarm size2 : " << nodes_des_.size() << std::endl;
         ROS_WARN("Size of swarm formation vector is incorrect. ");
         return false;
     }
@@ -153,8 +155,17 @@ bool SwarmGraph::calcFGrad( Eigen::Vector3d &gradp, Eigen::Vector3d &gradp_org, 
         }
         
         for(int i = 0; i < N; i++)
+        {
             for( int j = 0; j < 3; j++ )
-                dedp(i, j) = 2 * (nodes_[query_idx](j) - nodes_[adj_arr_[query_idx][i]](j));
+            {
+                if(i!=0&&i!=1&&i!=2&&i!=3&&i!=4&&i!=5&&i!=6&&i!=7 &&i!=15 &&i!=23 &&i!=31 &&i!=39&& i!=47&& i!=55&& i!=63&& i!=71)
+                {
+                    dedp(i, j) = 2 * (nodes_[query_idx](j) - nodes_[adj_arr_[query_idx][i]](j));
+                }else{
+                    dedp(i, j) = 2 * (nodes_[query_idx](j) - nodes_[adj_arr_[query_idx][i]](j));
+                }
+            } 
+        }
         
         //Ignore the machine epsilon
         gradp_org = dfde.transpose() * dedp;

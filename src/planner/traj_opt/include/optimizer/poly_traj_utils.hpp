@@ -1277,25 +1277,25 @@ namespace poly_traj
         inline double getTrajJerkCost() const
         {
             double objective = 0.0;
-            std::cout<<"objective::::"<<N<<"   bbbbbb:::::"<<b.row(6 * 0 + 3)<<std::endl;
+            // std::cout<<"objective::::"<<N<<"   bbbbbb:::::"<<b.row(6 * 0 + 3)<<std::endl;
             for (int i = 0; i < N; i++)
             {
-            std::cout<<"objective1::::"<<i<<std::endl;
-            std::cout<<"b1::::"<< b.row(6 * i + 3)<<std::endl;
-            std::cout<<"b1::::"<< b.row(6 * i + 4)<<std::endl;
-            std::cout<<"b1::::"<< b.row(6 * i + 5)<<std::endl;
-            std::cout<<"T1::::"<< T1(i)<<std::endl;
-            std::cout<<"T2::::"<< T2(i)<<std::endl;
-            std::cout<<"T3::::"<< T3(i)<<std::endl;
-            std::cout<<"T4::::"<< T4(i)<<std::endl;
-            std::cout<<"T5::::"<< T5(i)<<std::endl;
+            // std::cout<<"objective1::::"<<i<<std::endl;
+            // std::cout<<"b1::::"<< b.row(6 * i + 3)<<std::endl;
+            // std::cout<<"b1::::"<< b.row(6 * i + 4)<<std::endl;
+            // std::cout<<"b1::::"<< b.row(6 * i + 5)<<std::endl;
+            // std::cout<<"T1::::"<< T1(i)<<std::endl;
+            // std::cout<<"T2::::"<< T2(i)<<std::endl;
+            // std::cout<<"T3::::"<< T3(i)<<std::endl;
+            // std::cout<<"T4::::"<< T4(i)<<std::endl;
+            // std::cout<<"T5::::"<< T5(i)<<std::endl;
                 objective += 36.0 * b.row(6 * i + 3).squaredNorm() * T1(i) +
                              144.0 * b.row(6 * i + 4).dot(b.row(6 * i + 3)) * T2(i) +
                              192.0 * b.row(6 * i + 4).squaredNorm() * T3(i) +
                              240.0 * b.row(6 * i + 5).dot(b.row(6 * i + 3)) * T3(i) +
                              720.0 * b.row(6 * i + 5).dot(b.row(6 * i + 4)) * T4(i) +
                              720.0 * b.row(6 * i + 5).squaredNorm() * T5(i);
-            std::cout<<"objective::::"<<i<<std::endl;
+            // std::cout<<"objective::::"<<i<<std::endl;
             }
             return objective;
         }

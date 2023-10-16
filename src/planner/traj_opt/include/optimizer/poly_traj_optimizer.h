@@ -154,7 +154,7 @@ namespace ego_planner
     double max_vel_, max_acc_;               // dynamic limits
     
     bool is_set_swarm_advanced_;
-
+    
     int    formation_type_;
     int    formation_method_type_;
     int    formation_size_;
@@ -175,9 +175,10 @@ namespace ego_planner
     ~PolyTrajOptimizer() {ztr_log3.close();}
 
     /* set variables */
-    void setParam();
+    void setParam(bool m_or_not_, vector<int> leader_id_);
     void setControlPoints(const Eigen::MatrixXd &points);
     void setSwarmTrajs(SwarmTrajData *swarm_trajs_ptr);
+    // void setSwarmTrajs();
     void setDroneId(const int drone_id);
 
     /* helper functions */
@@ -191,7 +192,7 @@ namespace ego_planner
     double getFormationError(std::vector<Eigen::Vector3d> swarm_graph_pos);
     void updateSwarmGraph(Eigen::VectorXi assignment);
     double getCollisionCheckTimeEnd() { return collision_check_time_end_; }
-
+    
     /* main planning API */
     bool optimizeTrajectory_lbfgs(const Eigen::MatrixXd &iniState, const Eigen::MatrixXd &finState,
                             const Eigen::MatrixXd &initInnerPts, const Eigen::VectorXd &initT,
@@ -301,7 +302,7 @@ namespace ego_planner
     static double swarmGraphCostCallback(void *func_data, const double *x, double *grad, const int n);
 
     double obstacleGradCostP(Eigen::VectorXd &gdT);
-
+    bool decide_contin(int id_get);
     double swarmGradCostP(Eigen::VectorXd &gdT);
 
     double swarmGraphGradCostP(Eigen::VectorXd &gdT);
@@ -312,236 +313,201 @@ namespace ego_planner
 
     bool getFormationPos(std::vector<Eigen::Vector3d> &swarm_graph_pos, Eigen::Vector3d pos);
 
-    void setDesiredFormation(int type){
+    void setDesiredFormation(int type, bool m_or_not, vector<int> _leader_id){
       switch (type)
       {
-        case FORMATION_TYPE::NONE_FORMATION :
-        {
-          use_formation_  = false;
-          formation_size_ = 0;
-          break;
-        }
-
-        case FORMATION_TYPE::REGULAR_HEXAGON :
-        {
-          // set the desired formation
-          Eigen::Vector3d v0(0,0,0);
-          Eigen::Vector3d v1(1.7321,-1,0);
-          Eigen::Vector3d v2(0,-2,0);
-          Eigen::Vector3d v3(-1.7321,-1,0);
-          Eigen::Vector3d v4(-1.7321,1,0);
-          Eigen::Vector3d v5(0,2,0);
-          Eigen::Vector3d v6(1.7321,1,0);
-
-          swarm_des_.push_back(v0);
-          swarm_des_.push_back(v1);
-          swarm_des_.push_back(v2);
-          swarm_des_.push_back(v3);
-          swarm_des_.push_back(v4);
-          swarm_des_.push_back(v5);
-          swarm_des_.push_back(v6);
-
-          formation_size_ = swarm_des_.size();
-          // construct the desired swarm graph
-          // adj_in_ =  {0, 0, 0, 0, 0, 0, 1, 2, 3, 4, 5, 6};
-          // adj_out_ = {1, 2, 3, 4, 5, 6, 2, 3, 4, 5, 6, 1};
-          for (int i=0; i<formation_size_; i++){
-            for ( int j=0; j<i; j++){
-              adj_in_.push_back(i);
-              adj_out_.push_back(j);
-            }
-          }
-          assignment_ = Eigen::VectorXi::LinSpaced(formation_size_, 0, formation_size_ - 1 );
-          swarm_graph_->setDesiredForm(swarm_des_, adj_in_, adj_out_);
-          break;
-        }
-
-        case FORMATION_TYPE::TWENTY_FIVE :
-        {
-          // set the desired formation
-          Eigen::Vector3d v0(2,-2,0);
-          Eigen::Vector3d v1(1,-2,0);
-          Eigen::Vector3d v2(0,-2,0);
-          Eigen::Vector3d v3(-1,-2,0);
-          Eigen::Vector3d v4(-2,-2,0);
-          Eigen::Vector3d v5(2,-1,0);
-          Eigen::Vector3d v6(1,-1,0);
-          Eigen::Vector3d v7(0,-1,0);
-          Eigen::Vector3d v8(-1,-1,0);
-          Eigen::Vector3d v9(-2,-1,0);
-          Eigen::Vector3d v10(2,0,0);
-          Eigen::Vector3d v11(1,0,0);
-          Eigen::Vector3d v12(0,0,0);
-          Eigen::Vector3d v13(-1,0,0);
-          Eigen::Vector3d v14(-2,0,0);
-          Eigen::Vector3d v15(2,1,0);
-          Eigen::Vector3d v16(1,1,0);
-          Eigen::Vector3d v17(0,1,0);
-          Eigen::Vector3d v18(-1,1,0);
-          Eigen::Vector3d v19(-2,1,0);
-          // Eigen::Vector3d v20(2,2,0);
-          // Eigen::Vector3d v21(1,2,0);
-          // Eigen::Vector3d v22(0,2,0);
-          // Eigen::Vector3d v23(-1,2,0);
-          // Eigen::Vector3d v24(-2,2,0);
-          
-
-          swarm_des_.push_back(v0);
-          swarm_des_.push_back(v1);
-          swarm_des_.push_back(v2);
-          swarm_des_.push_back(v3);
-          swarm_des_.push_back(v4);
-          swarm_des_.push_back(v5);
-          swarm_des_.push_back(v6);
-          swarm_des_.push_back(v7);
-          swarm_des_.push_back(v8);
-          swarm_des_.push_back(v9);
-          swarm_des_.push_back(v10);
-          swarm_des_.push_back(v11);
-          swarm_des_.push_back(v12);
-          swarm_des_.push_back(v13);
-          swarm_des_.push_back(v14);
-          swarm_des_.push_back(v15);
-          swarm_des_.push_back(v16);
-          swarm_des_.push_back(v17);
-          swarm_des_.push_back(v18);
-          swarm_des_.push_back(v19);
-          // swarm_des_.push_back(v20);
-          // swarm_des_.push_back(v21);
-          // swarm_des_.push_back(v22);
-          // swarm_des_.push_back(v23);
-          // swarm_des_.push_back(v24);
-
-          formation_size_ = swarm_des_.size();
-          // construct the desired swarm graph
-          // adj_in =  {0, 0, 0, 0, 0, 0, 1, 2, 3, 4, 5, 6};
-          // adj_out = {1, 2, 3, 4, 5, 6, 2, 3, 4, 5, 6, 1};
-          for (int i=0; i<formation_size_; i++){
-            for ( int j=0; j<i; j++){
-              adj_in_.push_back(i);
-              adj_out_.push_back(j);
-            }
-          }
-          assignment_ = Eigen::VectorXi::LinSpaced(formation_size_, 0, formation_size_ - 1 );
-          swarm_graph_->setDesiredForm(swarm_des_, adj_in_, adj_out_);
-          break;
-        }
-
-        case FORMATION_TYPE::DOUBLE_TEN:
-        {
-          // set the desired formation
-          Eigen::Vector3d v0(6,0,0);
-          Eigen::Vector3d v1(4,-1,0);
-          Eigen::Vector3d v2(4,1,0);
-          Eigen::Vector3d v3(2,-2,0);
-          Eigen::Vector3d v4(2,0,0);
-          Eigen::Vector3d v5(2,2,0);
-          Eigen::Vector3d v6(0,-3,0);
-          Eigen::Vector3d v7(0,-1,0);
-          Eigen::Vector3d v8(0,1,0);
-          Eigen::Vector3d v9(0,3,0);
-          Eigen::Vector3d v10(6,0,2);
-          Eigen::Vector3d v11(4,-1,2);
-          Eigen::Vector3d v12(4,1,2);
-          Eigen::Vector3d v13(2,-2,2);
-          Eigen::Vector3d v14(2,0,2);
-          Eigen::Vector3d v15(2,2,2);
-          Eigen::Vector3d v16(0,-3,2);
-          Eigen::Vector3d v17(0,-1,2);
-          Eigen::Vector3d v18(0,1,2);
-          Eigen::Vector3d v19(0,3,2);
-
-          swarm_des_.push_back(v0);
-          swarm_des_.push_back(v1);
-          swarm_des_.push_back(v2);
-          swarm_des_.push_back(v3);
-          swarm_des_.push_back(v4);
-          swarm_des_.push_back(v5);
-          swarm_des_.push_back(v6);
-          swarm_des_.push_back(v7);
-          swarm_des_.push_back(v8);
-          swarm_des_.push_back(v9);
-          swarm_des_.push_back(v10);
-          swarm_des_.push_back(v11);
-          swarm_des_.push_back(v12);
-          swarm_des_.push_back(v13);
-          swarm_des_.push_back(v14);
-          swarm_des_.push_back(v15);
-          swarm_des_.push_back(v16);
-          swarm_des_.push_back(v17);
-          swarm_des_.push_back(v18);
-          swarm_des_.push_back(v19);
-
-          formation_size_ = swarm_des_.size();
-          // construct the desired swarm graph
-          // adj_in =  {0, 0, 0, 0, 0, 0, 1, 2, 3, 4, 5, 6};
-          // adj_out = {1, 2, 3, 4, 5, 6, 2, 3, 4, 5, 6, 1};
-          for (int i=0; i<formation_size_; i++){
-            for ( int j=0; j<i; j++){
-              adj_in_.push_back(i);
-              adj_out_.push_back(j);
-            }
-          }
-          assignment_ = Eigen::VectorXi::LinSpaced(formation_size_, 0, formation_size_ - 1 );
-          swarm_graph_->setDesiredForm(swarm_des_, adj_in_, adj_out_);
-          break;
-        }
-        
-        case FORMATION_TYPE::OCTAHEDRON:
-        {  // set the desired formation
-          Eigen::Vector3d v0(-2,0,0);
-          Eigen::Vector3d v1(2,0,0);
-          Eigen::Vector3d v2(0,-2,0);
-          Eigen::Vector3d v3(0,2,0);
-          Eigen::Vector3d v4(0,0,-2);
-          Eigen::Vector3d v5(0,0,2);
-
-
-          swarm_des_.push_back(v0);
-          swarm_des_.push_back(v1);
-          swarm_des_.push_back(v2);
-          swarm_des_.push_back(v3);
-          swarm_des_.push_back(v4);
-          swarm_des_.push_back(v5);
-
-
-          formation_size_ = swarm_des_.size();
-          // construct the desired swarm graph
-          // adj_in_ =  {0, 0, 0, 0, 0, 0, 1, 2, 3, 4, 5, 6};
-          // adj_out_ = {1, 2, 3, 4, 5, 6, 2, 3, 4, 5, 6, 1};
-          for (int i=0; i<formation_size_; i++){
-            for ( int j=0; j<i; j++){
-              adj_in_.push_back(i);
-              adj_out_.push_back(j);
-            }
-          }
-          assignment_ = Eigen::VectorXi::LinSpaced(formation_size_, 0, formation_size_ - 1 );
-          swarm_graph_->setDesiredForm(swarm_des_, adj_in_, adj_out_);
-          break;
-              
-            }
         case FORMATION_TYPE::CUBE:
         {  // set the desired formation
-          Eigen::Vector3d v0(0,0,0);
-          Eigen::Vector3d v1(0,2,0);
-          Eigen::Vector3d v2(2,2,0);
-          Eigen::Vector3d v3(2,0,0);
-          Eigen::Vector3d v4(0,0,2);
-          Eigen::Vector3d v5(0,2,2);
-          Eigen::Vector3d v6(2,2,2);
-          Eigen::Vector3d v7(2,0,2);
+          std::vector<Eigen::Vector3d> v;
+          v.resize(80);
+          v[0] = {1.0, -2.0, 1.0};
+          v[1] = {-1.0, -2.0,1.0};
+          v[2] = {1.0,  0.0, 1.0}; 
+          v[3] = {-1.0, 0.0, 1.0};
+          v[4] = {1.0,  2.0, 1.0};
+          v[5] = {-1.0,  2.0,1.0};
+          v[6] = {1.0,  4.0, 1.0};
+          v[7] = {-1.0, 4.0, 1.0};
 
+          v[8] = {1.0, -2.0, 3.0};
+          v[9] = {-1.0, -2.0,3.0};
+          v[10] = {1.0,  0.0, 3.0}; 
+          v[11] = {-1.0, 0.0, 3.0};
+          v[12] = {1.0,  2.0, 3.0};
+          v[13] = {-1.0,  2.0,3.0};
+          v[14] = {1.0,  4.0, 3.0};
+          v[15] = {-1.0, 4.0, 3.0};
 
-          swarm_des_.push_back(v0);
-          swarm_des_.push_back(v1);
-          swarm_des_.push_back(v2);
-          swarm_des_.push_back(v3);
-          swarm_des_.push_back(v4);
-          swarm_des_.push_back(v5);
-          swarm_des_.push_back(v6);
-          swarm_des_.push_back(v7);
+          v[16] = {1.0, -2.0, -1.0};
+          v[17] = {-1.0, -2.0,-1.0};
+          v[18] = {1.0,  0.0, -1.0}; 
+          v[19] = {-1.0, 0.0, -1.0};
+          v[20] = {1.0,  2.0, -1.0};
+          v[21] = {-1.0,  2.0,-1.0};
+          v[22] = {1.0,  4.0, -1.0};
+          v[23] = {-1.0, 4.0, -1.0};
 
+          v[24] = {1.0, -2.0, 5.0};
+          v[25] = {-1.0, -2.0,5.0};
+          v[26] = {1.0,  0.0, 5.0}; 
+          v[27] = {-1.0, 0.0, 5.0};
+          v[28] = {1.0,  2.0, 5.0};
+          v[29] = {-1.0,  2.0,5.0};
+          v[30] = {1.0,  4.0, 5.0};
+          v[31] = {-1.0, 4.0, 5.0};
 
+          v[32] = {1.0, -2.0, -3.0};
+          v[33] = {-1.0, -2.0,-3.0};
+          v[34] = {1.0,  0.0, -3.0}; 
+          v[35] = {-1.0, 0.0, -3.0};
+          v[36] = {1.0,  2.0, -3.0};
+          v[37] = {-1.0,  2.0,-3.0};
+          v[38] = {1.0,  4.0, -3.0};
+          v[39] = {-1.0, 4.0, -3.0};
+
+          v[40] = {1.0, -2.0, -5.0};
+          v[41] = {-1.0, -2.0,-5.0};
+          v[42] = {1.0,  0.0, -5.0}; 
+          v[43] = {-1.0, 0.0, -5.0};
+          v[44] = {1.0,  2.0, -5.0};
+          v[45] = {-1.0,  2.0,-5.0};
+          v[46] = {1.0,  4.0, -5.0};
+          v[47] = {-1.0, 4.0, -5.0};
+
+          v[48] = {1.0, -2.0,  -7.0};
+          v[49] = {-1.0, -2.0, -7.0};
+          v[50] = {1.0,  0.0, -7.0}; 
+          v[51] = {-1.0, 0.0, -7.0};
+          v[52] = {1.0,  2.0, -7.0};
+          v[53] = {-1.0,  2.0,-7.0};
+          v[54] = {1.0,  4.0, -7.0};
+          v[55] = {-1.0, 4.0, -7.0};
+
+          v[56] = {1.0, -2.0, 7.0};
+          v[57] = {-1.0, -2.0,7.0};
+          v[58] = {1.0,  0.0, 7.0}; 
+          v[59] = {-1.0, 0.0, 7.0};
+          v[60] = {1.0,  2.0, 7.0};
+          v[61] = {-1.0,  2.0,7.0};
+          v[62] = {1.0,  4.0, 7.0};
+          v[63] = {-1.0, 4.0, 7.0};
+
+          v[64] = {1.0, -2.0, 9.0};
+          v[65] = {-1.0, -2.0,9.0};
+          v[66] = {1.0,  0.0, 9.0}; 
+          v[67] = {-1.0, 0.0, 9.0};
+          v[68] = {1.0,  2.0, 9.0};
+          v[69] = {-1.0,  2.0,9.0};
+          v[70] = {1.0,  4.0, 9.0};
+          v[71] = {-1.0, 4.0, 9.0};
+          swarm_des_.push_back(v[0]);
+          swarm_des_.push_back(v[1]);
+          swarm_des_.push_back(v[2]);
+          swarm_des_.push_back(v[3]);
+          swarm_des_.push_back(v[4]);
+          swarm_des_.push_back(v[5]);
+          swarm_des_.push_back(v[6]);
+          swarm_des_.push_back(v[7]);
+          if(m_or_not)
+          {
+            swarm_des_.push_back(v[_leader_id[0]]);
+            swarm_des_.push_back(v[_leader_id[1]]);
+            swarm_des_.push_back(v[_leader_id[2]]);
+            swarm_des_.push_back(v[_leader_id[3]]);
+            swarm_des_.push_back(v[_leader_id[4]]);
+            swarm_des_.push_back(v[_leader_id[5]]);
+            swarm_des_.push_back(v[_leader_id[6]]);
+            swarm_des_.push_back(v[_leader_id[7]]);
+          }else{
+          
+          swarm_des_.push_back(v[8]);
+          swarm_des_.push_back(v[9]);
+          swarm_des_.push_back(v[10]);
+          swarm_des_.push_back(v[11]);
+          swarm_des_.push_back(v[12]);
+          swarm_des_.push_back(v[13]);
+          swarm_des_.push_back(v[14]);
+          swarm_des_.push_back(v[15]);
+
+          swarm_des_.push_back(v[16]);
+          swarm_des_.push_back(v[17]);
+          swarm_des_.push_back(v[18]);
+          swarm_des_.push_back(v[19]);
+          swarm_des_.push_back(v[20]);
+          swarm_des_.push_back(v[21]);
+          swarm_des_.push_back(v[22]);
+          swarm_des_.push_back(v[23]);
+
+          swarm_des_.push_back(v[24]);
+          swarm_des_.push_back(v[25]);
+          swarm_des_.push_back(v[26]);
+          swarm_des_.push_back(v[27]);
+          swarm_des_.push_back(v[28]);
+          swarm_des_.push_back(v[29]);
+          swarm_des_.push_back(v[30]);
+          swarm_des_.push_back(v[31]);
+
+          swarm_des_.push_back(v[32]);
+          swarm_des_.push_back(v[33]);
+          swarm_des_.push_back(v[34]);
+          swarm_des_.push_back(v[35]);
+          swarm_des_.push_back(v[36]);
+          swarm_des_.push_back(v[37]);
+          swarm_des_.push_back(v[38]);
+          swarm_des_.push_back(v[39]);
+
+          swarm_des_.push_back(v[40]);
+          swarm_des_.push_back(v[41]);
+          swarm_des_.push_back(v[42]);
+          swarm_des_.push_back(v[43]);
+          swarm_des_.push_back(v[44]);
+          swarm_des_.push_back(v[45]);
+          swarm_des_.push_back(v[46]);
+          swarm_des_.push_back(v[47]);
+
+          swarm_des_.push_back(v[48]);
+          swarm_des_.push_back(v[49]);
+          swarm_des_.push_back(v[50]);
+          swarm_des_.push_back(v[51]);
+          swarm_des_.push_back(v[52]);
+          swarm_des_.push_back(v[53]);
+          swarm_des_.push_back(v[54]);
+          swarm_des_.push_back(v[55]);
+
+          swarm_des_.push_back(v[56]);
+          swarm_des_.push_back(v[57]);
+          swarm_des_.push_back(v[58]);
+          swarm_des_.push_back(v[59]);
+          swarm_des_.push_back(v[60]);
+          swarm_des_.push_back(v[61]);
+          swarm_des_.push_back(v[62]);
+          swarm_des_.push_back(v[63]);
+
+          swarm_des_.push_back(v[64]);
+          swarm_des_.push_back(v[65]);
+          swarm_des_.push_back(v[66]);
+          swarm_des_.push_back(v[67]);
+          swarm_des_.push_back(v[68]);
+          swarm_des_.push_back(v[69]);
+          swarm_des_.push_back(v[70]);
+          swarm_des_.push_back(v[71]);
+          }
+          // Eigen::Vector3d v82(1.0, -2.0, 11.0);
+          // Eigen::Vector3d v83(-1.0, -2.0,11.0);
+          // Eigen::Vector3d v84(1.0,  0.0, 11.0); 
+          // Eigen::Vector3d v85(-1.0, 0.0, 11.0);
+          // Eigen::Vector3d v86(1.0,  2.0, 11.0);
+          // Eigen::Vector3d v87(-1.0,  2.0,11.0);
+          // Eigen::Vector3d v88(1.0,  4.0, 11.0);
+          // Eigen::Vector3d v89(-1.0, 4.0, 11.0);
+          // swarm_des_.push_back(v82);
+          // swarm_des_.push_back(v83);
+          // swarm_des_.push_back(v84);
+          // swarm_des_.push_back(v85);
+          // swarm_des_.push_back(v86);
+          // swarm_des_.push_back(v87);
+          // swarm_des_.push_back(v88);
+          // swarm_des_.push_back(v89);
 
           formation_size_ = swarm_des_.size();
           // construct the desired swarm graph

@@ -32,7 +32,18 @@
 #include <cstdlib>
 #include <cstring>
 #include <ros/ros.h>
+#include <fstream>
+using namespace std;
 namespace lbfgs {
+    std::ofstream log_;
+  inline int line_time_log_open()
+  {
+    log_.open("/home/z/rrt_rotor/src/drone_.txt");      
+  }
+  inline int line_time_log_close()
+  {
+    log_.close();
+  }
 // ----------------------- Data Type Part -----------------------
 
 /**
@@ -1200,8 +1211,8 @@ inline int lbfgs_optimize(int n, double *x, double *ptr_fx,
                           lbfgs_stepbound_t proc_stepbound,
                           lbfgs_progress_t proc_progress, void *instance,
                           lbfgs_parameter_t *_param) {
-  printf("here!!!!!!!!!!!!!!!!!!!!!!!!!");
-  printf("\n");
+  // printf("here!!!!!!!!!!!!!!!!!!!!!!!!!");/home/z/rrt_rotor/src
+  // printf("\n");
   int ret;
   int i, j, k, ls, end, bound;
   double step;
@@ -1329,7 +1340,7 @@ inline int lbfgs_optimize(int n, double *x, double *ptr_fx,
     ros::Time t0;
     ros::Time t1;
     while (loop == 1) {
-    printf("here!!!!!!!!!!!!!!!!@@@@@@@!");
+    // printf("here!!!!!!!!!!!!!!!!@@@@@@@!");
        t0 = ros::Time::now();
       /* If the step bound can be provied dynamically, then apply it. */
       step_min = param.min_step;
@@ -1485,9 +1496,12 @@ inline int lbfgs_optimize(int n, double *x, double *ptr_fx,
       */
       t1 = ros::Time::now();
       double total_time_ms = (t1 - t0).toSec() * 1000;
-      printf("line search:: %5.3f",total_time_ms);
+      printf("%5.8f",total_time_ms);
+      printf("\n");
+      log_<<total_time_ms<<endl;
       step = 1.0;
     }
+    // log_.close();
   }
 
   /* Return the final value of the objective function. */

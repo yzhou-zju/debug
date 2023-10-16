@@ -12,6 +12,7 @@ namespace ego_planner
   {
     std::cout<<"initT.size():"<<initT.size()<<std::endl;
     std::cout<<"initInnerPts.cols() :"<<initInnerPts.cols() <<std::endl;
+    lbfgs::line_time_log_open();
     if (initInnerPts.cols() != (initT.size() - 1))
     {
       ROS_ERROR("initInnerPts.cols() != (initT.size()-1)");
@@ -69,6 +70,7 @@ namespace ego_planner
     /* ---------- optimize ---------- */
     t1 = ros::Time::now();
     std::cout<<"final_cost begin"<<std::endl;
+    lbfgs::line_time_log_close();
     int result = lbfgs::lbfgs_optimize(variable_num_,
                                        q,
                                        &final_cost,
@@ -172,6 +174,7 @@ namespace ego_planner
             double t_in_st = time_cps_.relative_time_ahead(id) + accumulated_step_swarm;
             if (t_in_st < swarm_trajs_->at(id).duration)
             {
+              // std::cout<<"t_in_st init::"<<t_in_st<<std::endl;
               pos = swarm_trajs_->at(id).traj.getPos(t_in_st);
               vel = swarm_trajs_->at(id).traj.getVel(t_in_st);
             }
@@ -248,6 +251,7 @@ namespace ego_planner
           double final_cost;
           time_cps_.idx_of_sets = i;
           opt_local_min_loop_num_ = 0;
+          // std::cout<<"swarmGraphCostCallback:"<<std::endl;
           int result = lbfgs::lbfgs_optimize( 3, 
                                               q, 
                                               &final_cost,
@@ -287,6 +291,7 @@ namespace ego_planner
     double cost;
     Eigen::Vector3d gradP;
     int idx = opt->time_cps_.idx_of_sets;
+    // std::cout<<"idx idx idx :"<<opt->formation_size_<<std::endl;
     // get swarm pos
     vector<Eigen::Vector3d> swarm_pos(opt->formation_size_);
     for (int id = 0; id < opt->formation_size_; id++) {
@@ -329,7 +334,7 @@ namespace ego_planner
     opt->VirtualT2RealT(t, T);
 
     Eigen::VectorXd gradT(opt->piece_num_);
-    std::cout<<"opt->piece_num_::::"<<opt->piece_num_<<"   "<<gradT(0)<<std::endl;
+    // std::cout<<"opt->piece_num_::::"<<opt->piece_num_<<"   "<<gradT(0)<<std::endl;
     double smoo_cost = 0, time_cost = 0;
 
     opt->jerkOpt_.generate(P, T);
@@ -423,7 +428,7 @@ namespace ego_planner
   template <typename EIGENVEC>
   void PolyTrajOptimizer::initAndGetSmoothnessGradCost2PT(EIGENVEC &gdT, double &cost)
   {
-    std::cout<<" jerkOpt_.initGradCost(gdT, cost):::"<<gdT[0]<<"    "<<cost<<std::endl;
+    // std::cout<<" jerkOpt_.initGradCost(gdT, cost):::"<<gdT[0]<<"    "<<cost<<std::endl;
     jerkOpt_.initGradCost(gdT, cost);
     gdT *= wei_smooth_;
     cost *= wei_smooth_;
@@ -643,10 +648,9 @@ namespace ego_planner
 
     // double obs_cost = obstacleGradCostP(gdT);   
     costs(0) = 0;
-
-    // double swarm_obs_cost = swarmGradCostP(gdT);
-    // costs(1) = swarm_obs_cost;
-    costs(1) = 0;
+    double swarm_obs_cost = swarmGradCostP(gdT);
+    costs(1) = swarm_obs_cost;
+    // costs(1) = 0;
     double swarm_formation_cost = 0.0;
     if (use_formation_)
       swarm_formation_cost = swarmGraphGradCostP(gdT);
@@ -727,7 +731,29 @@ namespace ego_planner
   //   }
   //   return obs_cost;
   // }
-
+  bool PolyTrajOptimizer::decide_contin(int id_get)
+  {
+    int leader_id1  = 8;
+    int leader_id2  = 16;
+    int leader_id3  = 24;
+    int leader_id4  = 32;
+    int leader_id5  = 40;
+    int leader_id6  = 48;
+    int leader_id7  = 56;
+    int leader_id8  = 64;
+    int leader_id9  = 72;
+    bool id_need_ignored = false;
+    if(id_get!=0&&id_get!=2&&id_get!=3&&id_get!=4&&id_get!=5&&id_get!=6&&id_get!=7
+    &&id_get!=leader_id1 && id_get!=leader_id2 && id_get!=leader_id3 && id_get!=leader_id4 
+    && id_get!=leader_id5 && id_get!=leader_id6 && id_get!=leader_id7 && id_get!=leader_id8 && id_get!=leader_id9)
+    {
+      id_need_ignored = true;
+    }
+    else{
+      id_need_ignored = false;
+    }
+    return id_need_ignored;
+  }
   double PolyTrajOptimizer::swarmGradCostP(Eigen::VectorXd &gdT){   
     static const double step = time_cps_.sampling_time_step;
 
@@ -767,12 +793,10 @@ namespace ego_planner
       vel = c.transpose() * beta1;
       
       omg = (idx == 0 || idx == k) ? 0.5 : 1.0;
-
       int size = swarm_trajs_->size();
       for (int id=0; id < size; id++) {
-        if ((swarm_trajs_->at(id).drone_id < 0) || swarm_trajs_->at(id).drone_id == drone_id_)
+        if ((swarm_trajs_->at(id).drone_id < 0) || swarm_trajs_->at(id).drone_id == drone_id_ || decide_contin(swarm_trajs_->at(id).drone_id))
           continue;
-        
         // get swarm pos
         double t_in_st = accumulated_dur + (t_now_ - swarm_trajs_->at(id).start_time);
         Eigen::Vector3d swarm_p, swarm_v;
@@ -841,6 +865,7 @@ namespace ego_planner
       for (int i = time_cps_.sampling_num; i < k; i++)
       {
         SwarmGraph swarm_graph;
+        // std::cout<<"swarm_des_ size:"<<swarm_des_.size()<<std::endl;
         swarm_graph.setDesiredForm(swarm_des_, adj_in_, adj_out_);
         swarm_graph.setAssignment(assignment_);
         std::vector<Eigen::Vector3d> swarm_pos(size), swarm_vel(size);
@@ -860,6 +885,7 @@ namespace ego_planner
             double t_in_st = time_cps_.relative_time_ahead(id) + i * step;
             if (t_in_st < swarm_trajs_->at(id).duration)
             {
+              std::cout<<"t_in_st::"<<t_in_st<<std::endl;
               pos = swarm_trajs_->at(id).traj.getPos(t_in_st);
               vel = swarm_trajs_->at(id).traj.getVel(t_in_st);
             }
@@ -916,6 +942,7 @@ namespace ego_planner
           double final_cost;
           time_cps_.idx_of_sets = i;
           opt_local_min_loop_num_ = 0;
+          std::cout<<"formation lbfg:::"<<std::endl;
           lbfgs::lbfgs_optimize( 3,
                                  q, 
                                  &final_cost,
@@ -982,7 +1009,7 @@ namespace ego_planner
         Eigen::Vector3d dist_vec = pos - time_cps_.local_min_advance_sets[idx];
         double dist  = dist_vec.norm();
         double dist2 = dist_vec.squaredNorm(); 
-
+        // std::cout<<"dist2:"<<dist2<<std::endl;
         if (dist2 > 0){
           // double dist2_2 = dist2 * dist2;
           // double dist2_3 = dist2_2 * dist2;
@@ -1759,7 +1786,7 @@ namespace ego_planner
   }
 
   /* helper functions */
-  void PolyTrajOptimizer::setParam()
+  void PolyTrajOptimizer::setParam(bool m_or_not_, vector<int> leader_id_)
   {
 
     // nh.param("optimization/constrain_points_perPiece",  cps_num_prePiece_, -1);
@@ -1771,6 +1798,7 @@ namespace ego_planner
     // nh.param("optimization/weight_time",                wei_time_, -1.0);
     // nh.param("optimization/weight_formation",           wei_formation_, -1.0);
     // nh.param("optimization/weight_gather",              wei_gather_, -1.0);
+    // m_or_not_get = m_or_not_;
     wei_smooth_ = 100;
     wei_obs_ = 10000;
     wei_swarm_ = 10000;
@@ -1801,7 +1829,7 @@ namespace ego_planner
     time_cps_.enable_decouple_swarm_graph = true;
     // set the formation type
     swarm_graph_.reset(new SwarmGraph);
-    setDesiredFormation(formation_type_);
+    setDesiredFormation(formation_type_, m_or_not_, leader_id_);
 
     // benchmark position-based formation setting
     formation_relative_dist_.push_back(Eigen::Vector3d(0.0, 0.0, 0.0));
