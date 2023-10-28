@@ -19,7 +19,8 @@ namespace ego_planner
       return false;
     }
 
-    t_now_ = ros::Time::now().toSec();
+    t_now_ = 0;
+    // t_now_ = ros::Time::now().toSec();
     piece_num_ = initT.size();
 
     jerkOpt_.reset(iniState, finState, piece_num_);
@@ -1784,21 +1785,84 @@ namespace ego_planner
   {
     drone_id_ = drone_id;
   }
+ double PolyTrajOptimizer::error_dist(poly_traj::Trajectory traj_final)
+ {
+  std::vector<Eigen::Vector3d> f_des;
+  std::vector<Eigen::Vector3d> f_cur;
+  Eigen::Vector3d  p_ = Eigen::Vector3d::Zero();
+  Eigen::Vector3d  q_ = Eigen::Vector3d::Zero();
+  Eigen::Vector3d  tran_ = Eigen::Vector3d::Zero();
+  double sum_ = 0;
+  double e_dist = 0;
+  Eigen::Vector3d  l0 = Eigen::Vector3d::Zero();
+  Eigen::Vector3d  l1 = Eigen::Vector3d::Zero();
+  double dl = 0;
+  double L = 0;
+  f_des = swarm_des_;
+  std::cout<<"f_des first one::"<<f_des[0]<<std::endl;
+  f_cur.resize(f_des.size());
+  Eigen::Vector3d pos;
 
+  int j_flag =0 ;
+  for(double j=0;j<traj_final.getTotalDuration();j=j+traj_final.getTotalDuration()/100,j_flag++)
+  {
+    q_ = Eigen::Vector3d::Zero();
+    p_ = Eigen::Vector3d::Zero();
+    // tran_ = Eigen::Vector3d::Zero();
+    // std::cout<<"j_time:"<<j<<std::endl;
+    sum_ = 0;
+    for(int id=0;id<f_des.size();id++)
+    {
+      if(id == drone_id_)
+      {
+        // std::cout<<"111"<<std::endl;
+        pos = traj_final.getPos(j);
+      }else{
+        // std::cout<<"222"<<std::endl;
+        pos = swarm_trajs_->at(id).traj.getPos(j);
+      }
+      f_cur[id] = pos;
+      if(j_flag==5)
+      {
+        std::cout<<"f_cur"<<id<<":"<<pos<<std::endl;
+        // std::cout<<"traj:"<<swarm_trajs_->at(id).traj.getPiece(1)<<std::endl;
+      }
+    }
+    
+    e_dist = e_dist + getFormationError(f_cur);
+    // for(int i=0;i<f_cur.size();i++)
+    // {
+    //   q_ = q_ + f_des[i];
+    //   p_ = p_ + f_cur[i];
+    // }
+    // tran_ = (p_ - q_)/f_cur.size();
+    // if(j==0)
+    // {
+    //   l0 = p_/f_cur.size();
+    //   l1 = p_/f_cur.size();
+    // }else{
+    //   l1 = p_/f_cur.size();
+    // }
+    // dl = sqrt(((l1-l0)[0])*((l1-l0)[0])+((l1-l0)[1])*((l1-l0)[1])+((l1-l0)[2])*((l1-l0)[2]));
+
+    // L = L + dl;
+
+    // for(int ii=0;ii<f_cur.size();ii++)
+    // {
+    //   sum_ = sum_ +((f_cur[ii] - (f_des[ii]+tran_))[0])*((f_cur[ii] - (f_des[ii]+tran_))[0])+
+    //          ((f_cur[ii] - (f_des[ii]+tran_))[1])*((f_cur[ii] - (f_des[ii]+tran_))[1])+
+    //          ((f_cur[ii] - (f_des[ii]+tran_))[2])*((f_cur[ii] - (f_des[ii]+tran_))[2]);
+    // }
+    // e_dist = e_dist + sum_*dl/f_cur.size();
+    // l0 = l1;
+  }
+  // e_dist = e_dist / L;/******s0 = 1********/
+  return e_dist;
+ }
   /* helper functions */
   void PolyTrajOptimizer::setParam(bool m_or_not_, vector<int> leader_id_)
   {
 
-    // nh.param("optimization/constrain_points_perPiece",  cps_num_prePiece_, -1);
-    // nh.param("optimization/weight_smooth",              wei_smooth_, 1.0);
-    // nh.param("optimization/weight_obstacle",            wei_obs_, -1.0);
-    // nh.param("optimization/weight_swarm",               wei_swarm_, -1.0);
-    // nh.param("optimization/weight_feasibility",         wei_feas_, -1.0);
-    // nh.param("optimization/weight_sqrvariance",         wei_sqrvar_, -1.0);
-    // nh.param("optimization/weight_time",                wei_time_, -1.0);
-    // nh.param("optimization/weight_formation",           wei_formation_, -1.0);
-    // nh.param("optimization/weight_gather",              wei_gather_, -1.0);
-    // m_or_not_get = m_or_not_;
     wei_smooth_ = 100;
     wei_obs_ = 10000;
     wei_swarm_ = 10000;

@@ -180,6 +180,7 @@ namespace ego_planner
     void setSwarmTrajs(SwarmTrajData *swarm_trajs_ptr);
     // void setSwarmTrajs();
     void setDroneId(const int drone_id);
+    double error_dist(poly_traj::Trajectory traj_final);
 
     /* helper functions */
     inline ConstrainPoints getControlPoints() { return cps_; }
