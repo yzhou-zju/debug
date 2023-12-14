@@ -1496,7 +1496,7 @@ inline int lbfgs_optimize(int n, double *x, double *ptr_fx,
       */
       t1 = ros::Time::now();
       double total_time_ms = (t1 - t0).toSec() * 1000;
-      printf("%5.8f",total_time_ms);
+      printf("lbfgs time:%5.8f",total_time_ms);
       printf("\n");
       log_<<total_time_ms<<endl;
       step = 1.0;

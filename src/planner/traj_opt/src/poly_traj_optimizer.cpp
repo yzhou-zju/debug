@@ -300,6 +300,7 @@ namespace ego_planner
         swarm_pos[id] = local_min_pos;
       else
         swarm_pos[id] = opt->time_cps_.swarm_pos_advance_sets[idx][id];
+        std::cout<<"swarm_pos::"<<swarm_pos[id]<<std::endl;
     }
     // get cost and gradP
     opt->time_cps_.swarm_graph_advance_sets[idx].updatePartGraphAndGetGrad(opt->drone_id_, swarm_pos, gradP);
@@ -508,12 +509,7 @@ namespace ego_planner
 
         /* Formation method chosing */
         if (use_formation_){
-          switch (formation_method_type_)
-          {
-          case FORMATION_METHOD_TYPE::SWARM_GRAPH:
-          {
-            // deformale formation
-            if (swarmGraphGradCostP(i_dp, t + step * j, pos, vel, gradp, gradt, grad_prev_t, costp))
+          if (swarmGraphGradCostP(i_dp, t + step * j, pos, vel, gradp, gradt, grad_prev_t, costp))
             {
               gradViolaPc = beta0 * gradp.transpose();
               gradViolaPt = alpha * gradt;
@@ -525,53 +521,6 @@ namespace ego_planner
               }
               costs(2) += omg * step * costp;
             }
-            break;
-          }
-
-          case FORMATION_METHOD_TYPE::LEADER_POSITION:
-          {
-            // benchmark: leader-follower position-based formation
-            if (leaderPosFormationCostGradP(i_dp, t + step * j, pos, vel, gradp, gradt, grad_prev_t, costp))
-            {
-              gradViolaPc = beta0 * gradp.transpose();
-              gradViolaPt = alpha * gradt;
-              jerkOpt_.get_gdC().block<6, 3>(i * 6, 0) += omg * step * gradViolaPc;
-              gdT(i) += omg * (costp / K + step * gradViolaPt);
-              if (i > 0)
-              {
-                gdT.head(i).array() += omg * step * grad_prev_t;
-              }
-              costs(3) += omg * step * costp;
-            }
-            break;
-          }
-
-          case FORMATION_METHOD_TYPE::RELATIVE_POSITION:
-          {
-            // benchmark: relative position-based formation
-            if (relativePosFormationCostGradP(i_dp, t + step * j, pos, vel, gradp, gradt, grad_prev_t, costp))
-            {
-              gradViolaPc = beta0 * gradp.transpose();
-              gradViolaPt = alpha * gradt;
-              jerkOpt_.get_gdC().block<6, 3>(i * 6, 0) += omg * step * gradViolaPc;
-              gdT(i) += omg * (costp / K + step * gradViolaPt);
-              if (i > 0)
-              {
-                gdT.head(i).array() += omg * step * grad_prev_t;
-              }
-              costs(3) += omg * step * costp;
-            }
-            break;
-          }
-
-          case FORMATION_METHOD_TYPE::VRB_METHOD:
-          {
-            // benchmark: VRB-method
-          }
-
-          default:
-            break;
-          }
         }
 
         // feasibility
@@ -649,13 +598,21 @@ namespace ego_planner
 
     // double obs_cost = obstacleGradCostP(gdT);   
     costs(0) = 0;
-    double swarm_obs_cost = swarmGradCostP(gdT);
+    double swarm_obs_cost;
+    if(swarm_trajs_->size()>1)
+    {
+      swarm_obs_cost = swarmGradCostP(gdT);
+    }else{
+      swarm_obs_cost = 0;
+    }
+    
     costs(1) = swarm_obs_cost;
     // costs(1) = 0;
     double swarm_formation_cost = 0.0;
-    if (use_formation_)
+    if (use_formation_&&swarm_trajs_->size()>0)
       swarm_formation_cost = swarmGraphGradCostP(gdT);
     costs(2) = swarm_formation_cost;
+    // std::cout<<"swarm_formation_cost:"<<swarm_formation_cost<<std::endl;
 
     double vel_cost = 0.0, acc_cost = 0.0;
     feasibilityGradCostVandA(gdT, vel_cost, acc_cost);
@@ -664,74 +621,7 @@ namespace ego_planner
   }
 
 
-  // double PolyTrajOptimizer::obstacleGradCostP(Eigen::VectorXd &gdT) {
-  //   static const double step = time_cps_.sampling_time_step;
-
-  //   double T_sum = jerkOpt_.get_T1().sum();
-  //   int k = floor(T_sum / step) + 1;
-
-  //   /* Calculate the gdC, gdT and obs_cost */
-  //   // choose zhou's trick, only consider 2/3 trajectory
-  //   double obs_cost = 0.0;
-  //   int piece_of_idx(0);
-  //   double accumulated_dur(0.0);
-  //   double pre_dur(0.0);
-  //   double s1, s2, s3, s4, s5;
-  //   Eigen::Matrix<double, 6, 1> beta0, beta1;
-  //   Eigen::Vector3d pos, vel;
-  //   double omg;
-
-  //   for (int idx=0; idx<=k; idx++, accumulated_dur+=step) {
-  //     // if (idx >= k * 2 / 3)
-  //     //   break;
-      
-  //     s1 = accumulated_dur;
-
-  //     piece_of_idx = jerkOpt_.getTraj().locatePieceIdx(s1);
-  //     const Eigen::Matrix<double, 6, 3> &c = jerkOpt_.get_b().block<6, 3>(piece_of_idx * 6, 0);
-      
-  //     s2 = s1 * s1;
-  //     s3 = s2 * s1;
-  //     s4 = s2 * s2;
-  //     s5 = s4 * s1;
-  //     beta0 << 1.0, s1, s2, s3, s4, s5;
-  //     beta1 << 0.0, 1.0, 2.0 * s1, 3.0 * s2, 4.0 * s3, 5.0 * s4;
-  //     pos = c.transpose() * beta0;
-  //     vel = c.transpose() * beta1;
-      
-  //     omg = (idx == 0 || idx == k) ? 0.5 : 1.0;
-
-  //     // calculate the cost and grad of obstacle avoidance
-  //     double dJ_df, df_dt, grad_prev_t;
-  //     Eigen::Matrix<double, 6, 3> gradViolaPc;
-  //     Eigen::Vector3d df_dp;
-      
-  //     // use esdf
-  //     double dist;
-  //     Eigen::Vector3d dist_grad;
-  //     // grid_map_->evaluateEDTWithGrad(pos, dist, dist_grad);
-  //     double dist_err = obs_clearance_ - dist;
-
-  //     if (dist_err > 0){
-  //       dJ_df = 3 * wei_obs_ * step * omg * pow(dist_err, 2);
-  //       df_dp = - dist_grad;
-  //       gradViolaPc = dJ_df * beta0 * df_dp.transpose();
-  //       df_dt = df_dp.dot(vel);
-  //       grad_prev_t = -1 * dJ_df * df_dt;
-
-  //       // cost 
-  //       obs_cost += wei_obs_ * step * omg * pow(dist_err, 3);
-
-  //       // gdC
-  //       jerkOpt_.get_gdC().block<6, 3>(piece_of_idx * 6, 0) += gradViolaPc;
-
-  //       // gdT
-  //       if (piece_of_idx > 0)
-  //         gdT.head(piece_of_idx).array() += grad_prev_t;
-  //     }
-  //   }
-  //   return obs_cost;
-  // }
+  
   bool PolyTrajOptimizer::decide_contin(int id_get)
   {
     int leader_id1  = 8;
@@ -886,7 +776,7 @@ namespace ego_planner
             double t_in_st = time_cps_.relative_time_ahead(id) + i * step;
             if (t_in_st < swarm_trajs_->at(id).duration)
             {
-              std::cout<<"t_in_st::"<<t_in_st<<std::endl;
+              // std::cout<<"t_in_st::"<<t_in_st<<std::endl;
               pos = swarm_trajs_->at(id).traj.getPos(t_in_st);
               vel = swarm_trajs_->at(id).traj.getVel(t_in_st);
             }
@@ -1176,8 +1066,8 @@ namespace ego_planner
     // wait all the drones have trajectories
     // if (swarm_trajs_->size() < formation_size_ && drone_id_ != formation_size_-1)
     //   return false;
-    if (i_dp <= 0 || i_dp >= cps_.cp_size * 2 / 3)
-      return false;
+    // if (i_dp <= 0 || i_dp >= cps_.cp_size * 2 / 3)
+    //   return false;
 
     int size = swarm_trajs_->size();
     if (drone_id_ == formation_size_ - 1)
@@ -1391,8 +1281,8 @@ namespace ego_planner
                                          double &grad_prev_t,
                                          double &costp)
   {
-    if (i_dp <= 0 || i_dp >= cps_.cp_size * 2 / 3)
-      return false;
+    // if (i_dp <= 0 || i_dp >= cps_.cp_size * 2 / 3)
+    //   return false;
     // if (i_dp <= 0)
     //   return false;
 
@@ -1554,216 +1444,7 @@ namespace ego_planner
     return similarity_error;
   }
 
-  bool PolyTrajOptimizer::leaderPosFormationCostGradP(const int i_dp,
-                                                      const double t,
-                                                      const Eigen::Vector3d &p,
-                                                      const Eigen::Vector3d &v,
-                                                      Eigen::Vector3d &gradp,
-                                                      double &gradt,
-                                                      double &grad_prev_t,
-                                                      double &costp)
-  {
-    if (drone_id_ == 0)
-      return false;
-
-    if (i_dp <= 0 || i_dp >= cps_.cp_size * 2 / 3)
-      return false;
-
-    // init parameters
-    gradp.setZero();
-    costp = 0;
-    gradt = 0;
-    grad_prev_t = 0;
-
-    /* formation cost */
-    // get pilot_pos and pilot_vel
-    Eigen::Vector3d pilot_pos, pilot_vel;
-    double pt_time = t_now_ + t;
-    double traj_i_satrt_time = swarm_trajs_->at(0).start_time;
-    if (pt_time < traj_i_satrt_time + swarm_trajs_->at(0).duration)
-    {
-      pilot_pos = swarm_trajs_->at(0).traj.getPos(pt_time - traj_i_satrt_time);
-      pilot_vel = swarm_trajs_->at(0).traj.getVel(pt_time - traj_i_satrt_time);
-    }
-    else
-    {
-      double exceed_time = pt_time - (traj_i_satrt_time + swarm_trajs_->at(0).duration);
-      pilot_vel = swarm_trajs_->at(0).traj.getVel(swarm_trajs_->at(0).duration);
-      pilot_pos = swarm_trajs_->at(0).traj.getPos(swarm_trajs_->at(0).duration) + exceed_time * pilot_vel;
-    }
-
-    // get formation goal
-    Eigen::Vector3d formation_goal = pilot_pos + formation_relative_dist_[drone_id_];
-    double formation_clearance = 0.1;
-
-    // calculate cost
-    Eigen::Vector3d dist_vec = p - formation_goal;
-    double dist2 = dist_vec.squaredNorm();
-
-    double dist2_err_max = dist2 - formation_clearance * formation_clearance;
-    double dist2_err2_max = dist2_err_max * dist2_err_max;
-    double dist2_err3_max = dist2_err2_max * dist2_err_max;
-
-    if (dist2_err_max > 0)
-    {
-      costp = wei_formation_ * dist2_err3_max;
-      Eigen::Vector3d dJ_dP = wei_formation_ * 3 * dist2_err2_max * 2 * dist_vec;
-      gradp = dJ_dP;
-      gradt = dJ_dP.dot(v - pilot_vel);
-      grad_prev_t = dJ_dP.dot(-pilot_vel);
-    }
-    return true;
-  }
-
-  bool PolyTrajOptimizer::relativePosFormationCostGradP(const int i_dp,
-                                                        const double t,
-                                                        const Eigen::Vector3d &p,
-                                                        const Eigen::Vector3d &v,
-                                                        Eigen::Vector3d &gradp,
-                                                        double &gradt,
-                                                        double &grad_prev_t,
-                                                        double &costp)
-  {
-    if (drone_id_ == 0)
-      return false;
-
-    if (i_dp <= 0 || i_dp >= cps_.cp_size * 2 / 3)
-      return false;
-
-    int formation_size = 7;
-    int size = swarm_trajs_->size();
-    if (size < formation_size)
-      return false;
-
-    // init parameters
-    gradp.setZero();
-    costp = 0;
-    gradt = 0;
-    grad_prev_t = 0;
-
-    // get the swarm pos
-    vector<Eigen::Vector3d> swarm_pos(formation_size), swarm_vel(formation_size);
-    swarm_pos[drone_id_] = p;
-    swarm_vel[drone_id_] = v;
-    
-    for (int id = 0; id < formation_size; id++){
-      if (id == drone_id_)
-        continue;
-
-      double pt_time = t_now_ + t;
-      double traj_i_satrt_time = swarm_trajs_->at(id).start_time;
-
-      Eigen::Vector3d swarm_p, swarm_v;
-      if (pt_time < traj_i_satrt_time + swarm_trajs_->at(id).duration)
-      {
-        swarm_p = swarm_trajs_->at(id).traj.getPos(pt_time - traj_i_satrt_time);
-        swarm_v = swarm_trajs_->at(id).traj.getVel(pt_time - traj_i_satrt_time);
-      }
-      else
-      {
-        double exceed_time = pt_time - (traj_i_satrt_time + swarm_trajs_->at(id).duration);
-        swarm_v = swarm_trajs_->at(id).traj.getVel(swarm_trajs_->at(id).duration);
-        swarm_p = swarm_trajs_->at(id).traj.getPos(swarm_trajs_->at(id).duration) +
-                  exceed_time * swarm_v;
-      }
-      swarm_pos[id] = swarm_p;
-      swarm_vel[id] = swarm_v;
-    }
-
-    // get relative goal and connect_num
-    int connect_num;
-    vector<Eigen::Vector3d> connect_pos, connect_vel;
-    if (drone_id_ == 0)
-    {
-      connect_num = 6;
-      for (int i = 1; i <= connect_num; i++)
-      {
-        connect_pos.push_back(swarm_pos[i] - formation_relative_dist_[i]);
-        connect_vel.push_back(swarm_vel[i]);
-      }
-    }
-    else
-    {
-      connect_num = 3;
-      if (drone_id_ == 1)
-      {
-        connect_pos.push_back(swarm_pos[0] + formation_relative_dist_[1]);
-        connect_vel.push_back(swarm_vel[0]);
-        connect_pos.push_back(swarm_pos[6] + formation_relative_dist_[2]);
-        connect_vel.push_back(swarm_vel[6]);
-        connect_pos.push_back(swarm_pos[2] + formation_relative_dist_[6]);
-        connect_vel.push_back(swarm_vel[2]);
-      }
-      else if (drone_id_ == 2)
-      {
-        connect_pos.push_back(swarm_pos[0] + formation_relative_dist_[2]);
-        connect_vel.push_back(swarm_vel[0]);
-        connect_pos.push_back(swarm_pos[1] + formation_relative_dist_[3]);
-        connect_vel.push_back(swarm_vel[1]);
-        connect_pos.push_back(swarm_pos[3] + formation_relative_dist_[1]);
-        connect_vel.push_back(swarm_vel[3]);
-      }
-      else if (drone_id_ == 3)
-      {
-        connect_pos.push_back(swarm_pos[0] + formation_relative_dist_[3]);
-        connect_vel.push_back(swarm_vel[0]);
-        connect_pos.push_back(swarm_pos[2] + formation_relative_dist_[4]);
-        connect_vel.push_back(swarm_vel[2]);
-        connect_pos.push_back(swarm_pos[4] + formation_relative_dist_[2]);
-        connect_vel.push_back(swarm_vel[4]);
-      }
-      else if (drone_id_ == 4)
-      {
-        connect_pos.push_back(swarm_pos[0] + formation_relative_dist_[4]);
-        connect_vel.push_back(swarm_vel[0]);
-        connect_pos.push_back(swarm_pos[3] + formation_relative_dist_[5]);
-        connect_vel.push_back(swarm_vel[3]);
-        connect_pos.push_back(swarm_pos[5] + formation_relative_dist_[3]);
-        connect_vel.push_back(swarm_vel[5]);
-      }
-      else if (drone_id_ == 5)
-      {
-        connect_pos.push_back(swarm_pos[0] + formation_relative_dist_[5]);
-        connect_vel.push_back(swarm_vel[0]);
-        connect_pos.push_back(swarm_pos[4] + formation_relative_dist_[6]);
-        connect_vel.push_back(swarm_vel[4]);
-        connect_pos.push_back(swarm_pos[6] + formation_relative_dist_[4]);
-        connect_vel.push_back(swarm_vel[6]);
-      }
-      else if (drone_id_ == 6)
-      {
-        connect_pos.push_back(swarm_pos[0] + formation_relative_dist_[6]);
-        connect_vel.push_back(swarm_vel[0]);
-        connect_pos.push_back(swarm_pos[5] + formation_relative_dist_[1]);
-        connect_vel.push_back(swarm_vel[5]);
-        connect_pos.push_back(swarm_pos[1] + formation_relative_dist_[5]);
-        connect_vel.push_back(swarm_vel[1]);
-      }
-    }
-
-    // calculate cost
-    double formation_clearance = 0.1;
-    for (int i = 0; i < connect_num; i++)
-    {
-      Eigen::Vector3d dist_vec = p - connect_pos[i];
-      double dist2 = dist_vec.squaredNorm();
-
-      double dist2_err_max = dist2 - formation_clearance * formation_clearance;
-      double dist2_err2_max = dist2_err_max * dist2_err_max;
-      double dist2_err3_max = dist2_err2_max * dist2_err_max;
-
-      if (dist2_err_max > 0)
-      {
-        costp += wei_formation_ * dist2_err3_max;
-        Eigen::Vector3d dJ_dP = wei_formation_ * 3 * dist2_err2_max * 2 * dist_vec;
-        gradp += dJ_dP;
-        gradt += dJ_dP.dot(v - connect_vel[i]);
-        grad_prev_t += dJ_dP.dot(-connect_vel[i]);
-      }
-    }
-    return true;
-  }
-
+  
   void PolyTrajOptimizer::updateSwarmGraph(Eigen::VectorXi assignment)
   {
     swarm_graph_->setAssignment(assignment);
@@ -1822,39 +1503,10 @@ namespace ego_planner
         pos = swarm_trajs_->at(id).traj.getPos(j);
       }
       f_cur[id] = pos;
-      if(j_flag==5)
-      {
-        std::cout<<"f_cur"<<id<<":"<<pos<<std::endl;
-        // std::cout<<"traj:"<<swarm_trajs_->at(id).traj.getPiece(1)<<std::endl;
-      }
     }
     
     e_dist = e_dist + getFormationError(f_cur);
-    // for(int i=0;i<f_cur.size();i++)
-    // {
-    //   q_ = q_ + f_des[i];
-    //   p_ = p_ + f_cur[i];
-    // }
-    // tran_ = (p_ - q_)/f_cur.size();
-    // if(j==0)
-    // {
-    //   l0 = p_/f_cur.size();
-    //   l1 = p_/f_cur.size();
-    // }else{
-    //   l1 = p_/f_cur.size();
-    // }
-    // dl = sqrt(((l1-l0)[0])*((l1-l0)[0])+((l1-l0)[1])*((l1-l0)[1])+((l1-l0)[2])*((l1-l0)[2]));
-
-    // L = L + dl;
-
-    // for(int ii=0;ii<f_cur.size();ii++)
-    // {
-    //   sum_ = sum_ +((f_cur[ii] - (f_des[ii]+tran_))[0])*((f_cur[ii] - (f_des[ii]+tran_))[0])+
-    //          ((f_cur[ii] - (f_des[ii]+tran_))[1])*((f_cur[ii] - (f_des[ii]+tran_))[1])+
-    //          ((f_cur[ii] - (f_des[ii]+tran_))[2])*((f_cur[ii] - (f_des[ii]+tran_))[2]);
-    // }
-    // e_dist = e_dist + sum_*dl/f_cur.size();
-    // l0 = l1;
+ 
   }
   // e_dist = e_dist / L;/******s0 = 1********/
   return e_dist;
@@ -1869,19 +1521,15 @@ namespace ego_planner
     wei_feas_ = 10000;
     wei_sqrvar_ = 10000;
     wei_time_ = 80;
-    wei_formation_ = 100;
+    wei_formation_ = 50000;
     wei_gather_  = 100;
-    // nh.param("optimization/obstacle_clearance",         obs_clearance_, -1.0);
-    // nh.param("optimization/swarm_clearance",            swarm_clearance_, -1.0);
-    // nh.param("optimization/swarm_gather_threshold",     swarm_gather_threshold_, -1.0);
-    // nh.param("optimization/formation_type",             formation_type_, -1);
-    // nh.param("optimization/formation_method_type",      formation_method_type_, 0);
-    // nh.param("optimization/max_vel",                    max_vel_, -1.0);
-    // nh.param("optimization/max_acc",                    max_acc_, -1.0);
+
     obs_clearance_ = 0.4;
     swarm_clearance_ = 0.3;
     swarm_gather_threshold_ = 1;
-    formation_type_ = 88;
+    // formation_type_ = 88;
+    formation_type_ = 333;
+    // formation_type_ = 1;
     formation_method_type_ = 0;
     max_vel_ = 1;
     max_acc_ = 2;
@@ -1890,18 +1538,11 @@ namespace ego_planner
     // nh.param("optimization/enable_decouple_swarm_graph",time_cps_.enable_decouple_swarm_graph, false);
     enable_fix_step_ = true;
     time_cps_.sampling_time_step = 0.5;
-    time_cps_.enable_decouple_swarm_graph = true;
+    time_cps_.enable_decouple_swarm_graph = false;
     // set the formation type
     swarm_graph_.reset(new SwarmGraph);
     setDesiredFormation(formation_type_, m_or_not_, leader_id_);
 
     // benchmark position-based formation setting
-    formation_relative_dist_.push_back(Eigen::Vector3d(0.0, 0.0, 0.0));
-    formation_relative_dist_.push_back(Eigen::Vector3d(2.6, -1.5, 0.0));
-    formation_relative_dist_.push_back(Eigen::Vector3d(0.0, -3.0, 0.0));
-    formation_relative_dist_.push_back(Eigen::Vector3d(-2.6, -1.5, 0.0));
-    formation_relative_dist_.push_back(Eigen::Vector3d(-2.6, 1.5, 0.0));
-    formation_relative_dist_.push_back(Eigen::Vector3d(0.0, 3.0, 0.0));
-    formation_relative_dist_.push_back(Eigen::Vector3d(2.6, 1.5, 0.0));
   }
 } // namespace ego_planner
