@@ -21,6 +21,7 @@ private:
     std::vector< std::vector<int> > adj_arr_; // Arrays indicating the adjacency relations
 
     bool have_desired_;
+    bool flag_first_g;
 
     Eigen::MatrixXd A_;   //Adjacency matrix
     Eigen::VectorXd D_;   //Degree matrix

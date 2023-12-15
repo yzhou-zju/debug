@@ -1,0 +1,11 @@
+<launch>
+
+ <node name="rviz" pkg="rviz" type="rviz" output="screen"
+       args="-d $(find ego_planner)/config/1.rviz"> 
+</node>
+
+<node pkg ="ego_planner" type ="ego_planner_node" name ="ego_planner_1" output = "screen">    
+       
+</node>
+
+</launch>

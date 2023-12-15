@@ -94,6 +94,7 @@ namespace ego_planner
     int piece_num_;        // poly traj piece numbers
     int iter_num_;         // iteration of the solver
     bool enable_fix_step_ = false;
+    bool first_planner_ = true;
 
     string result_fn_;
     fstream result_file_;
@@ -165,6 +166,7 @@ namespace ego_planner
     void setSwarmTrajs(SwarmTrajData *swarm_trajs_ptr);
     // void setSwarmTrajs();
     void setDroneId(const int drone_id);
+    void fisrt_planner_or_not(const bool first_p_);
     double error_dist(poly_traj::Trajectory traj_final);
 
     /* helper functions */
@@ -287,7 +289,6 @@ namespace ego_planner
       {
       case 1:
       {
-        std::cout << "setDesiredFormation" << std::endl;
         std::vector<Eigen::Vector3d> v;
         v.resize(16);
         int id_form = 0;
@@ -296,8 +297,9 @@ namespace ego_planner
           for(int j=0;j<4;j++)
           {
             v[id_form] = {i*2,j*2,1};
-            id_form=id_form+1;
             swarm_des_.push_back(v[id_form]);
+            id_form=id_form+1;
+
           }
         }
         formation_size_ = swarm_des_.size();
@@ -321,13 +323,42 @@ namespace ego_planner
       {
         std::cout << "setDesiredFormation" << std::endl;
         std::vector<Eigen::Vector3d> v;
-        v.resize(3);
+        v.resize(16);
         v[0] = {0, 0, 1};
-        v[1] = {0, 2, 1};
-        v[2] = {0, -2, 1};
+        v[1] = {1, 2, 1};
+        v[2] = {1, 4, 1};
+        v[3] = {0, 6, 1};
+
+        v[4] = {-2, 0, 1};
+        v[5] = {-1, 2, 1};
+        v[6] = {-1, 4, 1};
+        v[7] = {-2, 6, 1};
+
+        v[8] = {-4, 0, 1};
+        v[9] = {-3, 2, 1};
+        v[10] = {-3, 4, 1};
+        v[11] = {-4, 6, 1};
+
+        v[12] = {-6, 0, 1};
+        v[13] = {-5, 2, 1};
+        v[14] = {-5, 4, 1};
+        v[15] = {-6, 6, 1};
         swarm_des_.push_back(v[0]);
         swarm_des_.push_back(v[1]);
         swarm_des_.push_back(v[2]);
+        swarm_des_.push_back(v[3]);
+        swarm_des_.push_back(v[4]);
+        swarm_des_.push_back(v[5]);
+        swarm_des_.push_back(v[6]);
+        swarm_des_.push_back(v[7]);
+        swarm_des_.push_back(v[8]);
+        swarm_des_.push_back(v[9]);
+        swarm_des_.push_back(v[10]);
+        swarm_des_.push_back(v[11]);
+        swarm_des_.push_back(v[12]);
+        swarm_des_.push_back(v[13]);
+        swarm_des_.push_back(v[14]);
+        swarm_des_.push_back(v[15]);
         formation_size_ = swarm_des_.size();
         // construct the desired swarm graph
         // adj_in_ =  {0, 0, 0, 0, 0, 0, 1, 2, 3, 4, 5, 6};
