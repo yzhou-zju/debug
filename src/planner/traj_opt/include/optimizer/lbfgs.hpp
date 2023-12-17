@@ -38,7 +38,7 @@ namespace lbfgs {
     std::ofstream log_;
   inline int line_time_log_open()
   {
-    log_.open("/home/z/rrt_rotor/src/drone_.txt");      
+    log_.open("/home/zy/debug/1/opt_time.txt");      
   }
   inline int line_time_log_close()
   {

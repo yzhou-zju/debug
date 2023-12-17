@@ -12,7 +12,6 @@ namespace ego_planner
   {
     std::cout<<"initT.size():"<<initT.size()<<std::endl;
     std::cout<<"initInnerPts.cols() :"<<initInnerPts.cols() <<std::endl;
-    lbfgs::line_time_log_open();
     if (initInnerPts.cols() != (initT.size() - 1))
     {
       ROS_ERROR("initInnerPts.cols() != (initT.size()-1)");
@@ -130,10 +129,18 @@ namespace ego_planner
       std::cout<<"drone_id_:"<<drone_id_<<std::endl;
       std::cout<<"formation_size_:"<<formation_size_<<std::endl;
       if (drone_id_ == formation_size_ - 1&&!first_planner_)
+      {
+        std::cout<<"@@@id:"<<drone_id_<<std::endl;
+        std::cout<<"formation_size_ - 1:"<<formation_size_ - 1<<std::endl;
+        std::cout<<"first_planner_:"<<first_planner_<<std::endl;
         size = formation_size_;
+      }
       if (size < formation_size_)
+      {
+        std::cout<<"size<form!!!!!"<<std::endl;
         return;
-
+      }
+      std::cout<<"size<form!?????"<<std::endl;
       time_cps_.start_time = t_now_;
 
       // calculate the effective time duration
@@ -173,9 +180,12 @@ namespace ego_planner
         swarm_graph.setDesiredForm(swarm_des_, adj_in_, adj_out_);
         swarm_graph.setAssignment(assignment_);
         std::vector<Eigen::Vector3d> swarm_pos(size), swarm_vel(size);
+        std::cout<<"opt !!!!!!!!!!!!!!!!!!!1111:"<<i<<std::endl;
         // get swarm pos and vel
         for (int id = 0; id < size; id++)
         {
+          // std::cout<<"opt !!!!!!!!!!!!!!!!!!!22222:"<<id<<std::endl;
+          // std::cout<<"opt !traj:"<<id<<"   "<<swarm_trajs_->at(id).duration<<std::endl;
           Eigen::Vector3d pos, vel;
           if (id == drone_id_)
           {
@@ -659,6 +669,7 @@ namespace ego_planner
     }
     return id_need_ignored;
   }
+
   double PolyTrajOptimizer::swarmGradCostP(Eigen::VectorXd &gdT){   
     static const double step = time_cps_.sampling_time_step;
 
@@ -1484,53 +1495,24 @@ namespace ego_planner
   {
     drone_id_ = drone_id;
   }
- double PolyTrajOptimizer::error_dist(poly_traj::Trajectory traj_final)
+ double PolyTrajOptimizer::error_dist(std::vector<Eigen::Vector3d> f_cur , std::vector<Eigen::Vector3d> f_des)
  {
-  std::vector<Eigen::Vector3d> f_des;
-  std::vector<Eigen::Vector3d> f_cur;
-  Eigen::Vector3d  p_ = Eigen::Vector3d::Zero();
-  Eigen::Vector3d  q_ = Eigen::Vector3d::Zero();
-  Eigen::Vector3d  tran_ = Eigen::Vector3d::Zero();
-  double sum_ = 0;
-  double e_dist = 0;
-  Eigen::Vector3d  l0 = Eigen::Vector3d::Zero();
-  Eigen::Vector3d  l1 = Eigen::Vector3d::Zero();
-  double dl = 0;
-  double L = 0;
-  f_des = swarm_des_;
-  std::cout<<"f_des first one::"<<f_des[0]<<std::endl;
-  f_cur.resize(f_des.size());
-  Eigen::Vector3d pos;
+  double error_d_;
+  error_d_ = swarm_graph_->getBigForm_error(f_des, f_cur);
+  error_d_ = error_d_ * 1000;
+  log_zy<<error_d_<<std::endl;
 
-  int j_flag =0 ;
-  for(double j=0;j<traj_final.getTotalDuration();j=j+traj_final.getTotalDuration()/100,j_flag++)
-  {
-    q_ = Eigen::Vector3d::Zero();
-    p_ = Eigen::Vector3d::Zero();
-    // tran_ = Eigen::Vector3d::Zero();
-    // std::cout<<"j_time:"<<j<<std::endl;
-    sum_ = 0;
-    for(int id=0;id<f_des.size();id++)
-    {
-      if(id == drone_id_)
-      {
-        // std::cout<<"111"<<std::endl;
-        pos = traj_final.getPos(j);
-      }else{
-        // std::cout<<"222"<<std::endl;
-        pos = swarm_trajs_->at(id).traj.getPos(j);
-      }
-      f_cur[id] = pos;
-    }
-    
-    e_dist = e_dist + getFormationError(f_cur);
- 
-  }
-  // e_dist = e_dist / L;/******s0 = 1********/
-  return e_dist;
  }
   /* helper functions */
-  void PolyTrajOptimizer::setParam(bool m_or_not_, vector<int> leader_id_)
+  void PolyTrajOptimizer::setlog(const int d_id_)
+  {
+    if(d_id_ == 0)
+    {
+      lbfgs::line_time_log_open();
+      log_zy.open("/home/zy/debug/1/error_" + to_string(d_id_)+".txt");
+    }
+  }
+  void PolyTrajOptimizer::setParam(vector<int> leader_id_, std::vector<Eigen::Vector3d> v_des)
   {
 
     wei_smooth_ = 100;
@@ -1546,20 +1528,18 @@ namespace ego_planner
     swarm_clearance_ = 0.3;
     // swarm_gather_threshold_ = 1;
     // formation_type_ = 88;
-    formation_type_ = 333;
-    // formation_type_ = 1;
+    // formation_type_ = 333;
+    formation_type_ = 1;
     formation_method_type_ = 0;
     max_vel_ = 1;
     max_acc_ = 2;
-    // nh.param("optimization/enable_fix_step",            enable_fix_step_, false);
-    // nh.param("optimization/sampling_time_step",         time_cps_.sampling_time_step, 0.0);
-    // nh.param("optimization/enable_decouple_swarm_graph",time_cps_.enable_decouple_swarm_graph, false);
+
     enable_fix_step_ = true;
     time_cps_.sampling_time_step = 0.5;
     time_cps_.enable_decouple_swarm_graph = false;
     // set the formation type
     swarm_graph_.reset(new SwarmGraph);
-    setDesiredFormation(formation_type_, m_or_not_, leader_id_);
+    setDesiredFormation(formation_type_, leader_id_, v_des);
 
     // benchmark position-based formation setting
   }

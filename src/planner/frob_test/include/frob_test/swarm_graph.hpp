@@ -59,7 +59,7 @@ public:
     bool setDesiredForm( const std::vector<Eigen::Vector3d> &swarm_des,
                           const std::vector<int> &adj_in,
                           const std::vector<int> &adj_out );
-
+    double getBigForm_error(const std::vector<Eigen::Vector3d> swarm_des, const std::vector<Eigen::Vector3d> swarm_cur);
     //Calculate the squared F-Normed difference of SNL matrix
     bool calcFNorm2( double &cost );
 

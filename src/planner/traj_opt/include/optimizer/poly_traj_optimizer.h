@@ -101,6 +101,7 @@ namespace ego_planner
 
     bool record_once_ = true; // debug for calculating the local min of swarm graph
     std::ofstream log_;
+    std::ofstream log_zy;
     int opt_local_min_loop_num_;
     int opt_local_min_loop_sum_num_ = 0;
     double collision_check_time_end_ = 0.0;
@@ -158,16 +159,17 @@ namespace ego_planner
 
   public:
     PolyTrajOptimizer() {}
-    ~PolyTrajOptimizer() { ztr_log3.close(); }
+    ~PolyTrajOptimizer() { log_zy.close(); }
 
     /* set variables */
-    void setParam(bool m_or_not_, vector<int> leader_id_);
+    void setlog(const int d_id_);
+    void setParam(vector<int> leader_id_,std::vector<Eigen::Vector3d> v_des);
     void setControlPoints(const Eigen::MatrixXd &points);
     void setSwarmTrajs(SwarmTrajData *swarm_trajs_ptr);
     // void setSwarmTrajs();
     void setDroneId(const int drone_id);
     void fisrt_planner_or_not(const bool first_p_);
-    double error_dist(poly_traj::Trajectory traj_final);
+    double error_dist(std::vector<Eigen::Vector3d> f_cur, std::vector<Eigen::Vector3d> f_des);
 
     /* helper functions */
     inline ConstrainPoints getControlPoints() { return cps_; }
@@ -283,25 +285,25 @@ namespace ego_planner
 
     bool getFormationPos(std::vector<Eigen::Vector3d> &swarm_graph_pos, Eigen::Vector3d pos);
 
-    void setDesiredFormation(int type, bool m_or_not, vector<int> _leader_id)
+    void setDesiredFormation(int type,vector<int> _leader_id, std::vector<Eigen::Vector3d> v_des_)
     {
       switch (type)
       {
       case 1:
       {
         std::vector<Eigen::Vector3d> v;
-        v.resize(16);
         int id_form = 0;
-        for(int i=0;i<4;i++)
-        {
-          for(int j=0;j<4;j++)
-          {
-            v[id_form] = {i*2,j*2,1};
-            swarm_des_.push_back(v[id_form]);
-            id_form=id_form+1;
-
-          }
-        }
+        // for(int i=0;i<4;i++)
+        // {
+        //   for(int j=0;j<4;j++)
+        //   {
+        //     v[id_form] = {i*2,j*2,1};
+        //     swarm_des_.push_back(v[id_form]);
+        //     id_form=id_form+1;
+        //   }
+        // }
+        swarm_des_ = v_des_;
+        std::cout<<"swarm_des_ size():"<<swarm_des_.size()<<std::endl;
         formation_size_ = swarm_des_.size();
         std::cout<<"formation_size_::"<<formation_size_<<std::endl;
         // construct the desired swarm graph
@@ -319,7 +321,7 @@ namespace ego_planner
         swarm_graph_->setDesiredForm(swarm_des_, adj_in_, adj_out_);
         break;
       }
-      case 333:
+      case 2:
       {
         std::cout << "setDesiredFormation" << std::endl;
         std::vector<Eigen::Vector3d> v;
@@ -467,7 +469,7 @@ namespace ego_planner
         swarm_des_.push_back(v[5]);
         swarm_des_.push_back(v[6]);
         swarm_des_.push_back(v[7]);
-        if (m_or_not)
+        if (true)
         {
           swarm_des_.push_back(v[_leader_id[0]]);
           swarm_des_.push_back(v[_leader_id[1]]);

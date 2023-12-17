@@ -75,7 +75,41 @@ bool SwarmGraph::updatePartGraphAndGetGrad(const int idx, const std::vector<Eige
         ROS_WARN("Please enter the desired formation!!");
     }
 }
+double SwarmGraph::getBigForm_error(const std::vector<Eigen::Vector3d> swarm_des, const std::vector<Eigen::Vector3d> swarm_cur)
+{
+    double cost_big;
+    std::vector<int> adj_in_big;
+    std::vector<int> adj_out_big;
+    Eigen::MatrixXd A_big;
+    Eigen::VectorXd D_big;
+    Eigen::MatrixXd A_des_big;   // Desired adjacency matrix
+    Eigen::VectorXd D_des_big;   // Desired degree matrix
+    Eigen::MatrixXd Lhat_des_big; // Desired SNL
+    Eigen::MatrixXd Lhat_big;     // Desired SNL
+    std::vector<Eigen::Vector3d> nodes_des_big;
+    std::vector<Eigen::Vector3d> nodes_big;
+    nodes_des_big = swarm_des;
+    nodes_big = swarm_cur;
 
+    for (int i = 0; i < nodes_des_big.size(); i++)
+    {
+        for (int j = 0; j < i; j++)
+        {
+            adj_in_big.push_back(i);
+            adj_out_big.push_back(j);
+        }
+    }
+    // (const std::vector<Eigen::Vector3d> &swarm,
+    //  const std::vector<int> &adj_in,
+    //  const std::vector<int> &adj_out,
+    //  Eigen::MatrixXd &Adj, Eigen::VectorXd &Deg,
+    //  Eigen::MatrixXd &SNL)
+    calcMatrices(nodes_des_big, adj_in_big, adj_out_big, A_des_big, D_des_big, Lhat_des_big);
+    calcMatrices(nodes_big, adj_in_big, adj_out_big, A_big, D_big, Lhat_big);
+    DLhat_ = Lhat_big - Lhat_des_big;
+    cost_big = DLhat_.cwiseAbs2().sum();
+    return cost_big;
+}
 bool SwarmGraph::setDesiredForm(const std::vector<Eigen::Vector3d> &swarm_des,
                                 const std::vector<int> &adj_in,
                                 const std::vector<int> &adj_out)
@@ -103,7 +137,6 @@ bool SwarmGraph::setDesiredForm(const std::vector<Eigen::Vector3d> &swarm_des,
     // {
     //     std::cout << "nodes_des:" << nodes_des_[i] << std::endl;
     // }
-
 
     // Update the desired matrix
     calcMatrices(nodes_des_, adj_in_, adj_out_, A_des_, D_des_, Lhat_des_);
