@@ -7,6 +7,7 @@
 using namespace ego_planner;
 using namespace poly_traj;
 using namespace std;
+
 class ego_planner_node
 {
 public:
@@ -19,20 +20,28 @@ public:
     std::vector<int> leader_id_;
     std::vector<Eigen::Vector3d> v_;
 
-    bool m_or_not_get = false;
+    bool m_or_not_get = true;
     bool flag_suss = true;
     traj_.swarm_traj.resize(1);
     have_no_swarm();
     /*********************************************************m_or_not_get 表示是否分组  true表示分组******************************************************************************/
-
+    bool flag_global;
+    global_traj_opt.reset(new PolyTrajOptimizer);
+    global_traj_opt->setParam(leader_id_, v_);
+    global_traj_opt->setSwarmTrajs(&traj_.swarm_traj);
+    flag_global = global_traj_opt->optimizeTrajectory_lbfgs(headState[0], tailState[0],
+                                                            intState[0], initT_,
+                                                            cstr_pts[0], true, 0);
+    // traj_global = global_traj_opt->getMinJerkOptPtr()->getTraj();
     for (int i = 0; i < agent_num_; i++)
     {
-      formation_optim[i]->setlog(i);
+      std::cout << "iiiiiiiizyzyzyiii:" << i << std::endl;
+      formation_optim[i]->setlog(i, a_num_);
       formation_optim[i]->setParam(leader_id_, v_);
       formation_optim[i]->setSwarmTrajs(&traj_.swarm_traj);
       flag_[i] = formation_optim[i]->optimizeTrajectory_lbfgs(headState[i], tailState[i],
                                                               intState[i], initT_,
-                                                              cstr_pts[i], true);
+                                                              cstr_pts[i], true, 0);
       if (!flag_[i])
       {
         flag_suss = false;
@@ -41,37 +50,102 @@ public:
       {
         std::cout << "gena suss!!!!!!!!!!!" << std::endl;
         traj_optim[i] = formation_optim[i]->getMinJerkOptPtr()->getTraj();
+        traj_global[i] = traj_optim[i];
       }
     }
+
     std::cout << "group des111" << std::endl;
     group_swarm(m_or_not_get);
     std::cout << "group des222222" << std::endl;
-    planner_all_formation_once();
+    // planner_all_formation_once(0);
     std::cout << "group des33333" << std::endl;
-    planner_all_formation_once();
+    ros::Time t_0 = ros::Time::now();
+    planner_all_formation_once(0, t_0, t_0);
+    planner_all_formation_once(0, t_0, t_0);
+    planner_all_formation_once(0, t_0, t_0);
+    ros::Time t_1 = ros::Time::now();
+    std::cout << "tttttttt time;;;;:::::" << (t_1 - t_0).toSec() << std::endl;
     for (int i = 0; i < agent_num_; i++)
     {
       std::cout << "time total:" << traj_optim[i].getTotalDuration() << std::endl;
-      std::cout << "pos:" << traj_optim[i].getPos(0) << std::endl;
-      std::cout << "pos:" << traj_optim[i].getPos(2.5) << std::endl;
-      std::cout << "pos:" << traj_optim[i].getPos(5) << std::endl;
-      std::cout << "pos:" << traj_optim[i].getPos(7.5) << std::endl;
+      // std::cout << "pos:" << traj_optim[i].getPos(0) << std::endl;
+      // std::cout << "pos:" << traj_optim[i].getPos(2.5) << std::endl;
+      // std::cout << "pos:" << traj_optim[i].getPos(5) << std::endl;
+      // std::cout << "pos:" << traj_optim[i].getPos(7.5) << std::endl;
     }
   }
 
-  void planner_all_formation_once()
+  void planner_all_formation_once(const double t_planner_go, const ros::Time t_n, const ros::Time t_global_s)
   {
+    Eigen::Vector3d pos_begin_;
+    Eigen::Vector3d vel_begin_;
+    Eigen::Vector3d acc_begin_;
+    Eigen::Vector3d pos_end_;
+    Eigen::Vector3d vel_end_;
+    Eigen::Vector3d acc_end_;
+    Eigen::Vector3d int_begin_;
+    Eigen::Vector3d int_begin_1;
+    Eigen::Vector3d int_begin_2;
+    Eigen::VectorXd initT_change;
+    initT_change = initT_;
     std::vector<Eigen::Vector3d> v_group; // 小编队的形状
     std::vector<int> id_all;              // 小组成员编号（在大组的编号）
     std::vector<int> num_every_group;     // 每个小组内的数量
     int group_id_;                        // 在哪个小组
     int g_num;                            // 小组数量
+    double time_hori = 5;
     num_every_group = get_every_group_num();
     g_num = get_group_num();
     traj_real.resize(g_num);
     for (int i = 0; i < num_every_group.size(); i++)
     {
       traj_real[i].swarm_traj.resize(num_every_group[i]);
+    }
+    if (t_planner_go != 0)
+    {
+      // initT_change[0] = 1.05 * time_hori / 4;
+      // initT_change[1] = 1.05 * time_hori / 4;
+      // initT_change[2] = 1.05 * time_hori / 4;
+      // initT_change[3] = 1.05 * time_hori / 4;
+
+      for (int i = 0; i < a_num_; i++)
+      {
+        pos_begin_ = traj_optim[i].getPos(t_planner_go);
+        vel_begin_ = traj_optim[i].getVel(t_planner_go);
+        acc_begin_ = {0, 0, 0};
+        acc_end_ = {0, 0, 0};
+
+        headState[i] << pos_begin_, vel_begin_, acc_begin_;
+        // pos_end_2 = pos_end_ + v_all[i];
+        if ((t_n - t_global_s).toSec() + time_hori <= traj_global[i].getTotalDuration())
+        {
+          pos_end_ = traj_global[i].getPos((t_n - t_global_s).toSec() + time_hori);
+          vel_end_ = traj_global[i].getVel((t_n - t_global_s).toSec() + time_hori);
+        }
+        else
+        {
+          pos_end_ = traj_global[i].getPos(traj_global[i].getTotalDuration());
+          vel_end_ = traj_global[i].getVel(traj_global[i].getTotalDuration());
+        }
+        tailState[i] << pos_end_, vel_end_, acc_end_;
+
+        initT_change[0] = sqrt((pos_end_[0] - pos_begin_[0]) * (pos_end_[0] - pos_begin_[0]) + (pos_end_[1] - pos_begin_[1]) * (pos_end_[1] - pos_begin_[1])) / 4;
+        initT_change[1] = sqrt((pos_end_[0] - pos_begin_[0]) * (pos_end_[0] - pos_begin_[0]) + (pos_end_[1] - pos_begin_[1]) * (pos_end_[1] - pos_begin_[1])) / 4;
+        initT_change[2] = sqrt((pos_end_[0] - pos_begin_[0]) * (pos_end_[0] - pos_begin_[0]) + (pos_end_[1] - pos_begin_[1]) * (pos_end_[1] - pos_begin_[1])) / 4;
+        initT_change[3] = sqrt((pos_end_[0] - pos_begin_[0]) * (pos_end_[0] - pos_begin_[0]) + (pos_end_[1] - pos_begin_[1]) * (pos_end_[1] - pos_begin_[1])) / 4;
+        int_begin_ = {(pos_end_[0] - pos_begin_[0]) / 4 + pos_begin_[0], (pos_end_[1] - pos_begin_[1]) / 4 + pos_begin_[1], 1};
+        int_begin_1 = {2 * (pos_end_[0] - pos_begin_[0]) / 4 + pos_begin_[0], 2 * (pos_end_[1] - pos_begin_[1]) / 4 + pos_begin_[1], 1};
+        int_begin_2 = {3 * (pos_end_[0] - pos_begin_[0]) / 4 + pos_begin_[0], 3 * (pos_end_[1] - pos_begin_[1]) / 4 + pos_begin_[1], 1};
+        intState[i] << int_begin_, int_begin_1, int_begin_2;
+
+        std::cout << "pos_begin::" << pos_begin_ << std::endl;
+        std::cout << "pos_end::" << pos_end_ << std::endl;
+        std::cout << "int_begin_::" << int_begin_ << std::endl;
+        std::cout << "int_begin_1::" << int_begin_1 << std::endl;
+        std::cout << "int_begin2::" << int_begin_2 << std::endl;
+        std::cout << "init ttt::" << initT_change << std::endl;
+      }
+      initT_ = initT_change;
     }
 
     std::cout << "all planner!!!" << std::endl;
@@ -91,11 +165,11 @@ public:
         {
           traj_real[i].swarm_traj[k].drone_id = k;
           traj_real[i].swarm_traj[k].traj_id = k;
-          traj_real[i].swarm_traj[k].start_time = t_now_0;
+          traj_real[i].swarm_traj[k].start_time = 0;
           traj_real[i].swarm_traj[k].constraint_aware = 0;
           traj_real[i].swarm_traj[k].traj = traj_optim[id_all[k]];
           traj_real[i].swarm_traj[k].duration = traj_optim[id_all[k]].getTotalDuration();
-          traj_real[i].swarm_traj[k].start_pos = traj_optim[id_all[k]].getPos(0.0);
+          traj_real[i].swarm_traj[k].start_pos = traj_optim[id_all[k]].getPos(0);
         }
         std::cout << "end iiiiii!!!" << std::endl;
       }
@@ -103,6 +177,7 @@ public:
       group_id_ = get_group_and_id(j);
       v_group = get_v_group(group_id_);
       recv_id = get_id_in_group(j);
+      std::cout << "recv_id:" << recv_id << std::endl;
       formation_optim[j]->setDroneId(recv_id);
       formation_optim[j]->fisrt_planner_or_not(false);
       formation_optim[j]->setParam(leader_id_, v_group);
@@ -110,8 +185,11 @@ public:
       formation_optim[j]->setSwarmTrajs(&traj_real[group_id_].swarm_traj);
       std::cout << "optimizeTrajectory_lbfgs" << std::endl;
       flag_[j] = formation_optim[j]->optimizeTrajectory_lbfgs(headState[j], tailState[j],
-                                                              intState[j], initT_,
-                                                              cstr_pts[j], true);
+                                                              intState[j], initT_change,
+                                                              cstr_pts[j], true, t_planner_go);
+      // std::cout<<"intState[j]0::"<<intState[j](0,0)<<"   "<<intState[j](0,1)<<"   "<<intState[j](0,2)<<std::endl;
+      // std::cout<<"intState[j]1::"<<intState[j](1,0)<<"   "<<intState[j](1,1)<<"   "<<intState[j](1,2)<<std::endl;
+      // std::cout<<"intState[j]2::"<<intState[j](2,0)<<"   "<<intState[j](2,1)<<"   "<<intState[j](2,2)<<std::endl;
       if (flag_[j])
       {
         traj_optim[j] = formation_optim[j]->getMinJerkOptPtr()->getTraj();
@@ -138,8 +216,11 @@ public:
   {
     int iiii;
     int group_id = form_to_group[id_big_form];
+    std::cout << "group ip::" << group_id << std::endl;
     for (int i = 0; i < id_in_group[group_id].size(); i++)
     {
+      std::cout << "iiiiiiiiiiii::" << i << std::endl;
+      std::cout << "id_in_group[group_id]::" << id_in_group[group_id].at(i) << std::endl;
       if (id_big_form == id_in_group[group_id].at(i))
       {
         iiii = i;
@@ -185,6 +266,8 @@ public:
   {
     if (m_or_n)
     {
+      /*********************************************20飞机******************************************************/
+      std::cout << "ssssss yessssssss" << std::endl;
       std::vector<Eigen::Vector3d> group_n; // 某个组的编队形状
       // 计算得到分组数量
       group_num_ = 4;
@@ -206,6 +289,10 @@ public:
       form_to_group[13] = 2;
       form_to_group[14] = 3;
       form_to_group[15] = 3;
+      form_to_group[16] = 0;
+      form_to_group[17] = 1;
+      form_to_group[18] = 2;
+      form_to_group[19] = 3;
       // 计算每个编队的形状
       std::cout << "group des@^^^^^" << std::endl;
       id_in_group.resize(group_num_);
@@ -214,8 +301,9 @@ public:
       // 计算leader是哪些
       leader_id_get.resize(group_num_);
       leader_id_get = {1, 3, 9, 11};
+      // leader_id_get = {16, 17, 18, 19};
       // 第一组情况
-      id_in_group[0] = {0, 1, 4, 5, 3, 9, 11};
+      id_in_group[0] = {0, 1, 4, 5, 3, 9, 11, 16};
       for (int i = 0; i < id_in_group[0].size(); i++)
       {
         int id_in_bigform = id_in_group[0][i];
@@ -223,29 +311,90 @@ public:
       }
       std::cout << "group des2$$$$" << std::endl;
       // 第二组情况
-      id_in_group[1] = {2, 3, 6, 7, 1, 9, 11};
+      id_in_group[1] = {2, 3, 6, 7, 1, 9, 11, 17};
       for (int i = 0; i < id_in_group[1].size(); i++)
       {
         int id_in_bigform = id_in_group[1][i];
         group_form[1].push_back(v_all[id_in_bigform]);
       }
       // 第三组情况
-      id_in_group[2] = {8, 9, 12, 13, 1, 3, 11};
+      id_in_group[2] = {8, 9, 12, 13, 1, 3, 11, 18};
       for (int i = 0; i < id_in_group[2].size(); i++)
       {
         int id_in_bigform = id_in_group[2][i];
         group_form[2].push_back(v_all[id_in_bigform]);
       }
       // 第四组情况
-      id_in_group[3] = {10, 11, 14, 15, 1, 3, 9};
+      id_in_group[3] = {10, 11, 14, 15, 1, 3, 9, 19};
       for (int i = 0; i < id_in_group[3].size(); i++)
       {
         int id_in_bigform = id_in_group[3][i];
         group_form[3].push_back(v_all[id_in_bigform]);
       }
+      /********************************************16飞机*******************************************************/
+      // std::cout << "ssssss yessssssss" << std::endl;
+      // std::vector<Eigen::Vector3d> group_n; // 某个组的编队形状
+      // // 计算得到分组数量
+      // group_num_ = 4;
+      // // 计算得到每个组内的飞机id（不包括其他leader）
+      // form_to_group.resize(a_num_);
+      // form_to_group[0] = 0;
+      // form_to_group[1] = 0;
+      // form_to_group[2] = 1;
+      // form_to_group[3] = 1;
+      // form_to_group[4] = 0;
+      // form_to_group[5] = 0;
+      // form_to_group[6] = 1;
+      // form_to_group[7] = 1;
+      // form_to_group[8] = 2;
+      // form_to_group[9] = 2;
+      // form_to_group[10] = 3;
+      // form_to_group[11] = 3;
+      // form_to_group[12] = 2;
+      // form_to_group[13] = 2;
+      // form_to_group[14] = 3;
+      // form_to_group[15] = 3;
+      // // 计算每个编队的形状
+      // std::cout << "group des@^^^^^" << std::endl;
+      // id_in_group.resize(group_num_);
+      // group_form.resize(group_num_);
+      // std::cout << "group des@@@@@@" << std::endl;
+      // // 计算leader是哪些
+      // leader_id_get.resize(group_num_);
+      // leader_id_get = {1, 3, 9, 11};
+      // // 第一组情况
+      // id_in_group[0] = {0, 1, 4, 5, 3, 9, 11};
+      // for (int i = 0; i < id_in_group[0].size(); i++)
+      // {
+      //   int id_in_bigform = id_in_group[0][i];
+      //   group_form[0].push_back(v_all[id_in_bigform]);
+      // }
+      // std::cout << "group des2$$$$" << std::endl;
+      // // 第二组情况
+      // id_in_group[1] = {2, 3, 6, 7, 1, 9, 11};
+      // for (int i = 0; i < id_in_group[1].size(); i++)
+      // {
+      //   int id_in_bigform = id_in_group[1][i];
+      //   group_form[1].push_back(v_all[id_in_bigform]);
+      // }
+      // // 第三组情况
+      // id_in_group[2] = {8, 9, 12, 13, 1, 3, 11};
+      // for (int i = 0; i < id_in_group[2].size(); i++)
+      // {
+      //   int id_in_bigform = id_in_group[2][i];
+      //   group_form[2].push_back(v_all[id_in_bigform]);
+      // }
+      // // 第四组情况
+      // id_in_group[3] = {10, 11, 14, 15, 1, 3, 9};
+      // for (int i = 0; i < id_in_group[3].size(); i++)
+      // {
+      //   int id_in_bigform = id_in_group[3][i];
+      //   group_form[3].push_back(v_all[id_in_bigform]);
+      // }
     }
     else
     {
+      std::cout << "ssssss noooooooo" << std::endl;
       std::vector<Eigen::Vector3d> group_n; // 某个组的编队形状
       // 计算得到分组数量
       group_num_ = 1;
@@ -262,7 +411,7 @@ public:
       std::cout << "group des@@@@@@" << std::endl;
       // 计算leader是哪些
       leader_id_get.resize(group_num_);
-      leader_id_get = {1};
+      leader_id_get = {3};
       // 第一组情况
       id_in_group[0] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
       for (int i = 0; i < id_in_group[0].size(); i++)
@@ -271,6 +420,163 @@ public:
         group_form[0].push_back(v_all[id_in_bigform]);
       }
       std::cout << "group des2$$$$" << std::endl;
+
+      // std::vector<Eigen::Vector3d> group_n; // 某个组的编队形状
+      // // 计算得到分组数量
+      // group_num_ = 14;
+      // // 计算得到每个组内的飞机id（不包括其他leader）
+      // form_to_group.resize(a_num_);
+      // form_to_group[0] = 0;
+      // form_to_group[1] = 1;
+      // form_to_group[2] = 2;
+      // form_to_group[3] = 3;
+      // form_to_group[4] = 4;
+      // form_to_group[5] = 5;
+      // form_to_group[6] = 6;
+      // form_to_group[7] = 7;
+      // form_to_group[8] = 8;
+      // form_to_group[9] = 8;
+      // form_to_group[10] = 9;
+      // form_to_group[11] = 9;
+      // form_to_group[12] = 10;
+      // form_to_group[13] = 11;
+      // form_to_group[14] = 12;
+      // form_to_group[15] = 13;
+      // // 计算每个编队的形状
+      // std::cout << "group des@^^^^^" << std::endl;
+      // id_in_group.resize(group_num_);
+      // group_form.resize(group_num_);
+      // std::cout << "group des@@@@@@" << std::endl;
+      // // 计算leader是哪些
+      // leader_id_get.resize(group_num_);
+      // leader_id_get = {0, 1, 2, 3, 4, 5, 6, 7, 9, 10, 12, 13, 14, 15};
+      // int i_id;
+      // // 第一组情况
+      // i_id = 0;
+      // id_in_group[i_id] = {0, 1, 2, 3, 4, 5, 6, 7, 9, 10, 12, 13, 14, 15};
+      // for (int i = 0; i < id_in_group[i_id].size(); i++)
+      // {
+      //   int id_in_bigform = id_in_group[i_id][i];
+      //   group_form[i_id].push_back(v_all[id_in_bigform]);
+      // }
+      // std::cout << "group des2$$$$" << std::endl;
+      // // 第一组情况
+      // i_id = 1;
+      // id_in_group[i_id] = {0, 1, 2, 3, 4, 5, 6, 7, 9, 10, 12, 13, 14, 15};
+      // for (int i = 0; i < id_in_group[i_id].size(); i++)
+      // {
+      //   int id_in_bigform = id_in_group[i_id][i];
+      //   group_form[i_id].push_back(v_all[id_in_bigform]);
+      // }
+      // std::cout << "group des2$$$$" << std::endl;
+      // // 第一组情况
+      // i_id = 2;
+      // id_in_group[i_id] = {0, 1, 2, 3, 4, 5, 6, 7, 9, 10, 12, 13, 14, 15};
+      // for (int i = 0; i < id_in_group[i_id].size(); i++)
+      // {
+      //   int id_in_bigform = id_in_group[i_id][i];
+      //   group_form[i_id].push_back(v_all[id_in_bigform]);
+      // }
+      // std::cout << "group des2$$$$" << std::endl;
+      // // 第一组情况
+      // i_id = 3;
+      // id_in_group[i_id] = {0, 1, 2, 3, 4, 5, 6, 7, 9, 10, 12, 13, 14, 15};
+      // for (int i = 0; i < id_in_group[i_id].size(); i++)
+      // {
+      //   int id_in_bigform = id_in_group[i_id][i];
+      //   group_form[i_id].push_back(v_all[id_in_bigform]);
+      // }
+      // std::cout << "group des2$$$$" << std::endl;
+      // // 第一组情况
+      // i_id = 4;
+      // id_in_group[i_id] = {0, 1, 2, 3, 4, 5, 6, 7, 9, 10, 12, 13, 14, 15};
+      // for (int i = 0; i < id_in_group[i_id].size(); i++)
+      // {
+      //   int id_in_bigform = id_in_group[i_id][i];
+      //   group_form[i_id].push_back(v_all[id_in_bigform]);
+      // }
+      // std::cout << "group des2$$$$" << std::endl;
+      // // 第一组情况
+      // i_id = 5;
+      // id_in_group[i_id] = {0, 1, 2, 3, 4, 5, 6, 7, 9, 10, 12, 13, 14, 15};
+      // for (int i = 0; i < id_in_group[i_id].size(); i++)
+      // {
+      //   int id_in_bigform = id_in_group[i_id][i];
+      //   group_form[i_id].push_back(v_all[id_in_bigform]);
+      // }
+      // std::cout << "group des2$$$$" << std::endl;
+      // // 第一组情况
+      // i_id = 6;
+      // id_in_group[i_id] = {0, 1, 2, 3, 4, 5, 6, 7, 9, 10, 12, 13, 14, 15};
+      // for (int i = 0; i < id_in_group[i_id].size(); i++)
+      // {
+      //   int id_in_bigform = id_in_group[i_id][i];
+      //   group_form[i_id].push_back(v_all[id_in_bigform]);
+      // }
+      // std::cout << "group des2$$$$" << std::endl;
+      // // 第一组情况
+      // i_id = 7;
+      // id_in_group[i_id] = {0, 1, 2, 3, 4, 5, 6, 7, 9, 10, 12, 13, 14, 15};
+      // for (int i = 0; i < id_in_group[i_id].size(); i++)
+      // {
+      //   int id_in_bigform = id_in_group[i_id][i];
+      //   group_form[i_id].push_back(v_all[id_in_bigform]);
+      // }
+      // std::cout << "group des2$$$$" << std::endl;
+      // // 第一组情况
+      // i_id = 8;
+      // id_in_group[i_id] = {8, 9, 0, 1, 2, 3, 4, 5, 6, 7, 12, 13, 14, 15, 10};
+      // for (int i = 0; i < id_in_group[i_id].size(); i++)
+      // {
+      //   int id_in_bigform = id_in_group[i_id][i];
+      //   group_form[i_id].push_back(v_all[id_in_bigform]);
+      // }
+      // std::cout << "group des2$$$$" << std::endl;
+      // // 第一组情况
+      // i_id = 9;
+      // id_in_group[i_id] = {11, 10, 0, 1, 2, 3, 4, 5, 6, 7, 12, 13, 14, 15, 9};
+      // for (int i = 0; i < id_in_group[i_id].size(); i++)
+      // {
+      //   int id_in_bigform = id_in_group[i_id][i];
+      //   group_form[i_id].push_back(v_all[id_in_bigform]);
+      // }
+      // std::cout << "group des2$$$$" << std::endl;
+      // // 第一组情况
+      // i_id = 10;
+      // id_in_group[i_id] = {0, 1, 2, 3, 4, 5, 6, 7, 9, 10, 12, 13, 14, 15};
+      // for (int i = 0; i < id_in_group[i_id].size(); i++)
+      // {
+      //   int id_in_bigform = id_in_group[i_id][i];
+      //   group_form[i_id].push_back(v_all[id_in_bigform]);
+      // }
+      // std::cout << "group des2$$$$" << std::endl;
+      // // 第一组情况
+      // i_id = 11;
+      // id_in_group[i_id] = {0, 1, 2, 3, 4, 5, 6, 7, 9, 10, 12, 13, 14, 15};
+      // for (int i = 0; i < id_in_group[i_id].size(); i++)
+      // {
+      //   int id_in_bigform = id_in_group[i_id][i];
+      //   group_form[i_id].push_back(v_all[id_in_bigform]);
+      // }
+      // std::cout << "group des2$$$$" << std::endl;
+      // // 第一组情况
+      // i_id = 12;
+      // id_in_group[i_id] = {0, 1, 2, 3, 4, 5, 6, 7, 9, 10, 12, 13, 14, 15};
+      // for (int i = 0; i < id_in_group[i_id].size(); i++)
+      // {
+      //   int id_in_bigform = id_in_group[i_id][i];
+      //   group_form[i_id].push_back(v_all[id_in_bigform]);
+      // }
+      // std::cout << "group des2$$$$" << std::endl;
+      // // 第一组情况
+      // i_id = 13;
+      // id_in_group[i_id] = {0, 1, 2, 3, 4, 5, 6, 7, 9, 10, 12, 13, 14, 15};
+      // for (int i = 0; i < id_in_group[i_id].size(); i++)
+      // {
+      //   int id_in_bigform = id_in_group[i_id][i];
+      //   group_form[i_id].push_back(v_all[id_in_bigform]);
+      // }
+      // std::cout << "group des2$$$$" << std::endl;
     }
   }
   /*************************************暂时手动给定leader以及组内编队,传进来在大编队里的id，传回在小编队里的id以及小编队形状*********************************************/
@@ -328,24 +634,25 @@ public:
     tail_acc = {0, 0, 0};
 
     int flag_num = 0;
-    for (int i = 0; i < agent_num / 4; i++)
+    for (int i = 0; i < (agent_num - 4) / 4; i++)
     {
       for (int j = 0; j < 4; j++)
       {
         if (flag_num != id_chose_form)
         {
-          head_pos[flag_num] = {-2 * i, j * 2, 1};
-          tail_pos[flag_num] = {-2 * i + 10, j * 2, 1};
+
+          head_pos[flag_num] = {-4 * i + j * 0.4, j * 4 - j * 0.4, 1};
+          tail_pos[flag_num] = {-4 * i + 10, j * 4, 1};
         }
         else
         {
-          head_pos[flag_num] = {-2 * i + 1.5, j * 2, 1};
-          tail_pos[flag_num] = {-2 * i + 10, j * 2, 1};
+          head_pos[flag_num] = {-4 * i, j * 4, 1};
+          tail_pos[flag_num] = {-4 * i + 10, j * 4, 1};
         }
 
-        int_pos[flag_num] = {-2 * i + 2.5, j * 2, 1};
-        int_pos1[flag_num] = {-2 * i + 5.0, j * 2, 1};
-        int_pos2[flag_num] = {-2 * i + 7.5, j * 2, 1};
+        int_pos[flag_num] = {-4 * i + 2.5, j * 4, 1};
+        int_pos1[flag_num] = {-4 * i + 5.0, j * 4, 1};
+        int_pos2[flag_num] = {-4 * i + 7.5, j * 4, 1};
 
         formation_optim[flag_num].reset(new PolyTrajOptimizer);
         formation_optim[flag_num]->setDroneId(flag_num);
@@ -357,19 +664,69 @@ public:
         flag_num = flag_num + 1;
       }
     }
+    for (int i = 0; i < 2; i++)
+    {
+      for (int j = 0; j < 2; j++)
+      {
+        head_pos[i + j + 16] = {-2 - i * 8, -2 + j * 8, 1};
+        tail_pos[i + j + 16] = {-2 - i * 8 + 10, -2 + j * 8, 1};
+
+        int_pos[i + j + 16] = {-2 - i * 8 + 2.5, -2 + j * 8, 1};
+        int_pos1[i + j + 16] = {-2 - i * 8 + 5.0, -2 + j * 8, 1};
+        int_pos2[i + j + 16] = {-2 - i * 8 + 7.5, -2 + j * 8, 1};
+
+        formation_optim[i + j + 16].reset(new PolyTrajOptimizer);
+        formation_optim[i + j + 16]->setDroneId(i + j + 16);
+        formation_optim[i + j + 16]->fisrt_planner_or_not(true);
+        intState[i + j + 16] << int_pos[i + j + 16], int_pos1[i + j + 16], int_pos2[i + j + 16];
+        headState[i + j + 16] << head_pos[i + j + 16], head_vel, head_acc;
+        tailState[i + j + 16] << tail_pos[i + j + 16], tail_vel, tail_acc;
+      }
+    }
+    /************************************************************************************************************************/
+    // for (int i = 0; i < agent_num / 4; i++)
+    // {
+    //   for (int j = 0; j < 4; j++)
+    //   {
+    //     if (flag_num != id_chose_form)
+    //     {
+
+    //       head_pos[flag_num] = {-2 * i + j * 0, j * 2 - j * 0, 1};
+    //       tail_pos[flag_num] = {-2 * i + 10, j * 2, 1};
+    //     }
+    //     else
+    //     {
+    //       head_pos[flag_num] = {-2 * i + 1.8, j * 2, 1};
+    //       tail_pos[flag_num] = {-2 * i + 10, j * 2, 1};
+    //     }
+
+    //     int_pos[flag_num] = {-2 * i + 2.5, j * 2, 1};
+    //     int_pos1[flag_num] = {-2 * i + 5.0, j * 2, 1};
+    //     int_pos2[flag_num] = {-2 * i + 7.5, j * 2, 1};
+
+    //     formation_optim[flag_num].reset(new PolyTrajOptimizer);
+    //     formation_optim[flag_num]->setDroneId(flag_num);
+    //     formation_optim[flag_num]->fisrt_planner_or_not(true);
+    //     intState[flag_num] << int_pos[flag_num], int_pos1[flag_num], int_pos2[flag_num];
+    //     headState[flag_num] << head_pos[flag_num], head_vel, head_acc;
+    //     tailState[flag_num] << tail_pos[flag_num], tail_vel, tail_acc;
+
+    //     flag_num = flag_num + 1;
+    //   }
+    // }
 
     initT_.resize(4);
     initT_ << 2.5, 2.5, 2.5, 2.5;
     traj_optim.resize(agent_num);
-
+    traj_global.resize(agent_num);
     set_v_all(agent_num);
   }
   /*****************设置整体编队形状*************************/
   void set_v_all(const int agent_num_set)
   {
-    v_all.resize(16);
+    v_all.resize(agent_num_set);
     int id_form = 0;
-    for (int i = 0; i < 4; i++)
+    for (int i = 0; i < agent_num_set / 4; i++)
     {
       for (int j = 0; j < 4; j++)
       {
@@ -396,6 +753,8 @@ private:
 
   std::vector<std::shared_ptr<PolyTrajOptimizer>> formation_optim;
   std::vector<poly_traj::Trajectory> traj_optim;
+  std::shared_ptr<PolyTrajOptimizer> global_traj_opt;
+  std::vector<poly_traj::Trajectory> traj_global;
   std::vector<bool> flag_;
   std::vector<Eigen::MatrixXd> cstr_pts;
   Eigen::VectorXd initT_;

@@ -1,0 +1,104 @@
+In file included from [01m[K/opt/ros/noetic/include/ros/publisher.h:35:0[m[K,
+                 from [01m[K/opt/ros/noetic/include/ros/node_handle.h:32[m[K,
+                 from [01m[K/opt/ros/noetic/include/ros/ros.h:45[m[K,
+                 from [01m[K/home/zy/debug/src/planner/plan_manage/include/visualizer.hpp:9[m[K,
+                 from [01m[K/home/zy/debug/src/planner/plan_manage/include/m_planner_node.h:3[m[K,
+                 from [01m[K/home/zy/debug/src/planner/plan_manage/src/ego_planner_node.cpp:2[m[K:
+[01m[K/usr/local/include/boost/bind.hpp:41:1:[m[K [01;36m[Knote: [m[K#pragma message: The practice of declaring the Bind placeholders (_1, _2, ...) in the global namespace is deprecated. Please use <boost/bind/bind.hpp> + using namespace boost::placeholders, or define BOOST_BIND_GLOBAL_PLACEHOLDERS to retain the current behavior.
+ [01;36m[K)[m[K
+ [01;36m[K^[m[K
+In file included from [01m[K/home/zy/debug/src/planner/plan_manage/src/ego_planner_node.cpp:2:0[m[K:
+[01m[K/home/zy/debug/src/planner/plan_manage/include/m_planner_node.h:[m[K In member function ‘[01m[Kvoid ego_planner_node::group_swarm(bool)[m[K’:
+[01m[K/home/zy/debug/src/planner/plan_manage/include/m_planner_node.h:320:11:[m[K [01;31m[Kerror: [m[Kredeclaration of ‘[01m[Kint i_id[m[K’
+       int [01;31m[Ki_id[m[K = 1;
+           [01;31m[K^~~~[m[K
+[01m[K/home/zy/debug/src/planner/plan_manage/include/m_planner_node.h:311:11:[m[K [01;36m[Knote: [m[K‘[01m[Kint i_id[m[K’ previously declared here
+       int [01;36m[Ki_id[m[K = 0;
+           [01;36m[K^~~~[m[K
+[01m[K/home/zy/debug/src/planner/plan_manage/include/m_planner_node.h:329:11:[m[K [01;31m[Kerror: [m[Kredeclaration of ‘[01m[Kint i_id[m[K’
+       int [01;31m[Ki_id[m[K = 2;
+           [01;31m[K^~~~[m[K
+[01m[K/home/zy/debug/src/planner/plan_manage/include/m_planner_node.h:311:11:[m[K [01;36m[Knote: [m[K‘[01m[Kint i_id[m[K’ previously declared here
+       int [01;36m[Ki_id[m[K = 0;
+           [01;36m[K^~~~[m[K
+[01m[K/home/zy/debug/src/planner/plan_manage/include/m_planner_node.h:338:11:[m[K [01;31m[Kerror: [m[Kredeclaration of ‘[01m[Kint i_id[m[K’
+       int [01;31m[Ki_id[m[K = 3;
+           [01;31m[K^~~~[m[K
+[01m[K/home/zy/debug/src/planner/plan_manage/include/m_planner_node.h:311:11:[m[K [01;36m[Knote: [m[K‘[01m[Kint i_id[m[K’ previously declared here
+       int [01;36m[Ki_id[m[K = 0;
+           [01;36m[K^~~~[m[K
+[01m[K/home/zy/debug/src/planner/plan_manage/include/m_planner_node.h:347:11:[m[K [01;31m[Kerror: [m[Kredeclaration of ‘[01m[Kint i_id[m[K’
+       int [01;31m[Ki_id[m[K = 4;
+           [01;31m[K^~~~[m[K
+[01m[K/home/zy/debug/src/planner/plan_manage/include/m_planner_node.h:311:11:[m[K [01;36m[Knote: [m[K‘[01m[Kint i_id[m[K’ previously declared here
+       int [01;36m[Ki_id[m[K = 0;
+           [01;36m[K^~~~[m[K
+[01m[K/home/zy/debug/src/planner/plan_manage/include/m_planner_node.h:356:11:[m[K [01;31m[Kerror: [m[Kredeclaration of ‘[01m[Kint i_id[m[K’
+       int [01;31m[Ki_id[m[K = 5;
+           [01;31m[K^~~~[m[K
+[01m[K/home/zy/debug/src/planner/plan_manage/include/m_planner_node.h:311:11:[m[K [01;36m[Knote: [m[K‘[01m[Kint i_id[m[K’ previously declared here
+       int [01;36m[Ki_id[m[K = 0;
+           [01;36m[K^~~~[m[K
+[01m[K/home/zy/debug/src/planner/plan_manage/include/m_planner_node.h:365:11:[m[K [01;31m[Kerror: [m[Kredeclaration of ‘[01m[Kint i_id[m[K’
+       int [01;31m[Ki_id[m[K = 6;
+           [01;31m[K^~~~[m[K
+[01m[K/home/zy/debug/src/planner/plan_manage/include/m_planner_node.h:311:11:[m[K [01;36m[Knote: [m[K‘[01m[Kint i_id[m[K’ previously declared here
+       int [01;36m[Ki_id[m[K = 0;
+           [01;36m[K^~~~[m[K
+[01m[K/home/zy/debug/src/planner/plan_manage/include/m_planner_node.h:374:11:[m[K [01;31m[Kerror: [m[Kredeclaration of ‘[01m[Kint i_id[m[K’
+       int [01;31m[Ki_id[m[K = 7;
+           [01;31m[K^~~~[m[K
+[01m[K/home/zy/debug/src/planner/plan_manage/include/m_planner_node.h:311:11:[m[K [01;36m[Knote: [m[K‘[01m[Kint i_id[m[K’ previously declared here
+       int [01;36m[Ki_id[m[K = 0;
+           [01;36m[K^~~~[m[K
+[01m[K/home/zy/debug/src/planner/plan_manage/include/m_planner_node.h:383:11:[m[K [01;31m[Kerror: [m[Kredeclaration of ‘[01m[Kint i_id[m[K’
+       int [01;31m[Ki_id[m[K = 8;
+           [01;31m[K^~~~[m[K
+[01m[K/home/zy/debug/src/planner/plan_manage/include/m_planner_node.h:311:11:[m[K [01;36m[Knote: [m[K‘[01m[Kint i_id[m[K’ previously declared here
+       int [01;36m[Ki_id[m[K = 0;
+           [01;36m[K^~~~[m[K
+[01m[K/home/zy/debug/src/planner/plan_manage/include/m_planner_node.h:392:11:[m[K [01;31m[Kerror: [m[Kredeclaration of ‘[01m[Kint i_id[m[K’
+       int [01;31m[Ki_id[m[K = 9;
+           [01;31m[K^~~~[m[K
+[01m[K/home/zy/debug/src/planner/plan_manage/include/m_planner_node.h:311:11:[m[K [01;36m[Knote: [m[K‘[01m[Kint i_id[m[K’ previously declared here
+       int [01;36m[Ki_id[m[K = 0;
+           [01;36m[K^~~~[m[K
+[01m[K/home/zy/debug/src/planner/plan_manage/include/m_planner_node.h:401:11:[m[K [01;31m[Kerror: [m[Kredeclaration of ‘[01m[Kint i_id[m[K’
+       int [01;31m[Ki_id[m[K = 10;
+           [01;31m[K^~~~[m[K
+[01m[K/home/zy/debug/src/planner/plan_manage/include/m_planner_node.h:311:11:[m[K [01;36m[Knote: [m[K‘[01m[Kint i_id[m[K’ previously declared here
+       int [01;36m[Ki_id[m[K = 0;
+           [01;36m[K^~~~[m[K
+[01m[K/home/zy/debug/src/planner/plan_manage/include/m_planner_node.h:410:11:[m[K [01;31m[Kerror: [m[Kredeclaration of ‘[01m[Kint i_id[m[K’
+       int [01;31m[Ki_id[m[K = 11;
+           [01;31m[K^~~~[m[K
+[01m[K/home/zy/debug/src/planner/plan_manage/include/m_planner_node.h:311:11:[m[K [01;36m[Knote: [m[K‘[01m[Kint i_id[m[K’ previously declared here
+       int [01;36m[Ki_id[m[K = 0;
+           [01;36m[K^~~~[m[K
+[01m[K/home/zy/debug/src/planner/plan_manage/include/m_planner_node.h:419:11:[m[K [01;31m[Kerror: [m[Kredeclaration of ‘[01m[Kint i_id[m[K’
+       int [01;31m[Ki_id[m[K = 12;
+           [01;31m[K^~~~[m[K
+[01m[K/home/zy/debug/src/planner/plan_manage/include/m_planner_node.h:311:11:[m[K [01;36m[Knote: [m[K‘[01m[Kint i_id[m[K’ previously declared here
+       int [01;36m[Ki_id[m[K = 0;
+           [01;36m[K^~~~[m[K
+[01m[K/home/zy/debug/src/planner/plan_manage/include/m_planner_node.h:428:11:[m[K [01;31m[Kerror: [m[Kredeclaration of ‘[01m[Kint i_id[m[K’
+       int [01;31m[Ki_id[m[K = 13;
+           [01;31m[K^~~~[m[K
+[01m[K/home/zy/debug/src/planner/plan_manage/include/m_planner_node.h:311:11:[m[K [01;36m[Knote: [m[K‘[01m[Kint i_id[m[K’ previously declared here
+       int [01;36m[Ki_id[m[K = 0;
+           [01;36m[K^~~~[m[K
+[01m[K/home/zy/debug/src/planner/plan_manage/include/m_planner_node.h:437:11:[m[K [01;31m[Kerror: [m[Kredeclaration of ‘[01m[Kint i_id[m[K’
+       int [01;31m[Ki_id[m[K = 14;
+           [01;31m[K^~~~[m[K
+[01m[K/home/zy/debug/src/planner/plan_manage/include/m_planner_node.h:311:11:[m[K [01;36m[Knote: [m[K‘[01m[Kint i_id[m[K’ previously declared here
+       int [01;36m[Ki_id[m[K = 0;
+           [01;36m[K^~~~[m[K
+[01m[K/home/zy/debug/src/planner/plan_manage/include/m_planner_node.h:446:11:[m[K [01;31m[Kerror: [m[Kredeclaration of ‘[01m[Kint i_id[m[K’
+       int [01;31m[Ki_id[m[K = 15;
+           [01;31m[K^~~~[m[K
+[01m[K/home/zy/debug/src/planner/plan_manage/include/m_planner_node.h:311:11:[m[K [01;36m[Knote: [m[K‘[01m[Kint i_id[m[K’ previously declared here
+       int [01;36m[Ki_id[m[K = 0;
+           [01;36m[K^~~~[m[K
+make[2]: *** [CMakeFiles/ego_planner_node.dir/build.make:76：CMakeFiles/ego_planner_node.dir/src/ego_planner_node.cpp.o] 错误 1
+make[1]: *** [CMakeFiles/Makefile2:1618：CMakeFiles/ego_planner_node.dir/all] 错误 2
+make: *** [Makefile:146：all] 错误 2

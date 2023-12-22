@@ -1,0 +1,6 @@
+devel_space: /home/zy/debug/devel
+install: false
+install_space: /home/zy/debug/install
+profile: default
+source_space: /home/zy/debug/src
+workspace: /home/zy/debug

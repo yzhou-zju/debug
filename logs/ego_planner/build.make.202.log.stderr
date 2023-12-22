@@ -1,0 +1,105 @@
+In file included from [01m[K/opt/ros/noetic/include/ros/publisher.h:35:0[m[K,
+                 from [01m[K/opt/ros/noetic/include/ros/node_handle.h:32[m[K,
+                 from [01m[K/opt/ros/noetic/include/ros/ros.h:45[m[K,
+                 from [01m[K/home/zy/debug/src/planner/plan_manage/include/visualizer.hpp:9[m[K,
+                 from [01m[K/home/zy/debug/src/planner/plan_manage/include/m_planner_node.h:3[m[K,
+                 from [01m[K/home/zy/debug/src/planner/plan_manage/src/ego_planner_node.cpp:2[m[K:
+[01m[K/usr/local/include/boost/bind.hpp:41:1:[m[K [01;36m[Knote: [m[K#pragma message: The practice of declaring the Bind placeholders (_1, _2, ...) in the global namespace is deprecated. Please use <boost/bind/bind.hpp> + using namespace boost::placeholders, or define BOOST_BIND_GLOBAL_PLACEHOLDERS to retain the current behavior.
+ [01;36m[K)[m[K
+ [01;36m[K^[m[K
+In file included from [01m[K/home/zy/debug/src/planner/plan_manage/src/ego_planner_node.cpp:2:0[m[K:
+[01m[K/home/zy/debug/src/planner/plan_manage/include/m_planner_node.h:[m[K In member function ‘[01m[Kvoid ego_planner_node::planner_all_formation_once()[m[K’:
+[01m[K/home/zy/debug/src/planner/plan_manage/include/m_planner_node.h:96:36:[m[K [01;31m[Kerror: [m[K‘[01m[Kleader_id_[m[K’ was not declared in this scope
+       formation_optim[j]->setParam([01;31m[Kleader_id_[m[K,v_group);
+                                    [01;31m[K^~~~~~~~~~[m[K
+[01m[K/home/zy/debug/src/planner/plan_manage/include/m_planner_node.h:[m[K In member function ‘[01m[Kvoid ego_planner_node::group_swarm()[m[K’:
+[01m[K/home/zy/debug/src/planner/plan_manage/include/m_planner_node.h:185:52:[m[K [01;31m[Kerror: [m[Kconversion from ‘[01m[K__gnu_cxx::__alloc_traits<std::allocator<std::vector<int> > >::value_type {aka std::vector<int>}[m[K’ to non-scalar type ‘[01m[KEigen::Vector3d {aka Eigen::Matrix<double, 3, 1>}[m[K’ requested
+       Eigen::Vector3d id_in_bigform = id_in_group[i[01;31m[K][m[K;
+                                                    [01;31m[K^[m[K
+[01m[K/home/zy/debug/src/planner/plan_manage/include/m_planner_node.h:186:36:[m[K [01;31m[Kerror: [m[Kno match for ‘[01m[Koperator[][m[K’ (operand types are ‘[01m[Kstd::vector<Eigen::Matrix<double, 3, 1> >[m[K’ and ‘[01m[KEigen::Vector3d {aka Eigen::Matrix<double, 3, 1>}[m[K’)
+       group_form[0].push_back(v_all[01;31m[K[[m[Kid_in_bigform]);
+                                    [01;31m[K^[m[K
+In file included from [01m[K/usr/include/c++/7/vector:64:0[m[K,
+                 from [01m[K/usr/local/include/eigen3/Eigen/SparseCore:15[m[K,
+                 from [01m[K/usr/local/include/eigen3/Eigen/Sparse:26[m[K,
+                 from [01m[K/usr/local/include/eigen3/Eigen/Eigen:2[m[K,
+                 from [01m[K/home/zy/debug/src/planner/plan_manage/include/visualizer.hpp:8[m[K,
+                 from [01m[K/home/zy/debug/src/planner/plan_manage/include/m_planner_node.h:3[m[K,
+                 from [01m[K/home/zy/debug/src/planner/plan_manage/src/ego_planner_node.cpp:2[m[K:
+[01m[K/usr/include/c++/7/bits/stl_vector.h:795:7:[m[K [01;36m[Knote: [m[Kcandidate: std::vector<_Tp, _Alloc>::reference std::vector<_Tp, _Alloc>::operator[](std::vector<_Tp, _Alloc>::size_type) [with _Tp = Eigen::Matrix<double, 3, 1>; _Alloc = std::allocator<Eigen::Matrix<double, 3, 1> >; std::vector<_Tp, _Alloc>::reference = Eigen::Matrix<double, 3, 1>&; std::vector<_Tp, _Alloc>::size_type = long unsigned int]
+       [01;36m[Koperator[m[K[](size_type __n) _GLIBCXX_NOEXCEPT
+       [01;36m[K^~~~~~~~[m[K
+[01m[K/usr/include/c++/7/bits/stl_vector.h:795:7:[m[K [01;36m[Knote: [m[K  no known conversion for argument 1 from ‘[01m[KEigen::Vector3d {aka Eigen::Matrix<double, 3, 1>}[m[K’ to ‘[01m[Kstd::vector<Eigen::Matrix<double, 3, 1> >::size_type {aka long unsigned int}[m[K’
+[01m[K/usr/include/c++/7/bits/stl_vector.h:813:7:[m[K [01;36m[Knote: [m[Kcandidate: std::vector<_Tp, _Alloc>::const_reference std::vector<_Tp, _Alloc>::operator[](std::vector<_Tp, _Alloc>::size_type) const [with _Tp = Eigen::Matrix<double, 3, 1>; _Alloc = std::allocator<Eigen::Matrix<double, 3, 1> >; std::vector<_Tp, _Alloc>::const_reference = const Eigen::Matrix<double, 3, 1>&; std::vector<_Tp, _Alloc>::size_type = long unsigned int]
+       [01;36m[Koperator[m[K[](size_type __n) const _GLIBCXX_NOEXCEPT
+       [01;36m[K^~~~~~~~[m[K
+[01m[K/usr/include/c++/7/bits/stl_vector.h:813:7:[m[K [01;36m[Knote: [m[K  no known conversion for argument 1 from ‘[01m[KEigen::Vector3d {aka Eigen::Matrix<double, 3, 1>}[m[K’ to ‘[01m[Kstd::vector<Eigen::Matrix<double, 3, 1> >::size_type {aka long unsigned int}[m[K’
+In file included from [01m[K/home/zy/debug/src/planner/plan_manage/src/ego_planner_node.cpp:2:0[m[K:
+[01m[K/home/zy/debug/src/planner/plan_manage/include/m_planner_node.h:192:52:[m[K [01;31m[Kerror: [m[Kconversion from ‘[01m[K__gnu_cxx::__alloc_traits<std::allocator<std::vector<int> > >::value_type {aka std::vector<int>}[m[K’ to non-scalar type ‘[01m[KEigen::Vector3d {aka Eigen::Matrix<double, 3, 1>}[m[K’ requested
+       Eigen::Vector3d id_in_bigform = id_in_group[i[01;31m[K][m[K;
+                                                    [01;31m[K^[m[K
+[01m[K/home/zy/debug/src/planner/plan_manage/include/m_planner_node.h:193:36:[m[K [01;31m[Kerror: [m[Kno match for ‘[01m[Koperator[][m[K’ (operand types are ‘[01m[Kstd::vector<Eigen::Matrix<double, 3, 1> >[m[K’ and ‘[01m[KEigen::Vector3d {aka Eigen::Matrix<double, 3, 1>}[m[K’)
+       group_form[1].push_back(v_all[01;31m[K[[m[Kid_in_bigform]);
+                                    [01;31m[K^[m[K
+In file included from [01m[K/usr/include/c++/7/vector:64:0[m[K,
+                 from [01m[K/usr/local/include/eigen3/Eigen/SparseCore:15[m[K,
+                 from [01m[K/usr/local/include/eigen3/Eigen/Sparse:26[m[K,
+                 from [01m[K/usr/local/include/eigen3/Eigen/Eigen:2[m[K,
+                 from [01m[K/home/zy/debug/src/planner/plan_manage/include/visualizer.hpp:8[m[K,
+                 from [01m[K/home/zy/debug/src/planner/plan_manage/include/m_planner_node.h:3[m[K,
+                 from [01m[K/home/zy/debug/src/planner/plan_manage/src/ego_planner_node.cpp:2[m[K:
+[01m[K/usr/include/c++/7/bits/stl_vector.h:795:7:[m[K [01;36m[Knote: [m[Kcandidate: std::vector<_Tp, _Alloc>::reference std::vector<_Tp, _Alloc>::operator[](std::vector<_Tp, _Alloc>::size_type) [with _Tp = Eigen::Matrix<double, 3, 1>; _Alloc = std::allocator<Eigen::Matrix<double, 3, 1> >; std::vector<_Tp, _Alloc>::reference = Eigen::Matrix<double, 3, 1>&; std::vector<_Tp, _Alloc>::size_type = long unsigned int]
+       [01;36m[Koperator[m[K[](size_type __n) _GLIBCXX_NOEXCEPT
+       [01;36m[K^~~~~~~~[m[K
+[01m[K/usr/include/c++/7/bits/stl_vector.h:795:7:[m[K [01;36m[Knote: [m[K  no known conversion for argument 1 from ‘[01m[KEigen::Vector3d {aka Eigen::Matrix<double, 3, 1>}[m[K’ to ‘[01m[Kstd::vector<Eigen::Matrix<double, 3, 1> >::size_type {aka long unsigned int}[m[K’
+[01m[K/usr/include/c++/7/bits/stl_vector.h:813:7:[m[K [01;36m[Knote: [m[Kcandidate: std::vector<_Tp, _Alloc>::const_reference std::vector<_Tp, _Alloc>::operator[](std::vector<_Tp, _Alloc>::size_type) const [with _Tp = Eigen::Matrix<double, 3, 1>; _Alloc = std::allocator<Eigen::Matrix<double, 3, 1> >; std::vector<_Tp, _Alloc>::const_reference = const Eigen::Matrix<double, 3, 1>&; std::vector<_Tp, _Alloc>::size_type = long unsigned int]
+       [01;36m[Koperator[m[K[](size_type __n) const _GLIBCXX_NOEXCEPT
+       [01;36m[K^~~~~~~~[m[K
+[01m[K/usr/include/c++/7/bits/stl_vector.h:813:7:[m[K [01;36m[Knote: [m[K  no known conversion for argument 1 from ‘[01m[KEigen::Vector3d {aka Eigen::Matrix<double, 3, 1>}[m[K’ to ‘[01m[Kstd::vector<Eigen::Matrix<double, 3, 1> >::size_type {aka long unsigned int}[m[K’
+In file included from [01m[K/home/zy/debug/src/planner/plan_manage/src/ego_planner_node.cpp:2:0[m[K:
+[01m[K/home/zy/debug/src/planner/plan_manage/include/m_planner_node.h:199:52:[m[K [01;31m[Kerror: [m[Kconversion from ‘[01m[K__gnu_cxx::__alloc_traits<std::allocator<std::vector<int> > >::value_type {aka std::vector<int>}[m[K’ to non-scalar type ‘[01m[KEigen::Vector3d {aka Eigen::Matrix<double, 3, 1>}[m[K’ requested
+       Eigen::Vector3d id_in_bigform = id_in_group[i[01;31m[K][m[K;
+                                                    [01;31m[K^[m[K
+[01m[K/home/zy/debug/src/planner/plan_manage/include/m_planner_node.h:200:36:[m[K [01;31m[Kerror: [m[Kno match for ‘[01m[Koperator[][m[K’ (operand types are ‘[01m[Kstd::vector<Eigen::Matrix<double, 3, 1> >[m[K’ and ‘[01m[KEigen::Vector3d {aka Eigen::Matrix<double, 3, 1>}[m[K’)
+       group_form[2].push_back(v_all[01;31m[K[[m[Kid_in_bigform]);
+                                    [01;31m[K^[m[K
+In file included from [01m[K/usr/include/c++/7/vector:64:0[m[K,
+                 from [01m[K/usr/local/include/eigen3/Eigen/SparseCore:15[m[K,
+                 from [01m[K/usr/local/include/eigen3/Eigen/Sparse:26[m[K,
+                 from [01m[K/usr/local/include/eigen3/Eigen/Eigen:2[m[K,
+                 from [01m[K/home/zy/debug/src/planner/plan_manage/include/visualizer.hpp:8[m[K,
+                 from [01m[K/home/zy/debug/src/planner/plan_manage/include/m_planner_node.h:3[m[K,
+                 from [01m[K/home/zy/debug/src/planner/plan_manage/src/ego_planner_node.cpp:2[m[K:
+[01m[K/usr/include/c++/7/bits/stl_vector.h:795:7:[m[K [01;36m[Knote: [m[Kcandidate: std::vector<_Tp, _Alloc>::reference std::vector<_Tp, _Alloc>::operator[](std::vector<_Tp, _Alloc>::size_type) [with _Tp = Eigen::Matrix<double, 3, 1>; _Alloc = std::allocator<Eigen::Matrix<double, 3, 1> >; std::vector<_Tp, _Alloc>::reference = Eigen::Matrix<double, 3, 1>&; std::vector<_Tp, _Alloc>::size_type = long unsigned int]
+       [01;36m[Koperator[m[K[](size_type __n) _GLIBCXX_NOEXCEPT
+       [01;36m[K^~~~~~~~[m[K
+[01m[K/usr/include/c++/7/bits/stl_vector.h:795:7:[m[K [01;36m[Knote: [m[K  no known conversion for argument 1 from ‘[01m[KEigen::Vector3d {aka Eigen::Matrix<double, 3, 1>}[m[K’ to ‘[01m[Kstd::vector<Eigen::Matrix<double, 3, 1> >::size_type {aka long unsigned int}[m[K’
+[01m[K/usr/include/c++/7/bits/stl_vector.h:813:7:[m[K [01;36m[Knote: [m[Kcandidate: std::vector<_Tp, _Alloc>::const_reference std::vector<_Tp, _Alloc>::operator[](std::vector<_Tp, _Alloc>::size_type) const [with _Tp = Eigen::Matrix<double, 3, 1>; _Alloc = std::allocator<Eigen::Matrix<double, 3, 1> >; std::vector<_Tp, _Alloc>::const_reference = const Eigen::Matrix<double, 3, 1>&; std::vector<_Tp, _Alloc>::size_type = long unsigned int]
+       [01;36m[Koperator[m[K[](size_type __n) const _GLIBCXX_NOEXCEPT
+       [01;36m[K^~~~~~~~[m[K
+[01m[K/usr/include/c++/7/bits/stl_vector.h:813:7:[m[K [01;36m[Knote: [m[K  no known conversion for argument 1 from ‘[01m[KEigen::Vector3d {aka Eigen::Matrix<double, 3, 1>}[m[K’ to ‘[01m[Kstd::vector<Eigen::Matrix<double, 3, 1> >::size_type {aka long unsigned int}[m[K’
+In file included from [01m[K/home/zy/debug/src/planner/plan_manage/src/ego_planner_node.cpp:2:0[m[K:
+[01m[K/home/zy/debug/src/planner/plan_manage/include/m_planner_node.h:206:52:[m[K [01;31m[Kerror: [m[Kconversion from ‘[01m[K__gnu_cxx::__alloc_traits<std::allocator<std::vector<int> > >::value_type {aka std::vector<int>}[m[K’ to non-scalar type ‘[01m[KEigen::Vector3d {aka Eigen::Matrix<double, 3, 1>}[m[K’ requested
+       Eigen::Vector3d id_in_bigform = id_in_group[i[01;31m[K][m[K;
+                                                    [01;31m[K^[m[K
+[01m[K/home/zy/debug/src/planner/plan_manage/include/m_planner_node.h:207:36:[m[K [01;31m[Kerror: [m[Kno match for ‘[01m[Koperator[][m[K’ (operand types are ‘[01m[Kstd::vector<Eigen::Matrix<double, 3, 1> >[m[K’ and ‘[01m[KEigen::Vector3d {aka Eigen::Matrix<double, 3, 1>}[m[K’)
+       group_form[3].push_back(v_all[01;31m[K[[m[Kid_in_bigform]);
+                                    [01;31m[K^[m[K
+In file included from [01m[K/usr/include/c++/7/vector:64:0[m[K,
+                 from [01m[K/usr/local/include/eigen3/Eigen/SparseCore:15[m[K,
+                 from [01m[K/usr/local/include/eigen3/Eigen/Sparse:26[m[K,
+                 from [01m[K/usr/local/include/eigen3/Eigen/Eigen:2[m[K,
+                 from [01m[K/home/zy/debug/src/planner/plan_manage/include/visualizer.hpp:8[m[K,
+                 from [01m[K/home/zy/debug/src/planner/plan_manage/include/m_planner_node.h:3[m[K,
+                 from [01m[K/home/zy/debug/src/planner/plan_manage/src/ego_planner_node.cpp:2[m[K:
+[01m[K/usr/include/c++/7/bits/stl_vector.h:795:7:[m[K [01;36m[Knote: [m[Kcandidate: std::vector<_Tp, _Alloc>::reference std::vector<_Tp, _Alloc>::operator[](std::vector<_Tp, _Alloc>::size_type) [with _Tp = Eigen::Matrix<double, 3, 1>; _Alloc = std::allocator<Eigen::Matrix<double, 3, 1> >; std::vector<_Tp, _Alloc>::reference = Eigen::Matrix<double, 3, 1>&; std::vector<_Tp, _Alloc>::size_type = long unsigned int]
+       [01;36m[Koperator[m[K[](size_type __n) _GLIBCXX_NOEXCEPT
+       [01;36m[K^~~~~~~~[m[K
+[01m[K/usr/include/c++/7/bits/stl_vector.h:795:7:[m[K [01;36m[Knote: [m[K  no known conversion for argument 1 from ‘[01m[KEigen::Vector3d {aka Eigen::Matrix<double, 3, 1>}[m[K’ to ‘[01m[Kstd::vector<Eigen::Matrix<double, 3, 1> >::size_type {aka long unsigned int}[m[K’
+[01m[K/usr/include/c++/7/bits/stl_vector.h:813:7:[m[K [01;36m[Knote: [m[Kcandidate: std::vector<_Tp, _Alloc>::const_reference std::vector<_Tp, _Alloc>::operator[](std::vector<_Tp, _Alloc>::size_type) const [with _Tp = Eigen::Matrix<double, 3, 1>; _Alloc = std::allocator<Eigen::Matrix<double, 3, 1> >; std::vector<_Tp, _Alloc>::const_reference = const Eigen::Matrix<double, 3, 1>&; std::vector<_Tp, _Alloc>::size_type = long unsigned int]
+       [01;36m[Koperator[m[K[](size_type __n) const _GLIBCXX_NOEXCEPT
+       [01;36m[K^~~~~~~~[m[K
+[01m[K/usr/include/c++/7/bits/stl_vector.h:813:7:[m[K [01;36m[Knote: [m[K  no known conversion for argument 1 from ‘[01m[KEigen::Vector3d {aka Eigen::Matrix<double, 3, 1>}[m[K’ to ‘[01m[Kstd::vector<Eigen::Matrix<double, 3, 1> >::size_type {aka long unsigned int}[m[K’
+make[2]: *** [CMakeFiles/ego_planner_node.dir/build.make:76：CMakeFiles/ego_planner_node.dir/src/ego_planner_node.cpp.o] 错误 1
+make[1]: *** [CMakeFiles/Makefile2:1618：CMakeFiles/ego_planner_node.dir/all] 错误 2
+make: *** [Makefile:146：all] 错误 2

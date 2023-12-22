@@ -1,0 +1,38 @@
+In file included from [01m[K/opt/ros/noetic/include/ros/publisher.h:35:0[m[K,
+                 from [01m[K/opt/ros/noetic/include/ros/node_handle.h:32[m[K,
+                 from [01m[K/opt/ros/noetic/include/ros/ros.h:45[m[K,
+                 from [01m[K/home/zy/debug/src/planner/plan_manage/include/visualizer.hpp:9[m[K,
+                 from [01m[K/home/zy/debug/src/planner/plan_manage/include/m_planner_node.h:3[m[K,
+                 from [01m[K/home/zy/debug/src/planner/plan_manage/src/ego_planner_node.cpp:2[m[K:
+[01m[K/usr/local/include/boost/bind.hpp:41:1:[m[K [01;36m[Knote: [m[K#pragma message: The practice of declaring the Bind placeholders (_1, _2, ...) in the global namespace is deprecated. Please use <boost/bind/bind.hpp> + using namespace boost::placeholders, or define BOOST_BIND_GLOBAL_PLACEHOLDERS to retain the current behavior.
+ [01;36m[K)[m[K
+ [01;36m[K^[m[K
+In file included from [01m[K/home/zy/debug/src/planner/plan_manage/src/ego_planner_node.cpp:2:0[m[K:
+[01m[K/home/zy/debug/src/planner/plan_manage/include/m_planner_node.h:[m[K In member function ‘[01m[Kvoid ego_planner_node::test3agent(std::vector<poly_traj::Trajectory>)[m[K’:
+[01m[K/home/zy/debug/src/planner/plan_manage/include/m_planner_node.h:286:51:[m[K [01;31m[Kerror: [m[Kno match for ‘[01m[Koperator[][m[K’ (operand types are ‘[01m[Kego_planner::TrajContainer[m[K’ and ‘[01m[Kint[m[K’)
+         traj_real.swarm_traj[recv_id].traj = traj_[01;31m[K[[m[K0];
+                                                   [01;31m[K^[m[K
+[01m[K/home/zy/debug/src/planner/plan_manage/include/m_planner_node.h:287:55:[m[K [01;31m[Kerror: [m[Kno match for ‘[01m[Koperator[][m[K’ (operand types are ‘[01m[Kego_planner::TrajContainer[m[K’ and ‘[01m[Kint[m[K’)
+         traj_real.swarm_traj[recv_id].duration = traj_[01;31m[K[[m[K0].getTotalDuration();
+                                                       [01;31m[K^[m[K
+[01m[K/home/zy/debug/src/planner/plan_manage/include/m_planner_node.h:288:56:[m[K [01;31m[Kerror: [m[Kno match for ‘[01m[Koperator[][m[K’ (operand types are ‘[01m[Kego_planner::TrajContainer[m[K’ and ‘[01m[Kint[m[K’)
+         traj_real.swarm_traj[recv_id].start_pos = traj_[01;31m[K[[m[K0].getPos(0.0);
+                                                        [01;31m[K^[m[K
+[01m[K/home/zy/debug/src/planner/plan_manage/include/m_planner_node.h:[m[K In member function ‘[01m[Kvoid ego_planner_node::fack_traj()[m[K’:
+[01m[K/home/zy/debug/src/planner/plan_manage/include/m_planner_node.h:333:5:[m[K [01;31m[Kerror: [m[K‘[01m[KcMats[m[K’ was not declared in this scope
+     [01;31m[KcMats[m[K[0].row(0) << -0.000411463, 0.00262856, -0.00482534, 0.00192251, 1.00824, -17.1803;
+     [01;31m[K^~~~~[m[K
+[01m[K/home/zy/debug/src/planner/plan_manage/include/m_planner_node.h:333:5:[m[K [01;36m[Knote: [m[Ksuggested alternative: ‘[01m[Kclass[m[K’
+     [01;36m[KcMats[m[K[0].row(0) << -0.000411463, 0.00262856, -0.00482534, 0.00192251, 1.00824, -17.1803;
+     [01;36m[K^~~~~[m[K
+     [32m[Kclass[m[K
+[01m[K/home/zy/debug/src/planner/plan_manage/include/m_planner_node.h:336:5:[m[K [01;31m[Kerror: [m[K‘[01m[Kdura[m[K’ was not declared in this scope
+     [01;31m[Kdura[m[K[0] = 1.83508;
+     [01;31m[K^~~~[m[K
+[01m[K/home/zy/debug/src/planner/plan_manage/include/m_planner_node.h:336:5:[m[K [01;36m[Knote: [m[Ksuggested alternative: ‘[01m[Kdup3[m[K’
+     [01;36m[Kdura[m[K[0] = 1.83508;
+     [01;36m[K^~~~[m[K
+     [32m[Kdup3[m[K
+make[2]: *** [CMakeFiles/ego_planner_node.dir/build.make:76：CMakeFiles/ego_planner_node.dir/src/ego_planner_node.cpp.o] 错误 1
+make[1]: *** [CMakeFiles/Makefile2:1618：CMakeFiles/ego_planner_node.dir/all] 错误 2
+make: *** [Makefile:146：all] 错误 2

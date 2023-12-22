@@ -1,0 +1,61 @@
+In file included from [01m[K/opt/ros/noetic/include/ros/publisher.h:35:0[m[K,
+                 from [01m[K/opt/ros/noetic/include/ros/node_handle.h:32[m[K,
+                 from [01m[K/opt/ros/noetic/include/ros/ros.h:45[m[K,
+                 from [01m[K/home/zy/debug/src/planner/traj_opt/include/optimizer/poly_traj_optimizer.h:16[m[K,
+                 from [01m[K/home/zy/debug/src/planner/traj_opt/src/poly_traj_optimizer.cpp:2[m[K:
+[01m[K/usr/local/include/boost/bind.hpp:41:1:[m[K [01;36m[Knote: [m[K#pragma message: The practice of declaring the Bind placeholders (_1, _2, ...) in the global namespace is deprecated. Please use <boost/bind/bind.hpp> + using namespace boost::placeholders, or define BOOST_BIND_GLOBAL_PLACEHOLDERS to retain the current behavior.
+ [01;36m[K)[m[K
+ [01;36m[K^[m[K
+[01m[K/home/zy/debug/src/planner/traj_opt/src/poly_traj_optimizer.cpp:[m[K In member function ‘[01m[Kbool ego_planner::PolyTrajOptimizer::optimizeTrajectory_lbfgs(const MatrixXd&, const MatrixXd&, const MatrixXd&, const VectorXd&, Eigen::MatrixXd&, bool)[m[K’:
+[01m[K/home/zy/debug/src/planner/traj_opt/src/poly_traj_optimizer.cpp:75:9:[m[K [01;35m[Kwarning: [m[Kunused variable ‘[01m[Kresult[m[K’ [[01;35m[K-Wunused-variable[m[K]
+     int [01;35m[Kresult[m[K = lbfgs::lbfgs_optimize(variable_num_,
+         [01;35m[K^~~~~~[m[K
+[01m[K/home/zy/debug/src/planner/traj_opt/src/poly_traj_optimizer.cpp:[m[K In member function ‘[01m[Kvoid ego_planner::PolyTrajOptimizer::setSwarmGraphInAdavanced(Eigen::VectorXd)[m[K’:
+[01m[K/home/zy/debug/src/planner/traj_opt/src/poly_traj_optimizer.cpp:260:15:[m[K [01;35m[Kwarning: [m[Kunused variable ‘[01m[Kresult[m[K’ [[01;35m[K-Wunused-variable[m[K]
+           int [01;35m[Kresult[m[K = lbfgs::lbfgs_optimize( 3,
+               [01;35m[K^~~~~~[m[K
+[01m[K/home/zy/debug/src/planner/traj_opt/src/poly_traj_optimizer.cpp:[m[K In static member function ‘[01m[Kstatic double ego_planner::PolyTrajOptimizer::swarmGraphCostCallback(void*, const double*, double*, int)[m[K’:
+[01m[K/home/zy/debug/src/planner/traj_opt/src/poly_traj_optimizer.cpp:305:7:[m[K [01;35m[Kwarning: [m[Kthis ‘[01m[Kelse[m[K’ clause does not guard... [[01;35m[K-Wmisleading-indentation[m[K]
+       [01;35m[Kelse[m[K
+       [01;35m[K^~~~[m[K
+[01m[K/home/zy/debug/src/planner/traj_opt/src/poly_traj_optimizer.cpp:307:9:[m[K [01;36m[Knote: [m[K...this statement, but the latter is misleadingly indented as if it were guarded by the ‘[01m[Kelse[m[K’
+         [01;36m[Kstd[m[K::cout<<"swarm_pos::"<<swarm_pos[id]<<std::endl;
+         [01;36m[K^~~[m[K
+[01m[K/home/zy/debug/src/planner/traj_opt/src/poly_traj_optimizer.cpp:[m[K In member function ‘[01m[Kdouble ego_planner::PolyTrajOptimizer::swarmGradCostP(Eigen::VectorXd&)[m[K’:
+[01m[K/home/zy/debug/src/planner/traj_opt/src/poly_traj_optimizer.cpp:666:12:[m[K [01;35m[Kwarning: [m[Kunused variable ‘[01m[Kpre_dur[m[K’ [[01;35m[K-Wunused-variable[m[K]
+     double [01;35m[Kpre_dur[m[K(0.0);
+            [01;35m[K^~~~~~~[m[K
+[01m[K/home/zy/debug/src/planner/traj_opt/src/poly_traj_optimizer.cpp:[m[K In member function ‘[01m[Kdouble ego_planner::PolyTrajOptimizer::swarmGraphGradCostP(Eigen::VectorXd&)[m[K’:
+[01m[K/home/zy/debug/src/planner/traj_opt/src/poly_traj_optimizer.cpp:868:12:[m[K [01;35m[Kwarning: [m[Kunused variable ‘[01m[Kpre_dur[m[K’ [[01;35m[K-Wunused-variable[m[K]
+     double [01;35m[Kpre_dur[m[K(0.0);
+            [01;35m[K^~~~~~~[m[K
+[01m[K/home/zy/debug/src/planner/traj_opt/src/poly_traj_optimizer.cpp:[m[K In member function ‘[01m[Kvoid ego_planner::PolyTrajOptimizer::feasibilityGradCostVandA(Eigen::VectorXd&, double&, double)[m[K’:
+[01m[K/home/zy/debug/src/planner/traj_opt/src/poly_traj_optimizer.cpp:988:12:[m[K [01;35m[Kwarning: [m[Kunused variable ‘[01m[Kpre_dur[m[K’ [[01;35m[K-Wunused-variable[m[K]
+     double [01;35m[Kpre_dur[m[K(0.0);
+            [01;35m[K^~~~~~~[m[K
+[01m[K/home/zy/debug/src/planner/traj_opt/src/poly_traj_optimizer.cpp:[m[K In member function ‘[01m[Kdouble ego_planner::PolyTrajOptimizer::error_dist(poly_traj::Trajectory)[m[K’:
+[01m[K/home/zy/debug/src/planner/traj_opt/src/poly_traj_optimizer.cpp:1499:20:[m[K [01;35m[Kwarning: [m[Kcomparison between signed and unsigned integer expressions [[01;35m[K-Wsign-compare[m[K]
+     for(int id=0;[01;35m[Kid<f_des.size()[m[K;id++)
+                  [01;35m[K~~^~~~~~~~~~~~~[m[K
+[01m[K/home/zy/debug/src/planner/traj_opt/src/poly_traj_optimizer.cpp:1479:20:[m[K [01;35m[Kwarning: [m[Kvariable ‘[01m[Ktran_[m[K’ set but not used [[01;35m[K-Wunused-but-set-variable[m[K]
+   Eigen::Vector3d  [01;35m[Ktran_[m[K = Eigen::Vector3d::Zero();
+                    [01;35m[K^~~~~[m[K
+[01m[K/home/zy/debug/src/planner/traj_opt/src/poly_traj_optimizer.cpp:1480:10:[m[K [01;35m[Kwarning: [m[Kvariable ‘[01m[Ksum_[m[K’ set but not used [[01;35m[K-Wunused-but-set-variable[m[K]
+   double [01;35m[Ksum_[m[K = 0;
+          [01;35m[K^~~~[m[K
+[01m[K/home/zy/debug/src/planner/traj_opt/src/poly_traj_optimizer.cpp:1482:20:[m[K [01;35m[Kwarning: [m[Kvariable ‘[01m[Kl0[m[K’ set but not used [[01;35m[K-Wunused-but-set-variable[m[K]
+   Eigen::Vector3d  [01;35m[Kl0[m[K = Eigen::Vector3d::Zero();
+                    [01;35m[K^~[m[K
+[01m[K/home/zy/debug/src/planner/traj_opt/src/poly_traj_optimizer.cpp:1483:20:[m[K [01;35m[Kwarning: [m[Kvariable ‘[01m[Kl1[m[K’ set but not used [[01;35m[K-Wunused-but-set-variable[m[K]
+   Eigen::Vector3d  [01;35m[Kl1[m[K = Eigen::Vector3d::Zero();
+                    [01;35m[K^~[m[K
+[01m[K/home/zy/debug/src/planner/traj_opt/src/poly_traj_optimizer.cpp:1484:10:[m[K [01;35m[Kwarning: [m[Kunused variable ‘[01m[Kdl[m[K’ [[01;35m[K-Wunused-variable[m[K]
+   double [01;35m[Kdl[m[K = 0;
+          [01;35m[K^~[m[K
+[01m[K/home/zy/debug/src/planner/traj_opt/src/poly_traj_optimizer.cpp:1485:10:[m[K [01;35m[Kwarning: [m[Kunused variable ‘[01m[KL[m[K’ [[01;35m[K-Wunused-variable[m[K]
+   double [01;35m[KL[m[K = 0;
+          [01;35m[K^[m[K
+[01m[K/home/zy/debug/src/planner/traj_opt/src/poly_traj_optimizer.cpp:[m[K In member function ‘[01m[Kbool ego_planner::PolyTrajOptimizer::obstacleGradCostP(int, const Vector3d&, Eigen::Vector3d&, double&)[m[K’:
+[01m[K/home/zy/debug/src/planner/traj_opt/src/poly_traj_optimizer.cpp:1267:12:[m[K [01;35m[Kwarning: [m[K‘[01m[Kdist[m[K’ may be used uninitialized in this function [[01;35m[K-Wmaybe-uninitialized[m[K]
+     double [01;35m[Kdist_err[m[K = obs_clearance_ - dist;
+            [01;35m[K^~~~~~~~[m[K

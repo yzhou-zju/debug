@@ -1,0 +1,2 @@
+set(traj_utils_MESSAGE_FILES "/home/zy/debug/src/planner/traj_utils/msg/DataDisp.msg;/home/zy/debug/src/planner/traj_utils/msg/PolyTraj.msg;/home/zy/debug/src/planner/traj_utils/msg/LocalGoal.msg;/home/zy/debug/src/planner/traj_utils/msg/RemapLocalGoalList.msg;/home/zy/debug/src/planner/traj_utils/msg/SwarmGlobalPathList.msg")
+set(traj_utils_SERVICE_FILES "/home/zy/debug/src/planner/traj_utils/srv/GlbObsRcv.srv")

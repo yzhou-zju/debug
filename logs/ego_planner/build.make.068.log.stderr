@@ -1,0 +1,8 @@
+In file included from [01m[K/home/zy/debug/src/planner/plan_manage/src/ego_planner_node.cpp:2:0[m[K:
+[01m[K/home/zy/debug/src/planner/plan_manage/include/m_planner_node.h:3:10:[m[K [01;31m[Kfatal error: [m[Kvisualizer.h: 没有那个文件或目录
+ #include [01;31m[K"visualizer.h"[m[K
+          [01;31m[K^~~~~~~~~~~~~~[m[K
+compilation terminated.
+make[2]: *** [CMakeFiles/ego_planner_node.dir/build.make:76：CMakeFiles/ego_planner_node.dir/src/ego_planner_node.cpp.o] 错误 1
+make[1]: *** [CMakeFiles/Makefile2:1618：CMakeFiles/ego_planner_node.dir/all] 错误 2
+make: *** [Makefile:146：all] 错误 2

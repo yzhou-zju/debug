@@ -1,0 +1,67 @@
+In file included from [01m[K/opt/ros/noetic/include/ros/publisher.h:35:0[m[K,
+                 from [01m[K/opt/ros/noetic/include/ros/node_handle.h:32[m[K,
+                 from [01m[K/opt/ros/noetic/include/ros/ros.h:45[m[K,
+                 from [01m[K/home/zy/debug/src/planner/plan_manage/include/visualizer.hpp:9[m[K,
+                 from [01m[K/home/zy/debug/src/planner/plan_manage/include/m_planner_node.h:3[m[K,
+                 from [01m[K/home/zy/debug/src/planner/plan_manage/src/ego_planner_node.cpp:2[m[K:
+[01m[K/usr/local/include/boost/bind.hpp:41:1:[m[K [01;36m[Knote: [m[K#pragma message: The practice of declaring the Bind placeholders (_1, _2, ...) in the global namespace is deprecated. Please use <boost/bind/bind.hpp> + using namespace boost::placeholders, or define BOOST_BIND_GLOBAL_PLACEHOLDERS to retain the current behavior.
+ [01;36m[K)[m[K
+ [01;36m[K^[m[K
+In file included from [01m[K/home/zy/debug/src/planner/plan_manage/src/ego_planner_node.cpp:2:0[m[K:
+[01m[K/home/zy/debug/src/planner/plan_manage/include/m_planner_node.h:[m[K In member function ‘[01m[Kvoid ego_planner_node::planner_all_formation_once()[m[K’:
+[01m[K/home/zy/debug/src/planner/plan_manage/include/m_planner_node.h:70:19:[m[K [01;31m[Kerror: [m[K‘[01m[Kclass std::vector<ego_planner::TrajContainer>[m[K’ has no member named ‘[01m[Kswarm_traj[m[K’
+         traj_real.[01;31m[Kswarm_traj[m[K[recv_id].drone_id = recv_id;
+                   [01;31m[K^~~~~~~~~~[m[K
+[01m[K/home/zy/debug/src/planner/plan_manage/include/m_planner_node.h:71:19:[m[K [01;31m[Kerror: [m[K‘[01m[Kclass std::vector<ego_planner::TrajContainer>[m[K’ has no member named ‘[01m[Kswarm_traj[m[K’
+         traj_real.[01;31m[Kswarm_traj[m[K[recv_id].traj_id = i;
+                   [01;31m[K^~~~~~~~~~[m[K
+[01m[K/home/zy/debug/src/planner/plan_manage/include/m_planner_node.h:72:19:[m[K [01;31m[Kerror: [m[K‘[01m[Kclass std::vector<ego_planner::TrajContainer>[m[K’ has no member named ‘[01m[Kswarm_traj[m[K’
+         traj_real.[01;31m[Kswarm_traj[m[K[recv_id].start_time = t_now_0;
+                   [01;31m[K^~~~~~~~~~[m[K
+[01m[K/home/zy/debug/src/planner/plan_manage/include/m_planner_node.h:73:19:[m[K [01;31m[Kerror: [m[K‘[01m[Kclass std::vector<ego_planner::TrajContainer>[m[K’ has no member named ‘[01m[Kswarm_traj[m[K’
+         traj_real.[01;31m[Kswarm_traj[m[K[recv_id].constraint_aware = 0;
+                   [01;31m[K^~~~~~~~~~[m[K
+[01m[K/home/zy/debug/src/planner/plan_manage/include/m_planner_node.h:74:19:[m[K [01;31m[Kerror: [m[K‘[01m[Kclass std::vector<ego_planner::TrajContainer>[m[K’ has no member named ‘[01m[Kswarm_traj[m[K’
+         traj_real.[01;31m[Kswarm_traj[m[K[recv_id].traj = traj_optim[i];
+                   [01;31m[K^~~~~~~~~~[m[K
+[01m[K/home/zy/debug/src/planner/plan_manage/include/m_planner_node.h:75:19:[m[K [01;31m[Kerror: [m[K‘[01m[Kclass std::vector<ego_planner::TrajContainer>[m[K’ has no member named ‘[01m[Kswarm_traj[m[K’
+         traj_real.[01;31m[Kswarm_traj[m[K[recv_id].duration = traj_optim[i].getTotalDuration();
+                   [01;31m[K^~~~~~~~~~[m[K
+[01m[K/home/zy/debug/src/planner/plan_manage/include/m_planner_node.h:76:19:[m[K [01;31m[Kerror: [m[K‘[01m[Kclass std::vector<ego_planner::TrajContainer>[m[K’ has no member named ‘[01m[Kswarm_traj[m[K’
+         traj_real.[01;31m[Kswarm_traj[m[K[recv_id].start_pos = traj_optim[i].getPos(0.0);
+                   [01;31m[K^~~~~~~~~~[m[K
+[01m[K/home/zy/debug/src/planner/plan_manage/include/m_planner_node.h:80:52:[m[K [01;31m[Kerror: [m[K‘[01m[Kclass std::vector<ego_planner::TrajContainer>[m[K’ has no member named ‘[01m[Kswarm_traj[m[K’
+       formation_optim[j]->setSwarmTrajs(&traj_real.[01;31m[Kswarm_traj[m[K);
+                                                    [01;31m[K^~~~~~~~~~[m[K
+[01m[K/home/zy/debug/src/planner/plan_manage/include/m_planner_node.h:[m[K In member function ‘[01m[Kvoid ego_planner_node::group_swarm()[m[K’:
+[01m[K/home/zy/debug/src/planner/plan_manage/include/m_planner_node.h:124:34:[m[K [01;31m[Kerror: [m[K‘[01m[K__gnu_cxx::__alloc_traits<std::allocator<std::vector<int> > >::value_type {aka class std::vector<int>}[m[K’ has no member named ‘[01m[Kszie[m[K’; did you mean ‘[01m[Ksize[m[K’?
+     for(int i=0;i<id_in_group[0].[01;31m[Kszie[m[K();i++)
+                                  [01;31m[K^~~~[m[K
+                                  [32m[Ksize[m[K
+[01m[K/home/zy/debug/src/planner/plan_manage/include/m_planner_node.h:126:40:[m[K [01;31m[Kerror: [m[Kcannot convert ‘[01m[K__gnu_cxx::__alloc_traits<std::allocator<std::vector<int> > >::value_type {aka std::vector<int>}[m[K’ to ‘[01m[Kint[m[K’ in initialization
+       int id_in_bigform = id_in_group[i[01;31m[K][m[K;
+                                        [01;31m[K^[m[K
+[01m[K/home/zy/debug/src/planner/plan_manage/include/m_planner_node.h:131:34:[m[K [01;31m[Kerror: [m[K‘[01m[K__gnu_cxx::__alloc_traits<std::allocator<std::vector<int> > >::value_type {aka class std::vector<int>}[m[K’ has no member named ‘[01m[Kszie[m[K’; did you mean ‘[01m[Ksize[m[K’?
+     for(int i=0;i<id_in_group[1].[01;31m[Kszie[m[K();i++)
+                                  [01;31m[K^~~~[m[K
+                                  [32m[Ksize[m[K
+[01m[K/home/zy/debug/src/planner/plan_manage/include/m_planner_node.h:133:40:[m[K [01;31m[Kerror: [m[Kcannot convert ‘[01m[K__gnu_cxx::__alloc_traits<std::allocator<std::vector<int> > >::value_type {aka std::vector<int>}[m[K’ to ‘[01m[Kint[m[K’ in initialization
+       int id_in_bigform = id_in_group[i[01;31m[K][m[K;
+                                        [01;31m[K^[m[K
+[01m[K/home/zy/debug/src/planner/plan_manage/include/m_planner_node.h:138:34:[m[K [01;31m[Kerror: [m[K‘[01m[K__gnu_cxx::__alloc_traits<std::allocator<std::vector<int> > >::value_type {aka class std::vector<int>}[m[K’ has no member named ‘[01m[Kszie[m[K’; did you mean ‘[01m[Ksize[m[K’?
+     for(int i=0;i<id_in_group[2].[01;31m[Kszie[m[K();i++)
+                                  [01;31m[K^~~~[m[K
+                                  [32m[Ksize[m[K
+[01m[K/home/zy/debug/src/planner/plan_manage/include/m_planner_node.h:140:40:[m[K [01;31m[Kerror: [m[Kcannot convert ‘[01m[K__gnu_cxx::__alloc_traits<std::allocator<std::vector<int> > >::value_type {aka std::vector<int>}[m[K’ to ‘[01m[Kint[m[K’ in initialization
+       int id_in_bigform = id_in_group[i[01;31m[K][m[K;
+                                        [01;31m[K^[m[K
+[01m[K/home/zy/debug/src/planner/plan_manage/include/m_planner_node.h:145:34:[m[K [01;31m[Kerror: [m[K‘[01m[K__gnu_cxx::__alloc_traits<std::allocator<std::vector<int> > >::value_type {aka class std::vector<int>}[m[K’ has no member named ‘[01m[Kszie[m[K’; did you mean ‘[01m[Ksize[m[K’?
+     for(int i=0;i<id_in_group[3].[01;31m[Kszie[m[K();i++)
+                                  [01;31m[K^~~~[m[K
+                                  [32m[Ksize[m[K
+[01m[K/home/zy/debug/src/planner/plan_manage/include/m_planner_node.h:147:40:[m[K [01;31m[Kerror: [m[Kcannot convert ‘[01m[K__gnu_cxx::__alloc_traits<std::allocator<std::vector<int> > >::value_type {aka std::vector<int>}[m[K’ to ‘[01m[Kint[m[K’ in initialization
+       int id_in_bigform = id_in_group[i[01;31m[K][m[K;
+                                        [01;31m[K^[m[K
+make[2]: *** [CMakeFiles/ego_planner_node.dir/build.make:76：CMakeFiles/ego_planner_node.dir/src/ego_planner_node.cpp.o] 错误 1
+make[1]: *** [CMakeFiles/Makefile2:1618：CMakeFiles/ego_planner_node.dir/all] 错误 2
+make: *** [Makefile:146：all] 错误 2

@@ -1,0 +1,20 @@
+In file included from [01m[K/opt/ros/noetic/include/ros/publisher.h:35:0[m[K,
+                 from [01m[K/opt/ros/noetic/include/ros/node_handle.h:32[m[K,
+                 from [01m[K/opt/ros/noetic/include/ros/ros.h:45[m[K,
+                 from [01m[K/home/zy/debug/src/planner/frob_test/include/frob_test/swarm_graph.hpp:6[m[K,
+                 from [01m[K/home/zy/debug/src/planner/frob_test/src/swarm_graph.cpp:1[m[K:
+[01m[K/usr/local/include/boost/bind.hpp:41:1:[m[K [01;36m[Knote: [m[K#pragma message: The practice of declaring the Bind placeholders (_1, _2, ...) in the global namespace is deprecated. Please use <boost/bind/bind.hpp> + using namespace boost::placeholders, or define BOOST_BIND_GLOBAL_PLACEHOLDERS to retain the current behavior.
+ [01;36m[K)[m[K
+ [01;36m[K^[m[K
+[01m[K/home/zy/debug/src/planner/frob_test/src/swarm_graph.cpp:[m[K In member function ‘[01m[Kdouble SwarmGraph::getBigForm_error(std::vector<Eigen::Matrix<double, 3, 1> >, std::vector<Eigen::Matrix<double, 3, 1> >)[m[K’:
+[01m[K/home/zy/debug/src/planner/frob_test/src/swarm_graph.cpp:112:76:[m[K [01;31m[Kerror: [m[Kno matching function for call to ‘[01m[KSwarmGraph::calcMatrices(std::vector<Eigen::Matrix<double, 3, 1> >&, std::vector<int>&, std::vector<int>&, std::vector<int>&, std::vector<int>&, Eigen::MatrixXd&)[m[K’
+     calcMatrices(nodes_big, adj_in_big, adj_out_big, A_big, D_big, Lhat_big[01;31m[K)[m[K;
+                                                                            [01;31m[K^[m[K
+In file included from [01m[K/home/zy/debug/src/planner/frob_test/src/swarm_graph.cpp:1:0[m[K:
+[01m[K/home/zy/debug/src/planner/frob_test/include/frob_test/swarm_graph.hpp:36:10:[m[K [01;36m[Knote: [m[Kcandidate: bool SwarmGraph::calcMatrices(const std::vector<Eigen::Matrix<double, 3, 1> >&, const std::vector<int>&, const std::vector<int>&, Eigen::MatrixXd&, Eigen::VectorXd&, Eigen::MatrixXd&)
+     bool [01;36m[KcalcMatrices[m[K( const std::vector<Eigen::Vector3d> &swarm,
+          [01;36m[K^~~~~~~~~~~~[m[K
+[01m[K/home/zy/debug/src/planner/frob_test/include/frob_test/swarm_graph.hpp:36:10:[m[K [01;36m[Knote: [m[K  no known conversion for argument 4 from ‘[01m[Kstd::vector<int>[m[K’ to ‘[01m[KEigen::MatrixXd& {aka Eigen::Matrix<double, -1, -1>&}[m[K’
+make[2]: *** [CMakeFiles/swarm_graph.dir/build.make:76：CMakeFiles/swarm_graph.dir/src/swarm_graph.cpp.o] 错误 1
+make[1]: *** [CMakeFiles/Makefile2:1510：CMakeFiles/swarm_graph.dir/all] 错误 2
+make: *** [Makefile:146：all] 错误 2

@@ -1,0 +1,8 @@
+prefix=/home/zy/debug/install
+
+Name: frob_test
+Description: Description of frob_test
+Version: 0.0.0
+Cflags: -I${prefix}/include
+Libs: -L${prefix}/lib -lswarm_graph
+Requires: message_runtime roscpp std_msgs tf

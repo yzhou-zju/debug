@@ -1,0 +1,58 @@
+In file included from [01m[K/opt/ros/noetic/include/ros/publisher.h:35:0[m[K,
+                 from [01m[K/opt/ros/noetic/include/ros/node_handle.h:32[m[K,
+                 from [01m[K/opt/ros/noetic/include/ros/ros.h:45[m[K,
+                 from [01m[K/home/zy/debug/src/planner/traj_opt/include/optimizer/poly_traj_optimizer.h:16[m[K,
+                 from [01m[K/home/zy/debug/src/planner/traj_opt/src/poly_traj_optimizer.cpp:2[m[K:
+[01m[K/usr/local/include/boost/bind.hpp:41:1:[m[K [01;36m[Knote: [m[K#pragma message: The practice of declaring the Bind placeholders (_1, _2, ...) in the global namespace is deprecated. Please use <boost/bind/bind.hpp> + using namespace boost::placeholders, or define BOOST_BIND_GLOBAL_PLACEHOLDERS to retain the current behavior.
+ [01;36m[K)[m[K
+ [01;36m[K^[m[K
+In file included from [01m[K/home/zy/debug/src/planner/traj_opt/src/poly_traj_optimizer.cpp:2:0[m[K:
+[01m[K/home/zy/debug/src/planner/traj_opt/include/optimizer/poly_traj_optimizer.h:[m[K In destructor ‘[01m[Kego_planner::PolyTrajOptimizer::~PolyTrajOptimizer()[m[K’:
+[01m[K/home/zy/debug/src/planner/traj_opt/include/optimizer/poly_traj_optimizer.h:162:35:[m[K [01;31m[Kerror: [m[K‘[01m[Kclass std::vector<std::basic_ofstream<char> >[m[K’ has no member named ‘[01m[Kclose[m[K’
+     ~PolyTrajOptimizer() { log_zy.[01;31m[Kclose[m[K(); }
+                                   [01;31m[K^~~~~[m[K
+[01m[K/home/zy/debug/src/planner/traj_opt/src/poly_traj_optimizer.cpp:[m[K In member function ‘[01m[Kbool ego_planner::PolyTrajOptimizer::optimizeTrajectory_lbfgs(const MatrixXd&, const MatrixXd&, const MatrixXd&, const VectorXd&, Eigen::MatrixXd&, bool, double)[m[K’:
+[01m[K/home/zy/debug/src/planner/traj_opt/src/poly_traj_optimizer.cpp:74:9:[m[K [01;35m[Kwarning: [m[Kunused variable ‘[01m[Kresult[m[K’ [[01;35m[K-Wunused-variable[m[K]
+     int [01;35m[Kresult[m[K = lbfgs::lbfgs_optimize(variable_num_,
+         [01;35m[K^~~~~~[m[K
+[01m[K/home/zy/debug/src/planner/traj_opt/src/poly_traj_optimizer.cpp:[m[K In member function ‘[01m[Kvoid ego_planner::PolyTrajOptimizer::setSwarmGraphInAdavanced(Eigen::VectorXd)[m[K’:
+[01m[K/home/zy/debug/src/planner/traj_opt/src/poly_traj_optimizer.cpp:280:15:[m[K [01;35m[Kwarning: [m[Kunused variable ‘[01m[Kresult[m[K’ [[01;35m[K-Wunused-variable[m[K]
+           int [01;35m[Kresult[m[K = lbfgs::lbfgs_optimize( 3,
+               [01;35m[K^~~~~~[m[K
+[01m[K/home/zy/debug/src/planner/traj_opt/src/poly_traj_optimizer.cpp:[m[K In static member function ‘[01m[Kstatic double ego_planner::PolyTrajOptimizer::swarmGraphCostCallback(void*, const double*, double*, int)[m[K’:
+[01m[K/home/zy/debug/src/planner/traj_opt/src/poly_traj_optimizer.cpp:325:7:[m[K [01;35m[Kwarning: [m[Kthis ‘[01m[Kelse[m[K’ clause does not guard... [[01;35m[K-Wmisleading-indentation[m[K]
+       [01;35m[Kelse[m[K
+       [01;35m[K^~~~[m[K
+[01m[K/home/zy/debug/src/planner/traj_opt/src/poly_traj_optimizer.cpp:327:9:[m[K [01;36m[Knote: [m[K...this statement, but the latter is misleadingly indented as if it were guarded by the ‘[01m[Kelse[m[K’
+         [01;36m[Kstd[m[K::cout<<"swarm_pos::"<<swarm_pos[id]<<std::endl;
+         [01;36m[K^~~[m[K
+[01m[K/home/zy/debug/src/planner/traj_opt/src/poly_traj_optimizer.cpp:[m[K In member function ‘[01m[Kdouble ego_planner::PolyTrajOptimizer::swarmGradCostP(Eigen::VectorXd&)[m[K’:
+[01m[K/home/zy/debug/src/planner/traj_opt/src/poly_traj_optimizer.cpp:687:12:[m[K [01;35m[Kwarning: [m[Kunused variable ‘[01m[Kpre_dur[m[K’ [[01;35m[K-Wunused-variable[m[K]
+     double [01;35m[Kpre_dur[m[K(0.0);
+            [01;35m[K^~~~~~~[m[K
+[01m[K/home/zy/debug/src/planner/traj_opt/src/poly_traj_optimizer.cpp:[m[K In member function ‘[01m[Kdouble ego_planner::PolyTrajOptimizer::swarmGraphGradCostP(Eigen::VectorXd&)[m[K’:
+[01m[K/home/zy/debug/src/planner/traj_opt/src/poly_traj_optimizer.cpp:889:12:[m[K [01;35m[Kwarning: [m[Kunused variable ‘[01m[Kpre_dur[m[K’ [[01;35m[K-Wunused-variable[m[K]
+     double [01;35m[Kpre_dur[m[K(0.0);
+            [01;35m[K^~~~~~~[m[K
+[01m[K/home/zy/debug/src/planner/traj_opt/src/poly_traj_optimizer.cpp:[m[K In member function ‘[01m[Kvoid ego_planner::PolyTrajOptimizer::feasibilityGradCostVandA(Eigen::VectorXd&, double&, double)[m[K’:
+[01m[K/home/zy/debug/src/planner/traj_opt/src/poly_traj_optimizer.cpp:1011:12:[m[K [01;35m[Kwarning: [m[Kunused variable ‘[01m[Kpre_dur[m[K’ [[01;35m[K-Wunused-variable[m[K]
+     double [01;35m[Kpre_dur[m[K(0.0);
+            [01;35m[K^~~~~~~[m[K
+[01m[K/home/zy/debug/src/planner/traj_opt/src/poly_traj_optimizer.cpp:[m[K In member function ‘[01m[Kvoid ego_planner::PolyTrajOptimizer::setSwarmTrajs(ego_planner::SwarmTrajData*)[m[K’:
+[01m[K/home/zy/debug/src/planner/traj_opt/src/poly_traj_optimizer.cpp:1493:22:[m[K [01;31m[Kerror: [m[Krequest for member ‘[01m[Ksize[m[K’ in ‘[01m[K((ego_planner::PolyTrajOptimizer*)this)->ego_planner::PolyTrajOptimizer::swarm_trajs_[m[K’, which is of pointer type ‘[01m[Kego_planner::SwarmTrajData* {aka std::vector<ego_planner::LocalTrajData>*}[m[K’ (maybe you meant to use ‘[01m[K->[m[K’ ?)
+      if(swarm_trajs_.[01;31m[Ksize[m[K()>2)
+                      [01;31m[K^~~~[m[K
+[01m[K/home/zy/debug/src/planner/traj_opt/src/poly_traj_optimizer.cpp:1495:35:[m[K [01;31m[Kerror: [m[Krequest for member ‘[01m[Ksize[m[K’ in ‘[01m[K((ego_planner::PolyTrajOptimizer*)this)->ego_planner::PolyTrajOptimizer::swarm_trajs_[m[K’, which is of pointer type ‘[01m[Kego_planner::SwarmTrajData* {aka std::vector<ego_planner::LocalTrajData>*}[m[K’ (maybe you meant to use ‘[01m[K->[m[K’ ?)
+        log_zy.resize(swarm_trajs_.[01;31m[Ksize[m[K());
+                                   [01;31m[K^~~~[m[K
+[01m[K/home/zy/debug/src/planner/traj_opt/src/poly_traj_optimizer.cpp:[m[K In member function ‘[01m[Kdouble ego_planner::PolyTrajOptimizer::error_dist(std::vector<Eigen::Matrix<double, 3, 1> >, std::vector<Eigen::Matrix<double, 3, 1> >)[m[K’:
+[01m[K/home/zy/debug/src/planner/traj_opt/src/poly_traj_optimizer.cpp:1515:2:[m[K [01;35m[Kwarning: [m[Kno return statement in function returning non-void [[01;35m[K-Wreturn-type[m[K]
+  [01;35m[K}[m[K
+  [01;35m[K^[m[K
+[01m[K/home/zy/debug/src/planner/traj_opt/src/poly_traj_optimizer.cpp:[m[K In member function ‘[01m[Kvoid ego_planner::PolyTrajOptimizer::setlog(int)[m[K’:
+[01m[K/home/zy/debug/src/planner/traj_opt/src/poly_traj_optimizer.cpp:1523:12:[m[K [01;31m[Kerror: [m[K‘[01m[Kclass std::vector<std::basic_ofstream<char> >[m[K’ has no member named ‘[01m[Kopen[m[K’
+     log_zy.[01;31m[Kopen[m[K("/home/zy/debug/1/error_" + to_string(d_id_)+".txt");
+            [01;31m[K^~~~[m[K
+make[2]: *** [CMakeFiles/traj_opt.dir/build.make:76：CMakeFiles/traj_opt.dir/src/poly_traj_optimizer.cpp.o] 错误 1
+make[1]: *** [CMakeFiles/Makefile2:1753：CMakeFiles/traj_opt.dir/all] 错误 2
+make: *** [Makefile:146：all] 错误 2

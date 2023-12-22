@@ -1,0 +1,23 @@
+[  0%] Built target std_msgs_generate_messages_py
+[  0%] Built target geometry_msgs_generate_messages_py
+[  0%] Built target std_msgs_generate_messages_eus
+[  0%] Built target geometry_msgs_generate_messages_cpp
+[  0%] Built target std_msgs_generate_messages_cpp
+[  0%] Built target geometry_msgs_generate_messages_lisp
+[  0%] Built target _traj_utils_generate_messages_check_deps_PolyTraj
+[  0%] Built target std_msgs_generate_messages_lisp
+[  0%] Built target _traj_utils_generate_messages_check_deps_DataDisp
+[  0%] Built target _traj_utils_generate_messages_check_deps_LocalGoal
+[  0%] Built target geometry_msgs_generate_messages_eus
+[  0%] Built target _traj_utils_generate_messages_check_deps_SwarmGlobalPathList
+[  0%] Built target geometry_msgs_generate_messages_nodejs
+[  0%] Built target std_msgs_generate_messages_nodejs
+[  0%] Built target _traj_utils_generate_messages_check_deps_RemapLocalGoalList
+[  5%] Built target traj_utils
+[  5%] Built target _traj_utils_generate_messages_check_deps_GlbObsRcv
+[ 34%] Built target traj_utils_generate_messages_lisp
+[ 40%] Built target traj_utils_generate_messages_cpp
+[ 57%] Built target traj_utils_generate_messages_nodejs
+[ 77%] Built target traj_utils_generate_messages_eus
+[100%] Built target traj_utils_generate_messages_py
+[100%] Built target traj_utils_generate_messages

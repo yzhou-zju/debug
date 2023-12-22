@@ -1,0 +1,1 @@
+/home/zy/debug/devel/.private/traj_utils/share/roseus/ros/traj_utils/msg/LocalGoal.l

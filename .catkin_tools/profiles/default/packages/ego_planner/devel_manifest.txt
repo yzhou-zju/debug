@@ -1,6 +1,6 @@
 planner/plan_manage
-/home/z/rrt_rotor/devel/.private/ego_planner/cmake.lock /home/z/rrt_rotor/devel/./cmake.lock
-/home/z/rrt_rotor/devel/.private/ego_planner/lib/ego_planner/ego_planner_node /home/z/rrt_rotor/devel/lib/ego_planner/ego_planner_node
-/home/z/rrt_rotor/devel/.private/ego_planner/lib/pkgconfig/ego_planner.pc /home/z/rrt_rotor/devel/lib/pkgconfig/ego_planner.pc
-/home/z/rrt_rotor/devel/.private/ego_planner/share/ego_planner/cmake/ego_plannerConfig-version.cmake /home/z/rrt_rotor/devel/share/ego_planner/cmake/ego_plannerConfig-version.cmake
-/home/z/rrt_rotor/devel/.private/ego_planner/share/ego_planner/cmake/ego_plannerConfig.cmake /home/z/rrt_rotor/devel/share/ego_planner/cmake/ego_plannerConfig.cmake
+/home/zy/debug/devel/.private/ego_planner/cmake.lock /home/zy/debug/devel/./cmake.lock
+/home/zy/debug/devel/.private/ego_planner/share/ego_planner/cmake/ego_plannerConfig-version.cmake /home/zy/debug/devel/share/ego_planner/cmake/ego_plannerConfig-version.cmake
+/home/zy/debug/devel/.private/ego_planner/share/ego_planner/cmake/ego_plannerConfig.cmake /home/zy/debug/devel/share/ego_planner/cmake/ego_plannerConfig.cmake
+/home/zy/debug/devel/.private/ego_planner/lib/ego_planner/ego_planner_node /home/zy/debug/devel/lib/ego_planner/ego_planner_node
+/home/zy/debug/devel/.private/ego_planner/lib/pkgconfig/ego_planner.pc /home/zy/debug/devel/lib/pkgconfig/ego_planner.pc

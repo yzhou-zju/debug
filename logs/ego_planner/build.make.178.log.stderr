@@ -1,0 +1,27 @@
+In file included from [01m[K/opt/ros/noetic/include/ros/publisher.h:35:0[m[K,
+                 from [01m[K/opt/ros/noetic/include/ros/node_handle.h:32[m[K,
+                 from [01m[K/opt/ros/noetic/include/ros/ros.h:45[m[K,
+                 from [01m[K/home/zy/debug/src/planner/plan_manage/include/visualizer.hpp:9[m[K,
+                 from [01m[K/home/zy/debug/src/planner/plan_manage/include/m_planner_node.h:3[m[K,
+                 from [01m[K/home/zy/debug/src/planner/plan_manage/src/ego_planner_node.cpp:2[m[K:
+[01m[K/usr/local/include/boost/bind.hpp:41:1:[m[K [01;36m[Knote: [m[K#pragma message: The practice of declaring the Bind placeholders (_1, _2, ...) in the global namespace is deprecated. Please use <boost/bind/bind.hpp> + using namespace boost::placeholders, or define BOOST_BIND_GLOBAL_PLACEHOLDERS to retain the current behavior.
+ [01;36m[K)[m[K
+ [01;36m[K^[m[K
+In file included from [01m[K/home/zy/debug/src/planner/plan_manage/src/ego_planner_node.cpp:2:0[m[K:
+[01m[K/home/zy/debug/src/planner/plan_manage/include/m_planner_node.h:141:93:[m[K [01;31m[Kerror: [m[Kexpected ‘[01m[K)[m[K’ before ‘[01m[K;[m[K’ token
+   void group_swarm(std::vector<int> &leader_id, std::vector<std::vector<Eigen::Vector3d>> &v[01;31m[K;[m[K)
+                                                                                             [01;31m[K^[m[K
+[01m[K/home/zy/debug/src/planner/plan_manage/include/m_planner_node.h:141:94:[m[K [01;31m[Kerror: [m[Kexpected unqualified-id before ‘[01m[K)[m[K’ token
+   void group_swarm(std::vector<int> &leader_id, std::vector<std::vector<Eigen::Vector3d>> &v;[01;31m[K)[m[K
+                                                                                              [01;31m[K^[m[K
+[01m[K/home/zy/debug/src/planner/plan_manage/include/m_planner_node.h:[m[K In member function ‘[01m[Kint ego_planner_node::do_planner(bool, int)[m[K’:
+[01m[K/home/zy/debug/src/planner/plan_manage/include/m_planner_node.h:29:36:[m[K [01;31m[Kerror: [m[K‘[01m[Kleader_id[m[K’ was not declared in this scope
+       formation_optim[i]->setParam([01;31m[Kleader_id[m[K);
+                                    [01;31m[K^~~~~~~~~[m[K
+[01m[K/home/zy/debug/src/planner/plan_manage/include/m_planner_node.h:29:36:[m[K [01;36m[Knote: [m[Ksuggested alternative: ‘[01m[Kleader_id_[m[K’
+       formation_optim[i]->setParam([01;36m[Kleader_id[m[K);
+                                    [01;36m[K^~~~~~~~~[m[K
+                                    [32m[Kleader_id_[m[K
+make[2]: *** [CMakeFiles/ego_planner_node.dir/build.make:76：CMakeFiles/ego_planner_node.dir/src/ego_planner_node.cpp.o] 错误 1
+make[1]: *** [CMakeFiles/Makefile2:1618：CMakeFiles/ego_planner_node.dir/all] 错误 2
+make: *** [Makefile:146：all] 错误 2

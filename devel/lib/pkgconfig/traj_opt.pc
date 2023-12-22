@@ -1,0 +1,1 @@
+/home/zy/debug/devel/.private/traj_opt/lib/pkgconfig/traj_opt.pc

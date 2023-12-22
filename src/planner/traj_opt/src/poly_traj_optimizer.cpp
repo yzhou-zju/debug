@@ -8,7 +8,7 @@ namespace ego_planner
   bool PolyTrajOptimizer::optimizeTrajectory_lbfgs(
       const Eigen::MatrixXd &iniState, const Eigen::MatrixXd &finState,
       const Eigen::MatrixXd &initInnerPts, const Eigen::VectorXd &initT,
-      Eigen::MatrixXd &optimal_points, const bool use_formation)
+      Eigen::MatrixXd &optimal_points, const bool use_formation, const double t_now_get_)
   {
     std::cout<<"initT.size():"<<initT.size()<<std::endl;
     std::cout<<"initInnerPts.cols() :"<<initInnerPts.cols() <<std::endl;
@@ -18,7 +18,7 @@ namespace ego_planner
       return false;
     }
 
-    t_now_ = 0;
+    t_now_ = t_now_get_;
     // t_now_ = ros::Time::now().toSec();
     piece_num_ = initT.size();
 
@@ -970,6 +970,10 @@ namespace ego_planner
         Eigen::Vector3d df_dp;
 
         time_cps_.swarm_graph_advance_sets[idx].updatePartGraphAndGetGrad(drone_id_, swarm_graph_pos, df_dp);
+        // log_zy[drone_id_]<<drone_id_<<"       ###########################################"<<std::endl;
+        // log_zy_x[drone_id_]<<abs(df_dp[0])<<std::endl;
+        // log_zy_y[drone_id_]<<abs(df_dp[1])<<std::endl;
+        // log_zy_z[drone_id_]<<abs(df_dp[2])<<std::endl;
         double similarity_error;
         time_cps_.swarm_graph_advance_sets[idx].calcFNorm2(similarity_error);
 
@@ -1101,9 +1105,9 @@ namespace ego_planner
     if (size < formation_size_)
       return false;
 
-    // if (i_dp <= 0 || i_dp >= cps_.cp_size * 2 / 3)
-    //   return false;
-
+    if (i_dp <= 0 || i_dp >= cps_.cp_size * 2 / 3)
+      return false;
+    
     // init
     bool ret = false;
     gradp.setZero();
@@ -1162,6 +1166,8 @@ namespace ego_planner
       gradp = wei_formation_ * swarm_grad[drone_id_];
 
       for (int id=0; id<size; id++){
+        // log_zy<<id<<"    #################################################"<<std::endl;
+        // log_zy<<swarm_grad[id]<<std::endl;
         gradt += wei_formation_ * swarm_grad[id].dot(swarm_graph_vel[id]);
         if (id != drone_id_)
           grad_prev_t += wei_formation_ * swarm_grad[id].dot(swarm_graph_vel[id]);
@@ -1193,8 +1199,8 @@ namespace ego_planner
       return false;
 
     // for the formation problem, we may optimize the whole trajectory ?
-    // if (i_dp <= 0 || i_dp >= cps_.cp_size * 2 / 3)
-    //   return false;
+    if (i_dp <= 0 || i_dp >= cps_.cp_size * 2 / 3)
+      return false;
 
     // init
     bool ret = false;
@@ -1306,10 +1312,10 @@ namespace ego_planner
                                          double &grad_prev_t,
                                          double &costp)
   {
-    // if (i_dp <= 0 || i_dp >= cps_.cp_size * 2 / 3)
-    //   return false;
-    // if (i_dp <= 0)
-    //   return false;
+    if (i_dp <= 0 || i_dp >= cps_.cp_size * 2 / 3)
+      return false;
+    if (i_dp <= 0)
+      return false;
 
     bool ret = false;
 
@@ -1484,7 +1490,10 @@ namespace ego_planner
     cps_.points = points;
   }
 
-  void PolyTrajOptimizer::setSwarmTrajs(SwarmTrajData *swarm_trajs_ptr) { swarm_trajs_ = swarm_trajs_ptr; }
+  void PolyTrajOptimizer::setSwarmTrajs(SwarmTrajData *swarm_trajs_ptr) {
+     swarm_trajs_ = swarm_trajs_ptr; 
+
+  }
   // void PolyTrajOptimizer::setSwarmTrajs(SwarmTrajData *swarm_trajs_ptr) { swarm_trajs_ = swarm_trajs_ptr; }
 
   void PolyTrajOptimizer::fisrt_planner_or_not(const bool first_p_){
@@ -1504,13 +1513,18 @@ namespace ego_planner
 
  }
   /* helper functions */
-  void PolyTrajOptimizer::setlog(const int d_id_)
+  void PolyTrajOptimizer::setlog(const int d_id_, const int s_num)
   {
-    if(d_id_ == 0)
-    {
-      lbfgs::line_time_log_open();
-      log_zy.open("/home/zy/debug/1/error_" + to_string(d_id_)+".txt");
-    }
+    // if(s_num>2)
+    //  {
+    //    log_zy_x.resize(s_num);
+    //    log_zy_y.resize(s_num);
+    //    log_zy_z.resize(s_num);
+    //  }
+    log_zy.open("/home/zy/debug/1/error_" + to_string(d_id_)+"_.txt");
+    // log_zy_x[d_id_].open("/home/zy/debug/1/error_" + to_string(d_id_)+"_x.txt");
+    // log_zy_y[d_id_].open("/home/zy/debug/1/error_" + to_string(d_id_)+"_y.txt");
+    // log_zy_z[d_id_].open("/home/zy/debug/1/error_" + to_string(d_id_)+"_z.txt");
   }
   void PolyTrajOptimizer::setParam(vector<int> leader_id_, std::vector<Eigen::Vector3d> v_des)
   {
@@ -1525,14 +1539,14 @@ namespace ego_planner
     wei_gather_  = 100;
 
     obs_clearance_ = 0.4;
-    swarm_clearance_ = 0.3;
+    swarm_clearance_ = 0.6;
     // swarm_gather_threshold_ = 1;
     // formation_type_ = 88;
     // formation_type_ = 333;
     formation_type_ = 1;
     formation_method_type_ = 0;
-    max_vel_ = 1;
-    max_acc_ = 2;
+    max_vel_ = 2;
+    max_acc_ = 3;
 
     enable_fix_step_ = true;
     time_cps_.sampling_time_step = 0.5;

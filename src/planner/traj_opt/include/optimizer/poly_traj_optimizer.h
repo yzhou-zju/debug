@@ -102,6 +102,9 @@ namespace ego_planner
     bool record_once_ = true; // debug for calculating the local min of swarm graph
     std::ofstream log_;
     std::ofstream log_zy;
+    std::vector<std::ofstream> log_zy_x;
+    std::vector<std::ofstream> log_zy_y;
+    std::vector<std::ofstream> log_zy_z;
     int opt_local_min_loop_num_;
     int opt_local_min_loop_sum_num_ = 0;
     double collision_check_time_end_ = 0.0;
@@ -159,10 +162,10 @@ namespace ego_planner
 
   public:
     PolyTrajOptimizer() {}
-    ~PolyTrajOptimizer() { log_zy.close(); }
+    ~PolyTrajOptimizer() { log_zy_x[drone_id_].close(); log_zy_y[drone_id_].close(); log_zy_z[drone_id_].close(); log_zy.close(); }
 
     /* set variables */
-    void setlog(const int d_id_);
+    void setlog(const int d_id_, const int s_num);
     void setParam(vector<int> leader_id_,std::vector<Eigen::Vector3d> v_des);
     void setControlPoints(const Eigen::MatrixXd &points);
     void setSwarmTrajs(SwarmTrajData *swarm_trajs_ptr);
@@ -186,7 +189,7 @@ namespace ego_planner
     /* main planning API */
     bool optimizeTrajectory_lbfgs(const Eigen::MatrixXd &iniState, const Eigen::MatrixXd &finState,
                                   const Eigen::MatrixXd &initInnerPts, const Eigen::VectorXd &initT,
-                                  Eigen::MatrixXd &optimal_points, const bool use_formation);
+                                  Eigen::MatrixXd &optimal_points, const bool use_formation, const double t_now_get_);
 
   private:
     /* callbacks by the L-BFGS optimizer */
