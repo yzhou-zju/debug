@@ -58,18 +58,16 @@ namespace ego_planner
       lbfgs_params.max_iterations = 100; 
       use_formation_ = false;
     }
-    std::cout<<"initT.size()$############$$$:"<<std::endl;
   
     // calculate in advance a part of swarm graph in other agents' local traj for each replanning
     opt_local_min_loop_sum_num_ = 0;
-    if (enable_fix_step_)
+    if (enable_fix_step_&&swarm_trajs_->size()>=2)
       setSwarmGraphInAdavanced(initT);
 
     iter_num_ = 0;
     force_stop_type_ = DONT_STOP;
     /* ---------- optimize ---------- */
     t1 = ros::Time::now();
-    std::cout<<"final_cost begin"<<std::endl;
     lbfgs::line_time_log_close();
     int result = lbfgs::lbfgs_optimize(variable_num_,
                                        q,
@@ -79,7 +77,7 @@ namespace ego_planner
                                        PolyTrajOptimizer::earlyExitCallback,
                                        this,
                                        &lbfgs_params);
-       
+    
     use_formation_ = use_formation_temp;
 
     t2 = ros::Time::now();
@@ -87,9 +85,7 @@ namespace ego_planner
     double total_time_ms = (t2 - t0).toSec() * 1000;
 
     // debug
-    std::cout<<"final_cost::"<<final_cost<<std::endl;
     cout << "[debug] final total: " << jerkOpt_.get_T1().sum() << ", T: " << jerkOpt_.get_T1().transpose() << endl;
-
     printf("\033[32m[Optimization]: iter=%d, use_formation=%d, optimize time(ms)=%5.3f, total time(ms)=%5.3f, graph num=%i \n\033[0m", iter_num_, use_formation, optimize_time_ms, total_time_ms, opt_local_min_loop_sum_num_);
     
     // print the optimization result
@@ -180,7 +176,6 @@ namespace ego_planner
         swarm_graph.setDesiredForm(swarm_des_, adj_in_, adj_out_);
         swarm_graph.setAssignment(assignment_);
         std::vector<Eigen::Vector3d> swarm_pos(size), swarm_vel(size);
-        std::cout<<"opt !!!!!!!!!!!!!!!!!!!1111:"<<i<<std::endl;
         // get swarm pos and vel
         for (int id = 0; id < size; id++)
         {
@@ -224,7 +219,7 @@ namespace ego_planner
       if (time_cps_.enable_decouple_swarm_graph) {
       // test : calculate the local minimum of swarm graph
         time_cps_.local_min_advance_sets.resize(time_cps_.sampling_num);
-
+      
         // record
         if (record_once_)
           log_.open("/home/lunquan/paper_ws/TRO2022_ws/Pipline-Swarm-Formation/src/planner/traj_opt/log/drone_" + to_string(drone_id_)+".txt");      
@@ -276,7 +271,6 @@ namespace ego_planner
           double final_cost;
           time_cps_.idx_of_sets = i;
           opt_local_min_loop_num_ = 0;
-          // std::cout<<"swarmGraphCostCallback:"<<std::endl;
           int result = lbfgs::lbfgs_optimize( 3, 
                                               q, 
                                               &final_cost,
@@ -311,7 +305,6 @@ namespace ego_planner
 
     Eigen::Vector3d local_min_pos;
     local_min_pos << x[0], x[1], x[2];
-
     /* calculate cost and grad of swarm graph */
     double cost;
     Eigen::Vector3d gradP;
@@ -324,7 +317,6 @@ namespace ego_planner
         swarm_pos[id] = local_min_pos;
       else
         swarm_pos[id] = opt->time_cps_.swarm_pos_advance_sets[idx][id];
-        std::cout<<"swarm_pos::"<<swarm_pos[id]<<std::endl;
     }
     // get cost and gradP
     opt->time_cps_.swarm_graph_advance_sets[idx].updatePartGraphAndGetGrad(opt->drone_id_, swarm_pos, gradP);
@@ -376,7 +368,6 @@ namespace ego_planner
     }
 
     opt->initAndGetSmoothnessGradCost2PT(gradT, smoo_cost); // Smoothness cost
-
     Eigen::VectorXd obs_swarm_feas_qvar_costs;
 
     if (opt->enable_fix_step_) {
@@ -617,11 +608,11 @@ namespace ego_planner
 
   template <typename EIGENVEC>
   void PolyTrajOptimizer::addPVAGradCost2CTwithFixedTimeSteps(EIGENVEC &gdT, Eigen::VectorXd &costs){
-
     costs.setZero();
 
-    // double obs_cost = obstacleGradCostP(gdT);   
-    costs(0) = 0;
+    double obs_cost = obstacleGradCostP(gdT);   
+    costs(0) = obs_cost;
+    // costs(0) = 0;
     double swarm_obs_cost;
     if(swarm_trajs_->size()>1)
     {
@@ -629,14 +620,12 @@ namespace ego_planner
     }else{
       swarm_obs_cost = 0;
     }
-    
     costs(1) = swarm_obs_cost;
     // costs(1) = 0;
     double swarm_formation_cost = 0.0;
     if (use_formation_&&swarm_trajs_->size()>1)
       swarm_formation_cost = swarmGraphGradCostP(gdT);
     costs(2) = swarm_formation_cost;
-    // std::cout<<"swarm_formation_cost:"<<swarm_formation_cost<<std::endl;
 
     double vel_cost = 0.0, acc_cost = 0.0;
     feasibilityGradCostVandA(gdT, vel_cost, acc_cost);
@@ -670,6 +659,75 @@ namespace ego_planner
     return id_need_ignored;
   }
 
+  double PolyTrajOptimizer::obstacleGradCostP(Eigen::VectorXd &gdT) {
+    static const double step = time_cps_.sampling_time_step;
+
+    double T_sum = jerkOpt_.get_T1().sum();
+    int k = floor(T_sum / step) + 1;
+
+    /* Calculate the gdC, gdT and obs_cost */
+    // choose zhou's trick, only consider 2/3 trajectory
+    double obs_cost = 0.0;
+    int piece_of_idx(0);
+    double accumulated_dur(0.0);
+    double pre_dur(0.0);
+    double s1, s2, s3, s4, s5;
+    Eigen::Matrix<double, 6, 1> beta0, beta1;
+    Eigen::Vector3d pos, vel;
+    double omg;
+
+    for (int idx=0; idx<=k; idx++, accumulated_dur+=step) {
+      // if (idx >= k * 4 / 5)
+      //   break;
+      
+      s1 = accumulated_dur;
+
+      piece_of_idx = jerkOpt_.getTraj().locatePieceIdx(s1);
+      const Eigen::Matrix<double, 6, 3> &c = jerkOpt_.get_b().block<6, 3>(piece_of_idx * 6, 0);
+      
+      s2 = s1 * s1;
+      s3 = s2 * s1;
+      s4 = s2 * s2;
+      s5 = s4 * s1;
+      beta0 << 1.0, s1, s2, s3, s4, s5;
+      beta1 << 0.0, 1.0, 2.0 * s1, 3.0 * s2, 4.0 * s3, 5.0 * s4;
+      pos = c.transpose() * beta0;
+      vel = c.transpose() * beta1;
+      
+      omg = (idx == 0 || idx == k) ? 0.5 : 1.0;
+
+      // calculate the cost and grad of obstacle avoidance
+      double dJ_df, df_dt, grad_prev_t;
+      Eigen::Matrix<double, 6, 3> gradViolaPc;
+      Eigen::Vector3d df_dp;
+      
+      // use esdf
+      double dist;
+      Eigen::Vector3d dist_grad;
+      grid_map_->getDisWithGradI(pos, dist, dist_grad);
+      double dist_err = obs_clearance_ - dist;
+
+      if (dist_err > 0){
+        dJ_df = 3 * wei_obs_ * step * omg * pow(dist_err, 2);
+        df_dp = - dist_grad;
+        gradViolaPc = dJ_df * beta0 * df_dp.transpose();
+        df_dt = df_dp.dot(vel);
+        grad_prev_t = -1 * dJ_df * df_dt;
+
+        // cost 
+        obs_cost += wei_obs_ * step * omg * pow(dist_err, 3);
+
+        // gdC
+        jerkOpt_.get_gdC().block<6, 3>(piece_of_idx * 6, 0) += gradViolaPc;
+
+        // gdT
+        if (piece_of_idx > 0)
+          gdT.head(piece_of_idx).array() += grad_prev_t;
+      }
+    }
+    return obs_cost;
+  }
+
   double PolyTrajOptimizer::swarmGradCostP(Eigen::VectorXd &gdT){   
     static const double step = time_cps_.sampling_time_step;
 
@@ -691,8 +749,8 @@ namespace ego_planner
     double omg;
 
     for (int idx=0; idx<=k; idx++, accumulated_dur+=step) {
-      if (idx >= k * 2 / 3)
-        break;
+      // if (idx >= k * 2 / 3)
+      //   break;
       
       s1 = accumulated_dur;
 
@@ -768,7 +826,6 @@ namespace ego_planner
       size = formation_size_;
     if (size < formation_size_)
       return 0.0;
-    
     static const double step = time_cps_.sampling_time_step;
 
     double T_sum = jerkOpt_.get_T1().sum();
@@ -777,7 +834,6 @@ namespace ego_planner
     /* Expand swarm_graph_advance_sets */
     if (T_sum > time_cps_.duration){
       k = floor(T_sum / step) + 1;
-
       for (int i = time_cps_.sampling_num; i < k; i++)
       {
         SwarmGraph swarm_graph;
@@ -820,8 +876,7 @@ namespace ego_planner
         // set swarm graph, need to change: calculate the local optimal pos of swarm graph
         swarm_graph.updateGraph(swarm_pos);
         time_cps_.swarm_graph_advance_sets.emplace_back(swarm_graph);
-      }
-
+      }/*************************3333333333333333333333333333333333333333333333333333333333333333333333333333*****************8*/
       if (time_cps_.enable_decouple_swarm_graph){
         for (int i=time_cps_.sampling_num; i<k; i++) {
           // init optimizer
@@ -858,7 +913,6 @@ namespace ego_planner
           double final_cost;
           time_cps_.idx_of_sets = i;
           opt_local_min_loop_num_ = 0;
-          std::cout<<"formation lbfg:::"<<std::endl;
           lbfgs::lbfgs_optimize( 3,
                                  q, 
                                  &final_cost,
@@ -880,7 +934,6 @@ namespace ego_planner
     {
       k = time_cps_.sampling_num;
     }
-    
     /* Calculate the gdC, gdT and swarm cost */
     // choose zhou's trick, only consider 2/3 trajectory
     double swarm_formation_cost = 0.0;
@@ -896,7 +949,6 @@ namespace ego_planner
       
       if (idx >= k * 2 / 3)
         break; 
-      
       s1 = accumulated_dur;
 
       piece_of_idx = jerkOpt_.getTraj().locatePieceIdx(s1);
@@ -1279,8 +1331,8 @@ namespace ego_planner
                                             Eigen::Vector3d &gradp,
                                             double &costp)
   {
-    if (i_dp == 0 || i_dp >= cps_.cp_size * 2 / 3)
-      return false;
+    // if (i_dp == 0 || i_dp >= cps_.cp_size * 2 / 3)
+    //   return false;
 
     bool ret = false;
 
@@ -1312,8 +1364,8 @@ namespace ego_planner
                                          double &grad_prev_t,
                                          double &costp)
   {
-    if (i_dp <= 0 || i_dp >= cps_.cp_size * 2 / 3)
-      return false;
+    // if (i_dp <= 0 || i_dp >= cps_.cp_size * 2 / 3)
+    //   return false;
     if (i_dp <= 0)
       return false;
 
@@ -1504,6 +1556,11 @@ namespace ego_planner
   {
     drone_id_ = drone_id;
   }
+  void PolyTrajOptimizer::get_esdf(sensor_msgs::PointCloud2& esdf_vis, pcl::PointCloud<pcl::PointXYZ> &point_obs_)
+  {
+    grid_map_->get_esdf_map(esdf_vis);
+    grid_map_->get_obs(point_obs_);
+  }
  double PolyTrajOptimizer::error_dist(std::vector<Eigen::Vector3d> f_cur , std::vector<Eigen::Vector3d> f_des)
  {
   double error_d_;
@@ -1521,7 +1578,10 @@ namespace ego_planner
     //    log_zy_y.resize(s_num);
     //    log_zy_z.resize(s_num);
     //  }
-    log_zy.open("/home/zy/debug/1/error_" + to_string(d_id_)+"_.txt");
+    if(d_id_==0)
+    {
+      log_zy.open("/home/zy/debug/1/error_" + to_string(d_id_)+"_.txt");
+    }
     // log_zy_x[d_id_].open("/home/zy/debug/1/error_" + to_string(d_id_)+"_x.txt");
     // log_zy_y[d_id_].open("/home/zy/debug/1/error_" + to_string(d_id_)+"_y.txt");
     // log_zy_z[d_id_].open("/home/zy/debug/1/error_" + to_string(d_id_)+"_z.txt");
@@ -1530,16 +1590,16 @@ namespace ego_planner
   {
 
     wei_smooth_ = 100;
-    wei_obs_ = 10000;
+    wei_obs_ = 50000;
     wei_swarm_ = 10000;
     wei_feas_ = 10000;
     wei_sqrvar_ = 10000;
     wei_time_ = 80;
-    wei_formation_ = 12000;
+    wei_formation_ = 10000;
     wei_gather_  = 100;
 
-    obs_clearance_ = 0.4;
-    swarm_clearance_ = 0.6;
+    obs_clearance_ = 0.05;
+    swarm_clearance_ = 0.05;
     // swarm_gather_threshold_ = 1;
     // formation_type_ = 88;
     // formation_type_ = 333;
@@ -1547,11 +1607,13 @@ namespace ego_planner
     formation_method_type_ = 0;
     max_vel_ = 2;
     max_acc_ = 3;
-
+  
     enable_fix_step_ = true;
-    time_cps_.sampling_time_step = 0.5;
-    time_cps_.enable_decouple_swarm_graph = false;
+    time_cps_.sampling_time_step = 0.05;
+    time_cps_.enable_decouple_swarm_graph = true;
     // set the formation type
+    std::cout<<"init!!!!!!!!!!!"<<std::endl;
+    
     swarm_graph_.reset(new SwarmGraph);
     setDesiredFormation(formation_type_, leader_id_, v_des);
 

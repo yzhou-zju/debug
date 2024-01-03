@@ -13,6 +13,7 @@
 // #include <path_searching/dyn_a_star.h>
 // #include <path_searching/kinodynamic_astar.h>
 // #include <plan_env/grid_map.h>
+#include "grid_map.h"
 #include <ros/ros.h>
 #include "optimizer/lbfgs.hpp"
 #include <traj_utils/plan_container.hpp>
@@ -20,6 +21,7 @@
 #include <frob_test/swarm_graph.hpp>
 #include <fstream>
 using namespace std;
+using namespace trailer_planner;
 namespace ego_planner
 {
 
@@ -78,7 +80,7 @@ namespace ego_planner
   {
 
   private:
-    // GridMap::Ptr grid_map_;
+    GridMap::Ptr grid_map_;
     bool use_kino_;
     // AStar::Ptr a_star_;
     // KinodynamicAstar::Ptr kino_a_star_;
@@ -161,14 +163,15 @@ namespace ego_planner
     vector<Eigen::Vector3d> formation_relative_dist_;
 
   public:
-    PolyTrajOptimizer() {}
-    ~PolyTrajOptimizer() { log_zy_x[drone_id_].close(); log_zy_y[drone_id_].close(); log_zy_z[drone_id_].close(); log_zy.close(); }
+    PolyTrajOptimizer() {grid_map_.reset(new GridMap);grid_map_->init();}
+    ~PolyTrajOptimizer() {log_zy.close(); }
 
     /* set variables */
     void setlog(const int d_id_, const int s_num);
     void setParam(vector<int> leader_id_,std::vector<Eigen::Vector3d> v_des);
     void setControlPoints(const Eigen::MatrixXd &points);
     void setSwarmTrajs(SwarmTrajData *swarm_trajs_ptr);
+    void get_esdf(sensor_msgs::PointCloud2& esdf_vis, pcl::PointCloud<pcl::PointXYZ> &point_obs_);
     // void setSwarmTrajs();
     void setDroneId(const int drone_id);
     void fisrt_planner_or_not(const bool first_p_);

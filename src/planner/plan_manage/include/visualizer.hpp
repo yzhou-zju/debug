@@ -11,7 +11,10 @@
 #include <geometry_msgs/PoseStamped.h>
 #include <visualization_msgs/Marker.h>
 #include <visualization_msgs/MarkerArray.h>
-
+#include <pcl/io/pcd_io.h>
+#include <pcl_conversions/pcl_conversions.h>
+#include <pcl/point_cloud.h>
+#include <pcl/point_types.h>
 // Visualizer for the planner
 class Visualizer
 {
@@ -25,6 +28,8 @@ private:
     ros::Publisher wayPointsPub;
     ros::Publisher routePub;
     ros::Publisher swarmPub;
+    ros::Publisher esdf_pub;
+    ros::Publisher _all_map_pub;
 
 public:
     Visualizer(ros::NodeHandle &nh_)
@@ -33,13 +38,22 @@ public:
         wayPointsPub = nh.advertise<visualization_msgs::Marker>("/visualizer/agent", 10);
         routePub = nh.advertise<visualization_msgs::Marker>("/visualizer/route", 10);
         swarmPub = nh.advertise<visualization_msgs::Marker>("/visualizer/swarm", 10);
+        esdf_pub = nh.advertise<sensor_msgs::PointCloud2>("/esdf_map", 1);
+        _all_map_pub = nh.advertise<sensor_msgs::PointCloud2>("/global_map", 1);
     }
 
     // Visualize the trajectory and its front-end path
-    inline void visualize(const std::vector<Eigen::Vector3d> &route, int trajId = 0)
+    inline void get_esdf_vis(sensor_msgs::PointCloud2 esdf_get, pcl::PointCloud<pcl::PointXYZ> point_obs)
+    {
+        sensor_msgs::PointCloud2 globalMap_pcd;
+        pcl::toROSMsg(point_obs, globalMap_pcd);
+        globalMap_pcd.header.frame_id = "map";
+        _all_map_pub.publish(globalMap_pcd);
+        esdf_pub.publish(esdf_get);
+    }
+    inline void visualize(const std::vector<std::vector<Eigen::Vector3d>> &route, int trajId)
     {
         visualization_msgs::Marker routeMarker;
-
         routeMarker.id = trajId;
         routeMarker.type = visualization_msgs::Marker::LINE_LIST;
         routeMarker.header.stamp = ros::Time::now();
@@ -47,17 +61,17 @@ public:
         routeMarker.pose.orientation.w = 1.00;
         routeMarker.action = visualization_msgs::Marker::ADD;
         routeMarker.ns = "route";
-        routeMarker.color.r = 0.00;
-        routeMarker.color.g = 1.00;
+        routeMarker.color.r = 1.00;
+        routeMarker.color.g = 0.00;
         routeMarker.color.b = 0.00;
         routeMarker.color.a = 1.00;
-        routeMarker.scale.x = 0.05;
+        routeMarker.scale.x = 0.15;
 
-        if (route.size() > 0)
+        if (route[trajId].size() > 0)
         {
             bool first = true;
             Eigen::Vector3d last;
-            for (auto it : route)
+            for (auto it : route[trajId])
             {
                 if (first)
                 {
@@ -93,9 +107,9 @@ public:
         routeMarker.pose.orientation.w = 1.00;
         routeMarker.action = visualization_msgs::Marker::ADD;
         routeMarker.ns = "route";
-        routeMarker.color.r = 1.00;
+        routeMarker.color.r = 0.00;
         routeMarker.color.g = 0.00;
-        routeMarker.color.b = 0.00;
+        routeMarker.color.b = 1.00;
         routeMarker.color.a = 1.00;
         routeMarker.scale.x = 0.05;
 

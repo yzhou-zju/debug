@@ -1320,13 +1320,9 @@ inline int lbfgs_optimize(int n, double *x, double *ptr_fx,
 
   if (xnorm < 1.0) {
     xnorm = 1.0;
-    printf("here2!!!!!!!!!!!!!!!!!!!!!!!!!");
-    printf("\n");
   }
   if (gnorm / xnorm <= param.g_epsilon) {
     ret = LBFGS_ALREADY_MINIMIZED;
-    printf("here3!!!!!!!!!!!!!!!!!!!!!!!!!");
-    printf("\n");
   } else {
     /* Compute the initial step:
     step = 1.0 / sqrt(vecdot(d, d, n))
@@ -1496,8 +1492,6 @@ inline int lbfgs_optimize(int n, double *x, double *ptr_fx,
       */
       t1 = ros::Time::now();
       double total_time_ms = (t1 - t0).toSec() * 1000;
-      printf("lbfgs time:%5.8f",total_time_ms);
-      printf("\n");
       log_<<total_time_ms<<endl;
       step = 1.0;
     }

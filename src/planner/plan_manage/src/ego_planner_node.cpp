@@ -8,7 +8,6 @@ int main(int argc, char **argv)
   ros::Time::init();
   ego_planner_node m_planner(nh_);
   m_planner.do_planner(true, 20);
-
   ros::Time t_old;
   ros::Time t_0 = ros::Time::now();
   t_old = t_0;

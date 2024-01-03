@@ -18,7 +18,7 @@ find_package(catkin REQUIRED COMPONENTS
   message_generation
   cv_bridge
 )
-
+find_package(PCL 1.7 REQUIRED)
 # catkin_package(CATKIN_DEPENDS message_runtime)
 catkin_package(
  INCLUDE_DIRS include

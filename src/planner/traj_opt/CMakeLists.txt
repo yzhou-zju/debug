@@ -18,7 +18,7 @@ find_package(catkin REQUIRED COMPONENTS
   traj_utils
   frob_test
 )
-
+# find_package(PCL 1.7 REQUIRED)
 catkin_package(
  INCLUDE_DIRS include
  LIBRARIES traj_opt
@@ -42,6 +42,7 @@ include_directories(
 
 add_library( traj_opt 
     src/poly_traj_optimizer.cpp 
+    src/grid_map.cpp 
     )
 
 target_link_libraries( traj_opt
