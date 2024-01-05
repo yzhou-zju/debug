@@ -9,7 +9,6 @@ namespace trailer_planner
         resolution = 0.1;
         map_size[0] = 40;
         map_size[1] = 40;
-        std::cout << "agfeawgesda!!!" << std::endl;
         // esdf_pub = nh.advertise<sensor_msgs::PointCloud2>("/esdf_map", 1);
         // cloud_sub = nh.subscribe("/global_map", 1, &GridMap::cloudCallback, this);
         // vis_timer = nh.createTimer(ros::Duration(1.0), &GridMap::visCallback, this);
@@ -39,7 +38,6 @@ namespace trailer_planner
         for (int i = 0; i < buffer_size; i++)
             grid_node_map[i] = new GridNode();
         map_ready = false;
-        std::cout << "agfeawgesda!!!" << std::endl;
         cloudCallback();
         return;
     }
@@ -206,12 +204,12 @@ namespace trailer_planner
         _w_h = 0.8;
         _h_l = 3;
         _h_h = 7;
-        double radius_l_ = 0.1;
-        double radius_h_ = 0.15;
-        double theta_ = 0.1;
+        double radius_l_ = 0.05;
+        double radius_h_ = 0.08;
+        double theta_ = 0.04;
         double z_l_ = 0.0;
         double z_h_ = 3.8;
-        int _obs_num = 400;
+        int _obs_num = 300;
         double _min_dist = 0.8;
         double _resolution = resolution;
         rand_x = uniform_real_distribution<double>(_x_l, _x_h);

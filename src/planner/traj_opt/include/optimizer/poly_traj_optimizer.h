@@ -309,9 +309,7 @@ namespace ego_planner
         //   }
         // }
         swarm_des_ = v_des_;
-        std::cout<<"swarm_des_ size():"<<swarm_des_.size()<<std::endl;
         formation_size_ = swarm_des_.size();
-        std::cout<<"formation_size_::"<<formation_size_<<std::endl;
         // construct the desired swarm graph
         // adj_in_ =  {0, 0, 0, 0, 0, 0, 1, 2, 3, 4, 5, 6};
         // adj_out_ = {1, 2, 3, 4, 5, 6, 2, 3, 4, 5, 6, 1};
@@ -329,7 +327,6 @@ namespace ego_planner
       }
       case 2:
       {
-        std::cout << "setDesiredFormation" << std::endl;
         std::vector<Eigen::Vector3d> v;
         v.resize(16);
         v[0] = {0, 0, 1};

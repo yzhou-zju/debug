@@ -10,8 +10,6 @@ namespace ego_planner
       const Eigen::MatrixXd &initInnerPts, const Eigen::VectorXd &initT,
       Eigen::MatrixXd &optimal_points, const bool use_formation, const double t_now_get_)
   {
-    std::cout<<"initT.size():"<<initT.size()<<std::endl;
-    std::cout<<"initInnerPts.cols() :"<<initInnerPts.cols() <<std::endl;
     if (initInnerPts.cols() != (initT.size() - 1))
     {
       ROS_ERROR("initInnerPts.cols() != (initT.size()-1)");
@@ -55,7 +53,7 @@ namespace ego_planner
     } else{
       // do not consider formation
       // so we use more iterations for more precise optimization results
-      lbfgs_params.max_iterations = 100; 
+      lbfgs_params.max_iterations = 100;
       use_formation_ = false;
     }
   
@@ -117,26 +115,17 @@ namespace ego_planner
   void PolyTrajOptimizer::setSwarmGraphInAdavanced(const Eigen::VectorXd initT)
   {
     is_set_swarm_advanced_ = false;
-    std::cout<<"initT.size()$#########*****:"<<std::endl;
     if (use_formation_)
     {
       int size = swarm_trajs_->size();
-      std::cout<<"swarm size:"<<size<<std::endl;
-      std::cout<<"drone_id_:"<<drone_id_<<std::endl;
-      std::cout<<"formation_size_:"<<formation_size_<<std::endl;
       if (drone_id_ == formation_size_ - 1&&!first_planner_)
       {
-        std::cout<<"@@@id:"<<drone_id_<<std::endl;
-        std::cout<<"formation_size_ - 1:"<<formation_size_ - 1<<std::endl;
-        std::cout<<"first_planner_:"<<first_planner_<<std::endl;
         size = formation_size_;
       }
       if (size < formation_size_)
       {
-        std::cout<<"size<form!!!!!"<<std::endl;
         return;
       }
-      std::cout<<"size<form!?????"<<std::endl;
       time_cps_.start_time = t_now_;
 
       // calculate the effective time duration
@@ -145,24 +134,18 @@ namespace ego_planner
 
       // calculate the effective time duration of swarm
       time_cps_.relative_time_ahead.resize(size);
-      std::cout<<"drone_id_:"<<drone_id_<<std::endl;
 
       for (int id = 0; id < size; id++)
       {
-        std::cout<<"idddddddddd:"<<id<<std::endl;
-        std::cout<<"drone_id:"<<drone_id_<<std::endl;
         if (id == drone_id_)
         {
-          std::cout<<"releate1"<<std::endl;
           time_cps_.relative_time_ahead(id) = 0.0;
         }
         else
         {
-          std::cout<<"releate2"<<std::endl;
           time_cps_.relative_time_ahead(id) = time_cps_.start_time - swarm_trajs_->at(id).start_time;
         }
       }
-      std::cout<<"initT.size()$#########!!!!*****:"<<std::endl;
       // calculate in advance for swarm graph
       time_cps_.swarm_graph_advance_sets.resize(time_cps_.sampling_num);
       time_cps_.swarm_pos_advance_sets.resize(time_cps_.sampling_num);
@@ -215,7 +198,6 @@ namespace ego_planner
         // swarm_graph.updateGraph(swarm_pos);   // wait to change to calculate local minimum
         time_cps_.swarm_graph_advance_sets[i] = swarm_graph;
       }
-      std::cout<<"initT.size()$#########@@@@@*****:"<<std::endl;
       if (time_cps_.enable_decouple_swarm_graph) {
       // test : calculate the local minimum of swarm graph
         time_cps_.local_min_advance_sets.resize(time_cps_.sampling_num);
@@ -609,9 +591,14 @@ namespace ego_planner
   template <typename EIGENVEC>
   void PolyTrajOptimizer::addPVAGradCost2CTwithFixedTimeSteps(EIGENVEC &gdT, Eigen::VectorXd &costs){
     costs.setZero();
+    ros::Time t0,t1,t2,t3,t4,t5;
+    t0 = ros::Time::now();
 
     double obs_cost = obstacleGradCostP(gdT);   
     costs(0) = obs_cost;
+
+    t1 = ros::Time::now();
+
     // costs(0) = 0;
     double swarm_obs_cost;
     if(swarm_trajs_->size()>1)
@@ -621,16 +608,30 @@ namespace ego_planner
       swarm_obs_cost = 0;
     }
     costs(1) = swarm_obs_cost;
+
+    t2 = ros::Time::now();
+
     // costs(1) = 0;
     double swarm_formation_cost = 0.0;
     if (use_formation_&&swarm_trajs_->size()>1)
       swarm_formation_cost = swarmGraphGradCostP(gdT);
     costs(2) = swarm_formation_cost;
 
+    t3 = ros::Time::now();
+
     double vel_cost = 0.0, acc_cost = 0.0;
     feasibilityGradCostVandA(gdT, vel_cost, acc_cost);
     costs(3) = vel_cost;
     costs(4) = acc_cost;
+
+    t4 = ros::Time::now();
+
+    // cout << "[debug] time ----------------" << endl;
+    // cout << "[obs]: " << (t1-t0).toSec()*1000.0 
+    //      << " ms, [swarm]: " << (t2-t1).toSec()*1000.0
+    //      << " ms, [formation]: " << (t3-t2).toSec()*1000.0
+    //      << " ms, [dynamic]: " << (t4-t3).toSec()*1000.0
+    //      << endl;
   }
 
 
@@ -1595,11 +1596,11 @@ namespace ego_planner
     wei_feas_ = 10000;
     wei_sqrvar_ = 10000;
     wei_time_ = 80;
-    wei_formation_ = 10000;
+    wei_formation_ = 5000;
     wei_gather_  = 100;
 
-    obs_clearance_ = 0.05;
-    swarm_clearance_ = 0.05;
+    obs_clearance_ = 0.1;
+    swarm_clearance_ = 0.1;
     // swarm_gather_threshold_ = 1;
     // formation_type_ = 88;
     // formation_type_ = 333;
@@ -1609,10 +1610,10 @@ namespace ego_planner
     max_acc_ = 3;
   
     enable_fix_step_ = true;
-    time_cps_.sampling_time_step = 0.05;
+    time_cps_.sampling_time_step = 0.02;
+    // time_cps_.sampling_time_step = 0.5;
     time_cps_.enable_decouple_swarm_graph = true;
     // set the formation type
-    std::cout<<"init!!!!!!!!!!!"<<std::endl;
     
     swarm_graph_.reset(new SwarmGraph);
     setDesiredFormation(formation_type_, leader_id_, v_des);

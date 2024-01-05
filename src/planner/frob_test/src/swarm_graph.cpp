@@ -20,8 +20,6 @@ bool SwarmGraph::updateGraph(const std::vector<Eigen::Vector3d> &swarm)
 
     if (nodes_.size() != nodes_des_.size())
     {
-        std::cout << "swarm size : " << nodes_.size() << std::endl;
-        std::cout << "swarm size2 : " << nodes_des_.size() << std::endl;
         ROS_WARN("Size of swarm formation vector is incorrect. ");
         return false;
     }
@@ -55,8 +53,6 @@ bool SwarmGraph::updatePartGraphAndGetGrad(const int idx, const std::vector<Eige
     nodes_ = swarm;
     if (nodes_.size() != nodes_des_.size())
     {
-        std::cout << "swarm size : " << nodes_.size() << std::endl;
-        std::cout << "swarm size2 : " << nodes_des_.size() << std::endl;
         ROS_WARN("Size of swarm formation vector is incorrect. ");
         return false;
     }

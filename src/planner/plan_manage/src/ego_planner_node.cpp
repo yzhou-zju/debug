@@ -12,6 +12,7 @@ int main(int argc, char **argv)
   ros::Time t_0 = ros::Time::now();
   t_old = t_0;
   ros::Rate lr(10);
+  std::cout<<"vis!!!!!!!!!!!"<<std::endl;
   while (ros::ok())
   {
     ros::Time t_1 = ros::Time::now();

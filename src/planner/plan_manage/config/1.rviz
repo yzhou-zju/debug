@@ -55,22 +55,6 @@ Visualization Manager:
       Value: true
     - Class: rviz/Marker
       Enabled: true
-      Marker Topic: /visualizer/route
-      Name: Marker
-      Namespaces:
-        route: true
-      Queue Size: 100
-      Value: true
-    - Class: rviz/Marker
-      Enabled: true
-      Marker Topic: /visualizer/swarm
-      Name: Marker
-      Namespaces:
-        route: true
-      Queue Size: 100
-      Value: true
-    - Class: rviz/Marker
-      Enabled: true
       Marker Topic: /visualizer/agent
       Name: Marker
       Namespaces:
@@ -117,7 +101,7 @@ Visualization Manager:
       Color: 255; 255; 255
       Color Transformer: Intensity
       Decay Time: 0
-      Enabled: true
+      Enabled: false
       Invert Rainbow: false
       Max Color: 237; 212; 0
       Min Color: 0; 0; 0
@@ -132,6 +116,326 @@ Visualization Manager:
       Unreliable: false
       Use Fixed Frame: true
       Use rainbow: true
+      Value: false
+    - Class: rviz/Marker
+      Enabled: true
+      Marker Topic: /visualizer/swarm0
+      Name: Marker
+      Namespaces:
+        route: true
+      Queue Size: 100
+      Value: true
+    - Class: rviz/Marker
+      Enabled: true
+      Marker Topic: /visualizer/swarm1
+      Name: Marker
+      Namespaces:
+        route: true
+      Queue Size: 100
+      Value: true
+    - Class: rviz/Marker
+      Enabled: true
+      Marker Topic: /visualizer/swarm2
+      Name: Marker
+      Namespaces:
+        route: true
+      Queue Size: 100
+      Value: true
+    - Class: rviz/Marker
+      Enabled: true
+      Marker Topic: /visualizer/swarm3
+      Name: Marker
+      Namespaces:
+        route: true
+      Queue Size: 100
+      Value: true
+    - Class: rviz/Marker
+      Enabled: true
+      Marker Topic: /visualizer/swarm4
+      Name: Marker
+      Namespaces:
+        route: true
+      Queue Size: 100
+      Value: true
+    - Class: rviz/Marker
+      Enabled: true
+      Marker Topic: /visualizer/swarm5
+      Name: Marker
+      Namespaces:
+        route: true
+      Queue Size: 100
+      Value: true
+    - Class: rviz/Marker
+      Enabled: true
+      Marker Topic: /visualizer/swarm6
+      Name: Marker
+      Namespaces:
+        route: true
+      Queue Size: 100
+      Value: true
+    - Class: rviz/Marker
+      Enabled: true
+      Marker Topic: /visualizer/swarm7
+      Name: Marker
+      Namespaces:
+        route: true
+      Queue Size: 100
+      Value: true
+    - Class: rviz/Marker
+      Enabled: true
+      Marker Topic: /visualizer/swarm8
+      Name: Marker
+      Namespaces:
+        route: true
+      Queue Size: 100
+      Value: true
+    - Class: rviz/Marker
+      Enabled: true
+      Marker Topic: /visualizer/swarm9
+      Name: Marker
+      Namespaces:
+        route: true
+      Queue Size: 100
+      Value: true
+    - Class: rviz/Marker
+      Enabled: true
+      Marker Topic: /visualizer/swarm10
+      Name: Marker
+      Namespaces:
+        route: true
+      Queue Size: 100
+      Value: true
+    - Class: rviz/Marker
+      Enabled: true
+      Marker Topic: /visualizer/swarm11
+      Name: Marker
+      Namespaces:
+        route: true
+      Queue Size: 100
+      Value: true
+    - Class: rviz/Marker
+      Enabled: true
+      Marker Topic: /visualizer/swarm13
+      Name: Marker
+      Namespaces:
+        route: true
+      Queue Size: 100
+      Value: true
+    - Class: rviz/Marker
+      Enabled: true
+      Marker Topic: /visualizer/swarm12
+      Name: Marker
+      Namespaces:
+        route: true
+      Queue Size: 100
+      Value: true
+    - Class: rviz/Marker
+      Enabled: true
+      Marker Topic: /visualizer/swarm14
+      Name: Marker
+      Namespaces:
+        route: true
+      Queue Size: 100
+      Value: true
+    - Class: rviz/Marker
+      Enabled: true
+      Marker Topic: /visualizer/swarm15
+      Name: Marker
+      Namespaces:
+        route: true
+      Queue Size: 100
+      Value: true
+    - Class: rviz/Marker
+      Enabled: true
+      Marker Topic: /visualizer/swarm16
+      Name: Marker
+      Namespaces:
+        route: true
+      Queue Size: 100
+      Value: true
+    - Class: rviz/Marker
+      Enabled: true
+      Marker Topic: /visualizer/swarm17
+      Name: Marker
+      Namespaces:
+        route: true
+      Queue Size: 100
+      Value: true
+    - Class: rviz/Marker
+      Enabled: true
+      Marker Topic: /visualizer/swarm18
+      Name: Marker
+      Namespaces:
+        route: true
+      Queue Size: 100
+      Value: true
+    - Class: rviz/Marker
+      Enabled: true
+      Marker Topic: /visualizer/swarm19
+      Name: Marker
+      Namespaces:
+        route: true
+      Queue Size: 100
+      Value: true
+    - Class: rviz/Marker
+      Enabled: true
+      Marker Topic: /visualizer/route0
+      Name: Marker
+      Namespaces:
+        route: true
+      Queue Size: 100
+      Value: true
+    - Class: rviz/Marker
+      Enabled: true
+      Marker Topic: /visualizer/route1
+      Name: Marker
+      Namespaces:
+        route: true
+      Queue Size: 100
+      Value: true
+    - Class: rviz/Marker
+      Enabled: true
+      Marker Topic: /visualizer/route2
+      Name: Marker
+      Namespaces:
+        route: true
+      Queue Size: 100
+      Value: true
+    - Class: rviz/Marker
+      Enabled: true
+      Marker Topic: /visualizer/route3
+      Name: Marker
+      Namespaces:
+        route: true
+      Queue Size: 100
+      Value: true
+    - Class: rviz/Marker
+      Enabled: true
+      Marker Topic: /visualizer/route4
+      Name: Marker
+      Namespaces:
+        route: true
+      Queue Size: 100
+      Value: true
+    - Class: rviz/Marker
+      Enabled: true
+      Marker Topic: /visualizer/route6
+      Name: Marker
+      Namespaces:
+        route: true
+      Queue Size: 100
+      Value: true
+    - Class: rviz/Marker
+      Enabled: true
+      Marker Topic: /visualizer/route5
+      Name: Marker
+      Namespaces:
+        route: true
+      Queue Size: 100
+      Value: true
+    - Class: rviz/Marker
+      Enabled: true
+      Marker Topic: /visualizer/route7
+      Name: Marker
+      Namespaces:
+        route: true
+      Queue Size: 100
+      Value: true
+    - Class: rviz/Marker
+      Enabled: true
+      Marker Topic: /visualizer/route8
+      Name: Marker
+      Namespaces:
+        route: true
+      Queue Size: 100
+      Value: true
+    - Class: rviz/Marker
+      Enabled: true
+      Marker Topic: /visualizer/route9
+      Name: Marker
+      Namespaces:
+        route: true
+      Queue Size: 100
+      Value: true
+    - Class: rviz/Marker
+      Enabled: true
+      Marker Topic: /visualizer/route10
+      Name: Marker
+      Namespaces:
+        route: true
+      Queue Size: 100
+      Value: true
+    - Class: rviz/Marker
+      Enabled: true
+      Marker Topic: /visualizer/route11
+      Name: Marker
+      Namespaces:
+        route: true
+      Queue Size: 100
+      Value: true
+    - Class: rviz/Marker
+      Enabled: true
+      Marker Topic: /visualizer/route12
+      Name: Marker
+      Namespaces:
+        route: true
+      Queue Size: 100
+      Value: true
+    - Class: rviz/Marker
+      Enabled: true
+      Marker Topic: /visualizer/route13
+      Name: Marker
+      Namespaces:
+        route: true
+      Queue Size: 100
+      Value: true
+    - Class: rviz/Marker
+      Enabled: true
+      Marker Topic: /visualizer/route14
+      Name: Marker
+      Namespaces:
+        route: true
+      Queue Size: 100
+      Value: true
+    - Class: rviz/Marker
+      Enabled: true
+      Marker Topic: /visualizer/route15
+      Name: Marker
+      Namespaces:
+        route: true
+      Queue Size: 100
+      Value: true
+    - Class: rviz/Marker
+      Enabled: true
+      Marker Topic: /visualizer/route16
+      Name: Marker
+      Namespaces:
+        route: true
+      Queue Size: 100
+      Value: true
+    - Class: rviz/Marker
+      Enabled: true
+      Marker Topic: /visualizer/route17
+      Name: Marker
+      Namespaces:
+        route: true
+      Queue Size: 100
+      Value: true
+    - Class: rviz/Marker
+      Enabled: true
+      Marker Topic: /visualizer/route18
+      Name: Marker
+      Namespaces:
+        route: true
+      Queue Size: 100
+      Value: true
+    - Class: rviz/Marker
+      Enabled: true
+      Marker Topic: /visualizer/route19
+      Name: Marker
+      Namespaces:
+        route: true
+      Queue Size: 100
       Value: true
   Enabled: true
   Global Options:
@@ -161,7 +465,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 47.00546646118164
+      Distance: 43.743812561035156
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
@@ -169,17 +473,17 @@ Visualization Manager:
         Value: false
       Field of View: 0.7853981852531433
       Focal Point:
-        X: 3.52555775642395
-        Y: 2.800363302230835
-        Z: 0.644637405872345
+        X: 11.62359619140625
+        Y: 1.628235101699829
+        Z: 1.259939432144165
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 1.4047964811325073
+      Pitch: 1.4747965335845947
       Target Frame: <Fixed Frame>
-      Yaw: 1.551712989807129
+      Yaw: 1.9067128896713257
     Saved: ~
 Window Geometry:
   Displays:
@@ -197,5 +501,5 @@ Window Geometry:
   Views:
     collapsed: true
   Width: 1948
-  X: 464
-  Y: 135
+  X: 612
+  Y: 27
