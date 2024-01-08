@@ -6,6 +6,7 @@
 #include <fstream>
 #include <optimizer/poly_traj_utils.hpp>
 #include <optimizer/poly_traj_optimizer.h>
+#include <optimizer/grid_map.h>
 using namespace ego_planner;
 using namespace poly_traj;
 using namespace std;
@@ -28,7 +29,7 @@ public:
     have_no_swarm();
     /*********************************************************m_or_not_get 表示是否分组  true表示分组******************************************************************************/
     bool flag_global;
-
+    std::cout<<"vis!!!!!!!!!!!"<<std::endl;
     for (int i = 0; i < agent_num_; i++)
     {
       formation_optim[i]->setlog(i, a_num_);
@@ -53,8 +54,8 @@ public:
     ros::Time t_0 = ros::Time::now();
     // planner_all_formation_once(0, t_0, t_0);
     // planner_all_formation_once(0, t_0, t_0);
-    planner_all_formation_once(0, t_0, t_0);
-    planner_all_formation_once(0, t_0, t_0);
+    // planner_all_formation_once(0, t_0, t_0);
+    // planner_all_formation_once(0, t_0, t_0);
     ros::Time t_1 = ros::Time::now();
   }
 
@@ -130,14 +131,14 @@ public:
       for (int i = 0; i < g_num; i++)
       {
         id_all = id_in_group[i];
-        std::cout << "num_every_group:" << num_every_group[i] << std::endl;
+        // std::cout << "num_every_group:" << num_every_group[i] << std::endl;
         for (int k = 0; k < num_every_group[i]; k++)
         {
           traj_real[i].swarm_traj[k].drone_id = k;
           traj_real[i].swarm_traj[k].traj_id = k;
           traj_real[i].swarm_traj[k].start_time = 0;
           traj_real[i].swarm_traj[k].constraint_aware = 0;
-          std::cout << "id_all[k]:" << id_all[k] << std::endl;
+          // std::cout << "id_all[k]:" << id_all[k] << std::endl;
           traj_real[i].swarm_traj[k].traj = traj_optim[id_all[k]];
           traj_real[i].swarm_traj[k].duration = traj_optim[id_all[k]].getTotalDuration();
           traj_real[i].swarm_traj[k].start_pos = traj_optim[id_all[k]].getPos(0);
@@ -183,9 +184,9 @@ public:
   void get_txt(const int agent_number)
   {
     v_all.resize(agent_number);
-    std::ifstream inputFile1("/home/zy/debug/1/group/face/2_all.txt");
-    std::ifstream inputFile2("/home/zy/debug/1/group/face/2_group.txt");
-    std::ifstream inputFile3("/home/zy/debug/1/group/face/2_leader.txt");
+    std::ifstream inputFile1("/home/zy/debug/1/group/cub2/no_all.txt");
+    std::ifstream inputFile2("/home/zy/debug/1/group/cub2/2_group_all.txt"); // 2_group_(随机)
+    std::ifstream inputFile3("/home/zy/debug/1/group/randow_face/2_leader.txt");
     std::vector<Eigen::Vector3d> data_all;
     std::vector<std::vector<int>> data_group;
     double value;
@@ -420,7 +421,7 @@ public:
       for (int j = 0; j < id_in_group[i].size(); j++)
       {
         for (int k = 0; k < id_in_group[i].size(); k++)
-        { 
+        {
           if (time_go > time_min)
           {
             agent_pos_ = traj_optim[id_in_group[i][j]].getPos(time_min);
@@ -462,7 +463,20 @@ public:
     vis_rviz.swarm_visualize(swarm_g_2, swarm_g_);
     sensor_msgs::PointCloud2 esdf_vis;
     pcl::PointCloud<pcl::PointXYZ> point_obs_;
+    // grid_map_->get_esdf_map(esdf_vis);
+    // grid_map_->get_obs(point_obs_);
+    std::vector<Eigen::Vector3d> simple_path;
+    std::vector<Eigen::Vector3d> simple_path_all;
     formation_optim[0]->get_esdf(esdf_vis, point_obs_);
+    for(int i=0;i<a_num_;i++)
+    {
+      formation_optim[i]->get_path(simple_path);
+      for(int j=0;j<simple_path.size();j++)
+      {
+        simple_path_all.push_back(simple_path[j]);
+      }
+    }
+    vis_rviz.astar_path_vis(simple_path_all);
     vis_rviz.get_esdf_vis(esdf_vis, point_obs_);
   }
 
@@ -484,16 +498,16 @@ public:
     head_acc = {0, 0, 0};
     tail_vel = {0, 0, 0};
     tail_acc = {0, 0, 0};
+    std::cout << "here!!!!1111" << std::endl;
     for (int i = 0; i < agent_num; i++)
     {
-      head_pos[i] = {v_all[i][0] - 4 + 0.15 * i, v_all[i][1] - 3.8 - 0.13 * i, v_all[i][2]};
+      head_pos[i] = {v_all[i][0] - 30 , v_all[i][1] - 7.2 , v_all[i][2]};
       // head_pos[i] = {v_all[i][0] - 4  , v_all[i][1] -3.8, v_all[i][2]};
-      tail_pos[i] = {v_all[i][0] + 16 - 4, v_all[i][1] - 3.8, v_all[i][2]};
+      tail_pos[i] = {v_all[i][0] + 10, v_all[i][1] - 7.2, v_all[i][2]};
 
-      int_pos[i] = {v_all[i][0] + 4 - 4, v_all[i][1] - 3.8, v_all[i][2]};
-      int_pos1[i] = {v_all[i][0] + 8 - 4, v_all[i][1] - 3.8, v_all[i][2]};
-      int_pos2[i] = {v_all[i][0] + 12 - 4, v_all[i][1] - 3.8, v_all[i][2]};
-
+      int_pos[i] = {v_all[i][0] -20, v_all[i][1] - 7.2, v_all[i][2]};
+      int_pos1[i] = {v_all[i][0] -10 , v_all[i][1] - 7.2, v_all[i][2]};
+      int_pos2[i] = {v_all[i][0] + 0, v_all[i][1] - 7.2, v_all[i][2]};
       formation_optim[i].reset(new PolyTrajOptimizer);
       formation_optim[i]->setDroneId(i);
       formation_optim[i]->fisrt_planner_or_not(true);
@@ -501,16 +515,18 @@ public:
       headState[i] << head_pos[i], head_vel, head_acc;
       tailState[i] << tail_pos[i], tail_vel, tail_acc;
     }
+    std::cout << "here!!!!1221" << std::endl;
 
     /************************************************************************************************************************/
     initT_.resize(4);
-    initT_ << 2.7, 2.7, 2.7, 2.7;
+    initT_ << 5, 5, 5, 5;
     traj_optim.resize(agent_num);
     traj_global.resize(agent_num);
   }
 
 private:
   // const int agent_num_get;
+  GridMap::Ptr grid_map_;
   Visualizer vis_rviz;
   std::vector<Eigen::Vector3d> v_all;                   // 整体编队的形状
   int group_num_;                                       // 分组数量
@@ -545,7 +561,7 @@ private:
   std::vector<Eigen::Vector3d> int_pos2;
 
 public:
-  ego_planner_node(ros::NodeHandle &nh_) : vis_rviz(nh_){};
+  ego_planner_node(ros::NodeHandle &nh_) : vis_rviz(nh_){grid_map_.reset(new GridMap);};
   ~ego_planner_node(){};
 
   void have_no_swarm()

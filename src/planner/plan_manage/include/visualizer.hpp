@@ -31,6 +31,7 @@ private:
     std::vector<ros::Publisher> swarmPub;
     ros::Publisher esdf_pub;
     ros::Publisher _all_map_pub;
+    ros::Publisher pathPub;
 
 public:
     Visualizer(ros::NodeHandle &nh_)
@@ -38,6 +39,7 @@ public:
     {
         swarmPub.resize(50);
         routePub.resize(50);
+        pathPub = nh.advertise<visualization_msgs::Marker>("/visualizer/astar_path", 10);
         wayPointsPub = nh.advertise<visualization_msgs::Marker>("/visualizer/agent", 10);
         routePub[0] = nh.advertise<visualization_msgs::Marker>("/visualizer/route0", 10);
         routePub[1] = nh.advertise<visualization_msgs::Marker>("/visualizer/route1", 10);
@@ -163,7 +165,41 @@ public:
             }
         }
     }
+    inline void astar_path_vis(const std::vector<Eigen::Vector3d> &path)
+    {
+        visualization_msgs::Marker routeMarker, wayPointsMarker;
+        routeMarker.id = 999;
+        routeMarker.header.stamp = ros::Time::now();
+        routeMarker.header.frame_id = "map";
+        routeMarker.pose.orientation.w = 1.00;
+        routeMarker.action = visualization_msgs::Marker::ADD;
 
+        routeMarker.color.a = 1.0;
+        wayPointsMarker = routeMarker;
+        wayPointsMarker.id = -wayPointsMarker.id - 2;
+        wayPointsMarker.type = visualization_msgs::Marker::SPHERE_LIST;
+        wayPointsMarker.ns = "waypoints";
+        wayPointsMarker.color.r = 1.00;
+        wayPointsMarker.color.g = 1.00;
+        wayPointsMarker.color.b = 0.00;
+        wayPointsMarker.scale.x = 0.30;
+        wayPointsMarker.scale.y = 0.30;
+        wayPointsMarker.scale.z = 0.30;
+        if (path.size() > 0)
+        {
+            // Eigen::MatrixXd wps = traj.getPositions();
+            for (int i = 0; i < path.size(); i++)
+            {
+                geometry_msgs::Point point;
+                point.x = path[i](0);
+                point.y = path[i](1);
+                point.z = path[i](2);
+                wayPointsMarker.points.push_back(point);
+            }
+
+            pathPub.publish(wayPointsMarker);
+        }
+    }
     inline void swarm_visualize(const std::vector<std::vector<Eigen::Vector3d>> &route, const std::vector<Eigen::Vector3d> &vall)
     {
         visualization_msgs::Marker routeMarker, wayPointsMarker;

@@ -6,10 +6,72 @@ namespace ego_planner
 {
   /* main planning API */
   bool PolyTrajOptimizer::optimizeTrajectory_lbfgs(
-      const Eigen::MatrixXd &iniState, const Eigen::MatrixXd &finState,
-      const Eigen::MatrixXd &initInnerPts, const Eigen::VectorXd &initT,
+      const Eigen::MatrixXd &iniState_init, const Eigen::MatrixXd &finState_init,
+      const Eigen::MatrixXd &initInnerPts_init, const Eigen::VectorXd &initT_init,
       Eigen::MatrixXd &optimal_points, const bool use_formation, const double t_now_get_)
   {
+    Eigen::Matrix3d iniState;
+    Eigen::Matrix3d finState;
+    Eigen::MatrixXd initInnerPts;
+    Eigen::VectorXd initT;
+    Eigen::Vector3d start_pos = iniState_init.col(0);
+    Eigen::Vector3d end_pos = finState_init.col(0);
+    std::cout<<"drone_id_@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@:"<<drone_id_<<std::endl;
+    std::vector<Eigen::Vector3d> a_star_path;
+    std::vector<Eigen::Vector3d> simple_path;
+    bool success = a_star_->astarSearchAndGetSimplePath(grid_map_->getResolution(), start_pos, end_pos, simple_path, a_star_path);
+    astar_path = simple_path;
+    // for (size_t i = 0; i < simple_path.size(); i++)
+    // {
+    //   std::cout << "第" << i << "个路径点是:" << simple_path[i].transpose() << " " << std::endl;
+    // }
+    if(success)
+    {
+      std::cout<<"a star success::"<<simple_path.size()<<std::endl;
+      iniState << simple_path[0], iniState_init.col(1), iniState_init.col(2);
+      finState << simple_path.back(), finState_init.col(1), finState_init.col(2);
+      initT.resize(simple_path.size()-1);
+      for(int i=0;i<simple_path.size()-1;i++)
+      {
+        initT[i] = sqrt((simple_path[i+1][0]-simple_path[i][0])*(simple_path[i+1][0]-simple_path[i][0])+
+                      (simple_path[i+1][1]-simple_path[i][1])*(simple_path[i+1][1]-simple_path[i][1])+
+                      (simple_path[i+1][2]-simple_path[i][2])*(simple_path[i+1][2]-simple_path[i][2]))/max_vel_;
+      }
+      Eigen::MatrixXd combinedPath(3, simple_path.size()-2);
+      for(int i=1;i<simple_path.size()-1;i++)
+      {
+        // initInnerPts << simple_path[i];
+        combinedPath.col(i-1) = simple_path[i];
+      }
+      initInnerPts = combinedPath;
+        
+    }else{
+      std::cout<<"a star failed:"<<std::endl;
+      std::cout<<"start:"<<start_pos<<std::endl;
+      std::cout<<"end:"<<end_pos<<std::endl;
+      // initT = initT_init;
+      iniState = iniState_init;
+      finState = finState_init;
+      // initInnerPts = initInnerPts_init;
+      Eigen::MatrixXd combinedPath(3, 12);
+      initT.resize(13);
+      for(int i=0;i<13;i++)
+      {
+        initT[i] = 0.9*3/max_vel_;
+      }
+      for(int i=1;i<13;i++)
+      {
+        // initInnerPts << simple_path[i];
+        combinedPath.col(i-1) = start_pos + (i)*(end_pos - start_pos)/(initT.size());
+        // std::cout<<"waypoint::"<<combinedPath.col(i-1)<<std::endl;
+      }
+      initInnerPts = combinedPath;
+    }
+    
+    // initT = initT_init;
+    // iniState = iniState_init;
+    // finState = finState_init;
+    // initInnerPts = initInnerPts_init;
     if (initInnerPts.cols() != (initT.size() - 1))
     {
       ROS_ERROR("initInnerPts.cols() != (initT.size()-1)");
@@ -38,8 +100,8 @@ namespace ego_planner
     lbfgs::lbfgs_load_default_parameters(&lbfgs_params);
     lbfgs_params.mem_size = 16;
     lbfgs_params.g_epsilon = 0.0;     //0.1
-    lbfgs_params.min_step = 1e-28;    //1e-32
-    lbfgs_params.max_linesearch = 120; // default:60
+    lbfgs_params.min_step = 1e-32;    //1e-32
+    lbfgs_params.max_linesearch = 220; // default:60
     lbfgs_params.past = 3;
     lbfgs_params.delta = 1.0e-4;
     lbfgs_params.line_search_type = 0;
@@ -49,11 +111,11 @@ namespace ego_planner
     {
       // consider formation
       // so we use less iterations for real time optimization
-      lbfgs_params.max_iterations = 100; //20      
+      lbfgs_params.max_iterations = 200; //20      
     } else{
       // do not consider formation
       // so we use more iterations for more precise optimization results
-      lbfgs_params.max_iterations = 100;
+      lbfgs_params.max_iterations = 200;
       use_formation_ = false;
     }
   
@@ -83,6 +145,8 @@ namespace ego_planner
     double total_time_ms = (t2 - t0).toSec() * 1000;
 
     // debug
+    cout<<"final_cost:"<<final_cost<<endl;
+    cout<<"result:"<<result<<endl;
     cout << "[debug] final total: " << jerkOpt_.get_T1().sum() << ", T: " << jerkOpt_.get_T1().transpose() << endl;
     printf("\033[32m[Optimization]: iter=%d, use_formation=%d, optimize time(ms)=%5.3f, total time(ms)=%5.3f, graph num=%i \n\033[0m", iter_num_, use_formation, optimize_time_ms, total_time_ms, opt_local_min_loop_sum_num_);
     
@@ -343,11 +407,11 @@ namespace ego_planner
     if (opt->iter_num_ == 0)
       cout << "[debug] init total: " << T.sum() << ", T: " << T.transpose() << endl;
     
-    if (T.sum() > 20.00){
-      gradP.setZero();
-      gradt.setZero();
-      return 9999999.0;
-    }
+    // if (T.sum() > 20.00){
+    //   gradP.setZero();
+    //   gradt.setZero();
+    //   return 9999999.0;
+    // }
 
     opt->initAndGetSmoothnessGradCost2PT(gradT, smoo_cost); // Smoothness cost
     Eigen::VectorXd obs_swarm_feas_qvar_costs;
@@ -623,7 +687,7 @@ namespace ego_planner
     feasibilityGradCostVandA(gdT, vel_cost, acc_cost);
     costs(3) = vel_cost;
     costs(4) = acc_cost;
-
+    
     t4 = ros::Time::now();
 
     // cout << "[debug] time ----------------" << endl;
@@ -1547,7 +1611,6 @@ namespace ego_planner
      swarm_trajs_ = swarm_trajs_ptr; 
 
   }
-  // void PolyTrajOptimizer::setSwarmTrajs(SwarmTrajData *swarm_trajs_ptr) { swarm_trajs_ = swarm_trajs_ptr; }
 
   void PolyTrajOptimizer::fisrt_planner_or_not(const bool first_p_){
     first_planner_ = first_p_;
@@ -1556,6 +1619,10 @@ namespace ego_planner
   void PolyTrajOptimizer::setDroneId(const int drone_id)
   {
     drone_id_ = drone_id;
+  }
+  void PolyTrajOptimizer::get_path(std::vector<Eigen::Vector3d> &simple_path_)
+  {
+    simple_path_ = astar_path;
   }
   void PolyTrajOptimizer::get_esdf(sensor_msgs::PointCloud2& esdf_vis, pcl::PointCloud<pcl::PointXYZ> &point_obs_)
   {
@@ -1590,28 +1657,31 @@ namespace ego_planner
   void PolyTrajOptimizer::setParam(vector<int> leader_id_, std::vector<Eigen::Vector3d> v_des)
   {
 
-    wei_smooth_ = 100;
-    wei_obs_ = 50000;
-    wei_swarm_ = 10000;
-    wei_feas_ = 10000;
-    wei_sqrvar_ = 10000;
-    wei_time_ = 80;
-    wei_formation_ = 5000;
-    wei_gather_  = 100;
+    wei_smooth_ = 1.0;
+    wei_obs_ = 3000.0;
+    wei_swarm_ = 1000.0;
+    wei_feas_ = 10.0;
+    wei_sqrvar_ = 0.0;
+    wei_time_ = 80.0;
+    wei_formation_ = 1000.0;
+    wei_gather_  = 0.0;
 
-    obs_clearance_ = 0.1;
+    obs_clearance_ = 0.5;
     swarm_clearance_ = 0.1;
     // swarm_gather_threshold_ = 1;
     // formation_type_ = 88;
     // formation_type_ = 333;
     formation_type_ = 1;
     formation_method_type_ = 0;
-    max_vel_ = 2;
-    max_acc_ = 3;
-  
+    max_vel_ = 2.0;
+    max_acc_ = 3.0;
+
+    Eigen::Vector3i pool_size = grid_map_->get_mapsize();
+    a_star_.reset(new AStar);
+    a_star_->initGridMap(grid_map_, pool_size);
     enable_fix_step_ = true;
-    time_cps_.sampling_time_step = 0.02;
-    // time_cps_.sampling_time_step = 0.5;
+    time_cps_.sampling_time_step = 0.05;
+    // time_cps_.sampling_time_step = 0.2;
     time_cps_.enable_decouple_swarm_graph = true;
     // set the formation type
     

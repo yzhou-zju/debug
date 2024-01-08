@@ -20,6 +20,7 @@
 #include "poly_traj_utils.hpp"
 #include <frob_test/swarm_graph.hpp>
 #include <fstream>
+#include "dyn_a_star.h"
 using namespace std;
 using namespace trailer_planner;
 namespace ego_planner
@@ -51,7 +52,7 @@ namespace ego_planner
     double duration;
     int sampling_num;
     int idx_of_sets;
-
+    
     Eigen::VectorXd relative_time_ahead;
     std::vector<SwarmGraph> swarm_graph_advance_sets;
     std::vector<std::vector<Eigen::Vector3d>> swarm_pos_advance_sets;
@@ -81,6 +82,7 @@ namespace ego_planner
 
   private:
     GridMap::Ptr grid_map_;
+    AStar::Ptr a_star_;
     bool use_kino_;
     // AStar::Ptr a_star_;
     // KinodynamicAstar::Ptr kino_a_star_;
@@ -97,6 +99,7 @@ namespace ego_planner
     int iter_num_;         // iteration of the solver
     bool enable_fix_step_ = false;
     bool first_planner_ = true;
+    std::vector<Eigen::Vector3d> astar_path;
 
     string result_fn_;
     fstream result_file_;
@@ -163,7 +166,9 @@ namespace ego_planner
     vector<Eigen::Vector3d> formation_relative_dist_;
 
   public:
-    PolyTrajOptimizer() {grid_map_.reset(new GridMap);grid_map_->init();}
+    PolyTrajOptimizer() {
+      grid_map_.reset(new GridMap);
+      grid_map_->init();}
     ~PolyTrajOptimizer() {log_zy.close(); }
 
     /* set variables */
@@ -171,6 +176,7 @@ namespace ego_planner
     void setParam(vector<int> leader_id_,std::vector<Eigen::Vector3d> v_des);
     void setControlPoints(const Eigen::MatrixXd &points);
     void setSwarmTrajs(SwarmTrajData *swarm_trajs_ptr);
+    void get_path(std::vector<Eigen::Vector3d> &simple_path_);
     void get_esdf(sensor_msgs::PointCloud2& esdf_vis, pcl::PointCloud<pcl::PointXYZ> &point_obs_);
     // void setSwarmTrajs();
     void setDroneId(const int drone_id);

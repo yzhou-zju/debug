@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(traj_opt)
 
+# set(CMAKE_BUILD_TYPE "Debug")
 set(CMAKE_BUILD_TYPE "Release")
 ADD_COMPILE_OPTIONS(-std=c++11 )
 ADD_COMPILE_OPTIONS(-std=c++14 )
@@ -43,6 +44,8 @@ include_directories(
 add_library( traj_opt 
     src/poly_traj_optimizer.cpp 
     src/grid_map.cpp 
+    src/dyn_a_star.cpp 
+    src/raycast.cpp 
     )
 
 target_link_libraries( traj_opt
