@@ -16,7 +16,7 @@ namespace ego_planner
     Eigen::VectorXd initT;
     Eigen::Vector3d start_pos = iniState_init.col(0);
     Eigen::Vector3d end_pos = finState_init.col(0);
-    std::cout<<"drone_id_@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@:"<<drone_id_<<std::endl;
+    // std::cout<<"drone_id_@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@:"<<drone_id_<<std::endl;
     std::vector<Eigen::Vector3d> a_star_path;
     std::vector<Eigen::Vector3d> simple_path;
     bool success = a_star_->astarSearchAndGetSimplePath(grid_map_->getResolution(), start_pos, end_pos, simple_path, a_star_path);
@@ -27,7 +27,6 @@ namespace ego_planner
     // }
     if(success)
     {
-      std::cout<<"a star success::"<<simple_path.size()<<std::endl;
       iniState << simple_path[0], iniState_init.col(1), iniState_init.col(2);
       finState << simple_path.back(), finState_init.col(1), finState_init.col(2);
       initT.resize(simple_path.size()-1);
@@ -46,9 +45,9 @@ namespace ego_planner
       initInnerPts = combinedPath;
         
     }else{
-      std::cout<<"a star failed:"<<std::endl;
-      std::cout<<"start:"<<start_pos<<std::endl;
-      std::cout<<"end:"<<end_pos<<std::endl;
+      // std::cout<<"a star failed:"<<std::endl;
+      // std::cout<<"start:"<<start_pos<<std::endl;
+      // std::cout<<"end:"<<end_pos<<std::endl;
       // initT = initT_init;
       iniState = iniState_init;
       finState = finState_init;
@@ -100,8 +99,8 @@ namespace ego_planner
     lbfgs::lbfgs_load_default_parameters(&lbfgs_params);
     lbfgs_params.mem_size = 16;
     lbfgs_params.g_epsilon = 0.0;     //0.1
-    lbfgs_params.min_step = 1e-32;    //1e-32
-    lbfgs_params.max_linesearch = 220; // default:60
+    lbfgs_params.min_step = 1e-24;    //1e-32
+    lbfgs_params.max_linesearch = 120; // default:60
     lbfgs_params.past = 3;
     lbfgs_params.delta = 1.0e-4;
     lbfgs_params.line_search_type = 0;
@@ -111,11 +110,11 @@ namespace ego_planner
     {
       // consider formation
       // so we use less iterations for real time optimization
-      lbfgs_params.max_iterations = 200; //20      
+      lbfgs_params.max_iterations = 100; //20      
     } else{
       // do not consider formation
       // so we use more iterations for more precise optimization results
-      lbfgs_params.max_iterations = 200;
+      lbfgs_params.max_iterations = 100;
       use_formation_ = false;
     }
   
@@ -145,9 +144,9 @@ namespace ego_planner
     double total_time_ms = (t2 - t0).toSec() * 1000;
 
     // debug
-    cout<<"final_cost:"<<final_cost<<endl;
-    cout<<"result:"<<result<<endl;
-    cout << "[debug] final total: " << jerkOpt_.get_T1().sum() << ", T: " << jerkOpt_.get_T1().transpose() << endl;
+    // cout<<"final_cost:"<<final_cost<<endl;
+    // cout<<"result:"<<result<<endl;
+    // cout << "[debug] final total: " << jerkOpt_.get_T1().sum() << ", T: " << jerkOpt_.get_T1().transpose() << endl;
     printf("\033[32m[Optimization]: iter=%d, use_formation=%d, optimize time(ms)=%5.3f, total time(ms)=%5.3f, graph num=%i \n\033[0m", iter_num_, use_formation, optimize_time_ms, total_time_ms, opt_local_min_loop_sum_num_);
     
     // print the optimization result
@@ -404,8 +403,8 @@ namespace ego_planner
     opt->jerkOpt_.generate(P, T);
 
     // debug
-    if (opt->iter_num_ == 0)
-      cout << "[debug] init total: " << T.sum() << ", T: " << T.transpose() << endl;
+    // if (opt->iter_num_ == 0)
+    //   cout << "[debug] init total: " << T.sum() << ", T: " << T.transpose() << endl;
     
     // if (T.sum() > 20.00){
     //   gradP.setZero();
@@ -1654,36 +1653,30 @@ namespace ego_planner
     // log_zy_y[d_id_].open("/home/zy/debug/1/error_" + to_string(d_id_)+"_y.txt");
     // log_zy_z[d_id_].open("/home/zy/debug/1/error_" + to_string(d_id_)+"_z.txt");
   }
-  void PolyTrajOptimizer::setParam(vector<int> leader_id_, std::vector<Eigen::Vector3d> v_des)
+  void PolyTrajOptimizer::setParam(ros::NodeHandle &nh_opt ,vector<int> leader_id_, std::vector<Eigen::Vector3d> v_des)
   {
-
-    wei_smooth_ = 1.0;
-    wei_obs_ = 3000.0;
-    wei_swarm_ = 1000.0;
-    wei_feas_ = 10.0;
-    wei_sqrvar_ = 0.0;
-    wei_time_ = 80.0;
-    wei_formation_ = 1000.0;
-    wei_gather_  = 0.0;
-
-    obs_clearance_ = 0.5;
-    swarm_clearance_ = 0.1;
-    // swarm_gather_threshold_ = 1;
-    // formation_type_ = 88;
-    // formation_type_ = 333;
-    formation_type_ = 1;
-    formation_method_type_ = 0;
-    max_vel_ = 2.0;
-    max_acc_ = 3.0;
+    nh_opt.param("wei_smooth_", wei_smooth_, 1.0);
+    nh_opt.param("wei_obs_", wei_obs_, 5000.0);
+    nh_opt.param("wei_swarm_", wei_swarm_, 1000.0);
+    nh_opt.param("wei_feas_", wei_feas_, 10.0);
+    nh_opt.param("wei_sqrvar_", wei_sqrvar_, 0.0);
+    nh_opt.param("wei_time_", wei_time_, 80.0);
+    nh_opt.param("wei_formation_", wei_formation_, 100.0);
+    nh_opt.param("wei_gather_", wei_gather_, 0.0);
+    nh_opt.param("obs_clearance_", obs_clearance_, 0.5);
+    nh_opt.param("swarm_clearance_", swarm_clearance_, 0.1);
+    nh_opt.param("formation_type_", formation_type_, 1);
+    nh_opt.param("formation_method_type_", formation_method_type_, 0);
+    nh_opt.param("max_vel_", max_vel_, 2.0);
+    nh_opt.param("max_acc_", max_acc_, 3.0);
+    nh_opt.param("enable_fix_step_", enable_fix_step_, true);
+    nh_opt.param("sampling_time_step", time_cps_.sampling_time_step, 0.05);
+    nh_opt.param("enable_decouple_swarm_graph", time_cps_.enable_decouple_swarm_graph, true);
+ 
 
     Eigen::Vector3i pool_size = grid_map_->get_mapsize();
     a_star_.reset(new AStar);
     a_star_->initGridMap(grid_map_, pool_size);
-    enable_fix_step_ = true;
-    time_cps_.sampling_time_step = 0.05;
-    // time_cps_.sampling_time_step = 0.2;
-    time_cps_.enable_decouple_swarm_graph = true;
-    // set the formation type
     
     swarm_graph_.reset(new SwarmGraph);
     setDesiredFormation(formation_type_, leader_id_, v_des);

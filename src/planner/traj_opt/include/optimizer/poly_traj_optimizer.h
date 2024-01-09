@@ -173,7 +173,7 @@ namespace ego_planner
 
     /* set variables */
     void setlog(const int d_id_, const int s_num);
-    void setParam(vector<int> leader_id_,std::vector<Eigen::Vector3d> v_des);
+    void setParam(ros::NodeHandle &nh_opt ,vector<int> leader_id_, std::vector<Eigen::Vector3d> v_des);
     void setControlPoints(const Eigen::MatrixXd &points);
     void setSwarmTrajs(SwarmTrajData *swarm_trajs_ptr);
     void get_path(std::vector<Eigen::Vector3d> &simple_path_);

@@ -3,16 +3,19 @@
 
 int main(int argc, char **argv)
 {
-  ros::init(argc, argv, "mt_planner_node");
-  ros::NodeHandle nh_;
+  ros::init(argc, argv, "ego_planner_node");
+  ros::NodeHandle nh_("~");
   ros::Time::init();
+  int a_number_;
+  nh_.param("agent_number_", a_number_, 1);
+
   ego_planner_node m_planner(nh_);
-  m_planner.do_planner(true, 20);
+  m_planner.do_planner(true, a_number_);
   ros::Time t_old;
   ros::Time t_0 = ros::Time::now();
   t_old = t_0;
   ros::Rate lr(10);
-  std::cout<<"vis!!!!!!!!!!!"<<std::endl;
+  // std::cout<<"vis!!!!!!!!!!!::"<<a_number_<<std::endl;
   while (ros::ok())
   {
     ros::Time t_1 = ros::Time::now();

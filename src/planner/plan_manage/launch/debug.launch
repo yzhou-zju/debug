@@ -5,6 +5,28 @@
 </node>
 
 <node pkg ="ego_planner" type ="ego_planner_node" name ="ego_planner_1" output = "screen">    
+      <param name="opt_circle_num" value="1" type="int"/> 
+      <param name="agent_number_" value="20" type="int"/>  
+      <param name="point_xyz" value="/home/zy/debug/1/group/cub2/no_all.txt" type="string"/>  
+      <param name="group_id" value="/home/zy/debug/1/group/randow_face/2_group_.txt" type="string"/>  
+      <param name="leader_id" value="/home/zy/debug/1/group/randow_face/2_leader.txt" type="string"/>  
+      <param name="wei_smooth_" value="1.0" type="double"/>  
+      <param name="wei_obs_" value="5000.0" type="double"/>  
+      <param name="wei_swarm_" value="1000.0" type="double"/>  
+      <param name="wei_feas_" value="10.0" type="double"/>  
+      <param name="wei_sqrvar_" value="0.0" type="double"/>  
+      <param name="wei_time_" value="80.0" type="double"/>  
+      <param name="wei_formation_" value="100.0" type="double"/>  
+      <param name="wei_gather_" value="0.0" type="double"/>  
+      <param name="obs_clearance_" value="0.5" type="double"/>  
+      <param name="swarm_clearance_" value="0.1" type="double"/>  
+      <param name="formation_type_" value="1" type="int"/>  
+      <param name="formation_method_type_" value="0" type="int"/>  
+      <param name="max_vel_" value="2.0" type="double"/>  
+      <param name="max_acc_" value="3.0" type="double"/>  
+      <param name="enable_fix_step_" value="true" type="bool"/>  
+      <param name="sampling_time_step" value="0.1" type="double"/>  
+      <param name="enable_decouple_swarm_graph" value="true" type="bool"/>  
        
 </node>
 

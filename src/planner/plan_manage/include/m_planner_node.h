@@ -29,11 +29,11 @@ public:
     have_no_swarm();
     /*********************************************************m_or_not_get 表示是否分组  true表示分组******************************************************************************/
     bool flag_global;
-    std::cout<<"vis!!!!!!!!!!!"<<std::endl;
+    // std::cout << "vis!!!!!!!!!!!" << std::endl;
     for (int i = 0; i < agent_num_; i++)
     {
       formation_optim[i]->setlog(i, a_num_);
-      formation_optim[i]->setParam(leader_id_, v_);
+      formation_optim[i]->setParam(nh_m, leader_id_, v_);
       formation_optim[i]->setSwarmTrajs(&traj_.swarm_traj);
       flag_[i] = formation_optim[i]->optimizeTrajectory_lbfgs(headState[i], tailState[i],
                                                               intState[i], initT_,
@@ -52,10 +52,11 @@ public:
     group_swarm(m_or_not_get);
     // planner_all_formation_once(0);
     ros::Time t_0 = ros::Time::now();
-    // planner_all_formation_once(0, t_0, t_0);
-    // planner_all_formation_once(0, t_0, t_0);
-    // planner_all_formation_once(0, t_0, t_0);
-    // planner_all_formation_once(0, t_0, t_0);
+    for (int i = 0; i < opt_circle_num; i++)
+    {
+      planner_all_formation_once(0, t_0, t_0);
+    }
+
     ros::Time t_1 = ros::Time::now();
   }
 
@@ -149,29 +150,29 @@ public:
       group_id_ = j;
       v_group = get_v_group(group_id_);
       recv_id = get_id_in_group(j);
-      std::cout << "recv_id::" << recv_id << std::endl;
+      // std::cout << "recv_id::" << recv_id << std::endl;
       formation_optim[j]->setDroneId(recv_id);
       formation_optim[j]->fisrt_planner_or_not(false);
-      formation_optim[j]->setParam(leader_id_, v_group);
+      formation_optim[j]->setParam(nh_m, leader_id_, v_group);
       formation_optim[j]->setSwarmTrajs(&traj_real[group_id_].swarm_traj);
       flag_[j] = formation_optim[j]->optimizeTrajectory_lbfgs(headState[j], tailState[j],
                                                               intState[j], initT_change,
                                                               cstr_pts[j], true, t_planner_go);
-      std::cout << "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@::" << j << std::endl;
-      std::cout << "intState[j]0::" << headState[j](0, 0) << "   " << headState[j](1, 0) << "   " << headState[j](2, 0) << std::endl;
-      std::cout << "intState[j]0::" << intState[j](0, 0) << "   " << intState[j](0, 1) << "   " << intState[j](0, 2) << std::endl;
-      std::cout << "intState[j]1::" << intState[j](1, 0) << "   " << intState[j](1, 1) << "   " << intState[j](1, 2) << std::endl;
-      std::cout << "intState[j]2::" << intState[j](2, 0) << "   " << intState[j](2, 1) << "   " << intState[j](2, 2) << std::endl;
-      std::cout << "group_id_:" << group_id_ << std::endl;
-      for (int i = 0; i < v_group.size(); i++)
-      {
-        std::cout << "v_group:" << v_group[i] << std::endl;
-      }
-      std::cout << "id_all[group_id_]:::" << std::endl;
-      for (int i = 0; i < id_in_group[j].size(); i++)
-      {
-        std::cout << id_in_group[j][i] << " ";
-      }
+      // std::cout << "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@::" << j << std::endl;
+      // std::cout << "intState[j]0::" << headState[j](0, 0) << "   " << headState[j](1, 0) << "   " << headState[j](2, 0) << std::endl;
+      // std::cout << "intState[j]0::" << intState[j](0, 0) << "   " << intState[j](0, 1) << "   " << intState[j](0, 2) << std::endl;
+      // std::cout << "intState[j]1::" << intState[j](1, 0) << "   " << intState[j](1, 1) << "   " << intState[j](1, 2) << std::endl;
+      // std::cout << "intState[j]2::" << intState[j](2, 0) << "   " << intState[j](2, 1) << "   " << intState[j](2, 2) << std::endl;
+      // std::cout << "group_id_:" << group_id_ << std::endl;
+      // for (int i = 0; i < v_group.size(); i++)
+      // {
+      //   std::cout << "v_group:" << v_group[i] << std::endl;
+      // }
+      // std::cout << "id_all[group_id_]:::" << std::endl;
+      // for (int i = 0; i < id_in_group[j].size(); i++)
+      // {
+      //   std::cout << id_in_group[j][i] << " ";
+      // }
       std::cout << std::endl;
       if (flag_[j])
       {
@@ -184,9 +185,13 @@ public:
   void get_txt(const int agent_number)
   {
     v_all.resize(agent_number);
-    std::ifstream inputFile1("/home/zy/debug/1/group/cub2/no_all.txt");
-    std::ifstream inputFile2("/home/zy/debug/1/group/cub2/2_group_all.txt"); // 2_group_(随机)
-    std::ifstream inputFile3("/home/zy/debug/1/group/randow_face/2_leader.txt");
+    nh_m.param("point_xyz", point_xyz_, std::string("/home/zy/debug/1/group/cub2/no_all.txt"));
+    nh_m.param("group_id", group_id_, std::string("/home/zy/debug/1/group/cub2/2_group_all.txt"));
+    nh_m.param("leader_id", leader_id_, std::string("/home/zy/debug/1/group/randow_face/2_leader.txt"));
+    nh_m.param("opt_circle_num_", opt_circle_num, 1);
+    std::ifstream inputFile1(point_xyz_);
+    std::ifstream inputFile2(group_id_); // 2_group_(随机)
+    std::ifstream inputFile3(leader_id_);
     std::vector<Eigen::Vector3d> data_all;
     std::vector<std::vector<int>> data_group;
     double value;
@@ -218,13 +223,13 @@ public:
         value2.push_back(value_group);
       }
     }
-    for (int i = 0; i < data_group.size(); i++)
-    {
-      for (int j = 0; j < data_group[i].size(); j++)
-      {
-        std::cout << data_group[i][j] << "  " << std::endl;
-      }
-    }
+    // for (int i = 0; i < data_group.size(); i++)
+    // {
+    //   for (int j = 0; j < data_group[i].size(); j++)
+    //   {
+    //     std::cout << data_group[i][j] << "  " << std::endl;
+    //   }
+    // }
     flag_get_txt = 0;
     leader_id_get.resize(data_group.size());
     while (inputFile3 >> value)
@@ -468,10 +473,10 @@ public:
     std::vector<Eigen::Vector3d> simple_path;
     std::vector<Eigen::Vector3d> simple_path_all;
     formation_optim[0]->get_esdf(esdf_vis, point_obs_);
-    for(int i=0;i<a_num_;i++)
+    for (int i = 0; i < a_num_; i++)
     {
       formation_optim[i]->get_path(simple_path);
-      for(int j=0;j<simple_path.size();j++)
+      for (int j = 0; j < simple_path.size(); j++)
       {
         simple_path_all.push_back(simple_path[j]);
       }
@@ -501,12 +506,12 @@ public:
     std::cout << "here!!!!1111" << std::endl;
     for (int i = 0; i < agent_num; i++)
     {
-      head_pos[i] = {v_all[i][0] - 30 , v_all[i][1] - 7.2 , v_all[i][2]};
+      head_pos[i] = {v_all[i][0] - 30, v_all[i][1] - 7.2, v_all[i][2]};
       // head_pos[i] = {v_all[i][0] - 4  , v_all[i][1] -3.8, v_all[i][2]};
-      tail_pos[i] = {v_all[i][0] + 10, v_all[i][1] - 7.2, v_all[i][2]};
+      tail_pos[i] = {v_all[i][0] + 9, v_all[i][1] - 7.2, v_all[i][2]};
 
-      int_pos[i] = {v_all[i][0] -20, v_all[i][1] - 7.2, v_all[i][2]};
-      int_pos1[i] = {v_all[i][0] -10 , v_all[i][1] - 7.2, v_all[i][2]};
+      int_pos[i] = {v_all[i][0] - 20, v_all[i][1] - 7.2, v_all[i][2]};
+      int_pos1[i] = {v_all[i][0] - 10, v_all[i][1] - 7.2, v_all[i][2]};
       int_pos2[i] = {v_all[i][0] + 0, v_all[i][1] - 7.2, v_all[i][2]};
       formation_optim[i].reset(new PolyTrajOptimizer);
       formation_optim[i]->setDroneId(i);
@@ -526,6 +531,7 @@ public:
 
 private:
   // const int agent_num_get;
+  ros::NodeHandle nh_m;
   GridMap::Ptr grid_map_;
   Visualizer vis_rviz;
   std::vector<Eigen::Vector3d> v_all;                   // 整体编队的形状
@@ -534,6 +540,7 @@ private:
   std::vector<std::vector<int>> id_in_group;            // 所有小组成员编号
   std::vector<std::vector<Eigen::Vector3d>> group_form; // 第某组的飞机编队
   std::vector<int> leader_id_get;                       // leader的id
+  int opt_circle_num;
 
   TrajContainer traj_;
   std::vector<TrajContainer> traj_real;
@@ -559,9 +566,12 @@ private:
   std::vector<Eigen::Vector3d> int_pos;
   std::vector<Eigen::Vector3d> int_pos1;
   std::vector<Eigen::Vector3d> int_pos2;
+  std::string point_xyz_;
+  std::string group_id_;
+  std::string leader_id_;
 
 public:
-  ego_planner_node(ros::NodeHandle &nh_) : vis_rviz(nh_){grid_map_.reset(new GridMap);};
+  ego_planner_node(ros::NodeHandle &nh_) : nh_m(nh_), vis_rviz(nh_) { grid_map_.reset(new GridMap); };
   ~ego_planner_node(){};
 
   void have_no_swarm()

@@ -6,11 +6,10 @@ namespace trailer_planner
         // nh.getParam("grid_map/map_size_x", map_size[0]);
         // nh.getParam("grid_map/map_size_y", map_size[1]);
         // nh.getParam("grid_map/resolution", resolution);
-        std::cout << "here   map3;;;;" << std::endl;
         resolution = 0.2;
         map_size[0] = 80;
         map_size[1] = 28;
-        map_size[2] = 9;
+        map_size[2] = 10;
         // esdf_pub = nh.advertise<sensor_msgs::PointCloud2>("/esdf_map", 1);
         // cloud_sub = nh.subscribe("/global_map", 1, &GridMap::cloudCallback, this);
         // vis_timer = nh.createTimer(ros::Duration(1.0), &GridMap::visCallback, this);
@@ -24,7 +23,6 @@ namespace trailer_planner
 
         // resolution
         resolution_inv = 1.0 / resolution;
-        std::cout << "here   map4;;;;" << std::endl;
         // voxel num
         voxel_num(0) = ceil(map_size(0) / resolution);
         voxel_num(1) = ceil(map_size(1) / resolution);
@@ -111,7 +109,6 @@ namespace trailer_planner
         neg_buffer = std::vector<char>(x_s * y_s * z_s, 0);
         neg_map = std::vector<char>(x_s * y_s * z_s, 0);
         dist_buffer = std::vector<double>(x_s * y_s * z_s, 10000);
-        std::cout << "here33311113" << std::endl;
         /* ========== compute positive DT ========== */
         for (int x = min_idx[0]; x <= max_idx[0]; x++)
         {
@@ -239,7 +236,6 @@ namespace trailer_planner
                         esdf_buffer[idx] += (-neg_buffer[idx] + resolution);
                 }
 
-        std::cout << "here3333333" << std::endl;
     }
     void GridMap::Generate_cloud(pcl::PointCloud<pcl::PointXYZ> &pc_)
     {
@@ -264,23 +260,19 @@ namespace trailer_planner
         _y_l = min_boundary[1];
         _x_h = max_boundary[0];
         _y_h = max_boundary[1]-10;
-        std::cout<<"x_l:"<<_x_l<<std::endl;
-        std::cout<<"y_l:"<<_y_l<<std::endl;
-        std::cout<<"x_h:"<<_x_h<<std::endl;
-        std::cout<<"y_h:"<<_y_h<<std::endl;
         // _x_l = 0;
         // _y_l = 0;
         // _x_h = map_size[0];
         // _y_h = map_size[1];
         _w_l = 0.3;
         _w_h = 0.8;
-        _h_l = 3;
-        _h_h = 7;
+        _h_l = 1;
+        _h_h = 9;
         double radius_l_ = 0.05;
         double radius_h_ = 0.08;
         double theta_ = 0.04;
         double z_l_ = 0.0;
-        double z_h_ = 5.8;
+        double z_h_ = 8.8;
         int _obs_num = 150;
         int circle_num_ = 50;
         double _min_dist = 0.8;
