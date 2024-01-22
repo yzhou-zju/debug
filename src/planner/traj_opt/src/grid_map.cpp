@@ -109,6 +109,7 @@ namespace trailer_planner
         neg_buffer = std::vector<char>(x_s * y_s * z_s, 0);
         neg_map = std::vector<char>(x_s * y_s * z_s, 0);
         dist_buffer = std::vector<double>(x_s * y_s * z_s, 10000);
+        std::cout<<"updateESDF2d222"<<std::endl;
         /* ========== compute positive DT ========== */
         for (int x = min_idx[0]; x <= max_idx[0]; x++)
         {
@@ -236,6 +237,7 @@ namespace trailer_planner
                         esdf_buffer[idx] += (-neg_buffer[idx] + resolution);
                 }
 
+        std::cout << "here3333333" << std::endl;
     }
     void GridMap::Generate_cloud(pcl::PointCloud<pcl::PointXYZ> &pc_)
     {
@@ -405,8 +407,10 @@ namespace trailer_planner
             if (isInMap(id))
                 occ_buffer[toAddress(id)] = 1;
         }
-
+        std::cout<<"updateESDF2d"<<std::endl;
         updateESDF2d();
+        std::cout<<"updateESDF2d222"<<std::endl;
+
         pc.clear();
         pcl::PointCloud<pcl::PointXYZI> pc_i;
         // test esdf computation

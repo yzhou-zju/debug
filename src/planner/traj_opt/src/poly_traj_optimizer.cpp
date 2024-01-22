@@ -19,13 +19,13 @@ namespace ego_planner
     // std::cout<<"drone_id_@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@:"<<drone_id_<<std::endl;
     std::vector<Eigen::Vector3d> a_star_path;
     std::vector<Eigen::Vector3d> simple_path;
-    bool success = a_star_->astarSearchAndGetSimplePath(grid_map_->getResolution(), start_pos, end_pos, simple_path, a_star_path);
-    astar_path = simple_path;
+    // bool success = a_star_->astarSearchAndGetSimplePath(grid_map_->getResolution(), start_pos, end_pos, simple_path, a_star_path);
+    // astar_path = simple_path;
     // for (size_t i = 0; i < simple_path.size(); i++)
     // {
     //   std::cout << "第" << i << "个路径点是:" << simple_path[i].transpose() << " " << std::endl;
     // }
-    if(success)
+    if(false)
     {
       iniState << simple_path[0], iniState_init.col(1), iniState_init.col(2);
       finState << simple_path.back(), finState_init.col(1), finState_init.col(2);
@@ -1647,11 +1647,19 @@ namespace ego_planner
     //  }
     if(d_id_==0)
     {
-      log_zy.open("/home/zy/debug/1/error_" + to_string(d_id_)+"_.txt");
+      log_zy.open("/home/zy/debug/1/randow" + to_string(s_num)+".txt");
     }
     // log_zy_x[d_id_].open("/home/zy/debug/1/error_" + to_string(d_id_)+"_x.txt");
     // log_zy_y[d_id_].open("/home/zy/debug/1/error_" + to_string(d_id_)+"_y.txt");
     // log_zy_z[d_id_].open("/home/zy/debug/1/error_" + to_string(d_id_)+"_z.txt");
+  }
+  void PolyTrajOptimizer::close_log()
+  {
+    log_zy.close();
+    adj_in_.clear();
+    adj_out_.clear();
+    swarm_des_.clear();
+    formation_size_ = 0;
   }
   void PolyTrajOptimizer::setParam(ros::NodeHandle &nh_opt ,vector<int> leader_id_, std::vector<Eigen::Vector3d> v_des)
   {
@@ -1672,15 +1680,22 @@ namespace ego_planner
     nh_opt.param("enable_fix_step_", enable_fix_step_, true);
     nh_opt.param("sampling_time_step", time_cps_.sampling_time_step, 0.05);
     nh_opt.param("enable_decouple_swarm_graph", time_cps_.enable_decouple_swarm_graph, true);
- 
+    std::cout<<"id132444::"<<std::endl;
+    if(!opt_num)
+    {
+      grid_map_->init();
+      Eigen::Vector3i pool_size = grid_map_->get_mapsize();
 
-    Eigen::Vector3i pool_size = grid_map_->get_mapsize();
-    a_star_.reset(new AStar);
-    a_star_->initGridMap(grid_map_, pool_size);
-    
+      // a_star_.reset(new AStar);
+      // a_star_->initGridMap(grid_map_, pool_size);
+      opt_num = true;
+    }
     swarm_graph_.reset(new SwarmGraph);
-    setDesiredFormation(formation_type_, leader_id_, v_des);
-
+    std::cout<<"v_des.size()! :"<<v_des.size()<<std::endl;
+    if(v_des.size()!=0)
+    {
+      setDesiredFormation(formation_type_, leader_id_, v_des);
+    }
     // benchmark position-based formation setting
   }
 } // namespace ego_planner

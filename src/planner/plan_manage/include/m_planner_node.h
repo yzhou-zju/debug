@@ -14,12 +14,25 @@ using namespace std;
 class ego_planner_node
 {
 public:
-  void do_planner(bool m_or_not_get_, const int agent_num_)
+  void do_planner(bool m_or_not_get_, const int agent_num_, int randow_)
   {
-    get_txt(agent_num_);
+    judge_plan_ok = false;
+    std::cout<<"id::"<<std::endl;
+    get_txt(agent_num_, randow_);
+    std::cout<<"id1::"<<std::endl;
     id_chose_form = 1;
     group_num_ = 1; // 初始化
-    re_setup(agent_num_);
+    if (randow_ == 1)
+    {
+      re_setup(agent_num_);
+    }
+    else
+    {
+      for (int k = 0; k < a_num_; k++)
+      {
+        formation_optim[k]->fisrt_planner_or_not(true);
+      }
+    }
     /*********************************************************m_or_not_get 表示是否分组  true表示分组******************************************************************************/
     std::vector<int> leader_id_;
     std::vector<Eigen::Vector3d> v_;
@@ -29,16 +42,14 @@ public:
     have_no_swarm();
     /*********************************************************m_or_not_get 表示是否分组  true表示分组******************************************************************************/
     bool flag_global;
-    // std::cout << "vis!!!!!!!!!!!" << std::endl;
     for (int i = 0; i < agent_num_; i++)
     {
-      formation_optim[i]->setlog(i, a_num_);
+      formation_optim[i]->setlog(i, randow_);
       formation_optim[i]->setParam(nh_m, leader_id_, v_);
       formation_optim[i]->setSwarmTrajs(&traj_.swarm_traj);
       flag_[i] = formation_optim[i]->optimizeTrajectory_lbfgs(headState[i], tailState[i],
                                                               intState[i], initT_,
                                                               cstr_pts[i], true, 0);
-
       if (!flag_[i])
       {
         flag_suss = false;
@@ -50,6 +61,7 @@ public:
       }
     }
     group_swarm(m_or_not_get);
+
     // planner_all_formation_once(0);
     ros::Time t_0 = ros::Time::now();
     for (int i = 0; i < opt_circle_num; i++)
@@ -86,6 +98,7 @@ public:
     {
       traj_real[i].swarm_traj.resize(num_every_group[i]);
     }
+    std::cout << "g_num1111 ::"<<g_num<< std::endl;
     if (t_planner_go != 0)
     {
 
@@ -139,7 +152,6 @@ public:
           traj_real[i].swarm_traj[k].traj_id = k;
           traj_real[i].swarm_traj[k].start_time = 0;
           traj_real[i].swarm_traj[k].constraint_aware = 0;
-          // std::cout << "id_all[k]:" << id_all[k] << std::endl;
           traj_real[i].swarm_traj[k].traj = traj_optim[id_all[k]];
           traj_real[i].swarm_traj[k].duration = traj_optim[id_all[k]].getTotalDuration();
           traj_real[i].swarm_traj[k].start_pos = traj_optim[id_all[k]].getPos(0);
@@ -150,7 +162,6 @@ public:
       group_id_ = j;
       v_group = get_v_group(group_id_);
       recv_id = get_id_in_group(j);
-      // std::cout << "recv_id::" << recv_id << std::endl;
       formation_optim[j]->setDroneId(recv_id);
       formation_optim[j]->fisrt_planner_or_not(false);
       formation_optim[j]->setParam(nh_m, leader_id_, v_group);
@@ -180,9 +191,15 @@ public:
       }
     }
   }
-
+  void close_zy_log()
+  {
+    formation_optim[0]->close_log();
+    id_in_group.clear();
+    group_form.clear();
+  }
+  
   /*****************************暂时手动给定leader以及组内编队,传进来在大编队里的id，传回小编队形状,小组成员编号（在大组的编号）以及小组id,以及小组数量************************/
-  void get_txt(const int agent_number)
+  void get_txt(const int agent_number, int randow_num)
   {
     v_all.resize(agent_number);
     nh_m.param("point_xyz", point_xyz_, std::string("/home/zy/debug/1/group/cub2/no_all.txt"));
@@ -190,7 +207,9 @@ public:
     nh_m.param("leader_id", leader_id_, std::string("/home/zy/debug/1/group/randow_face/2_leader.txt"));
     nh_m.param("opt_circle_num_", opt_circle_num, 1);
     std::ifstream inputFile1(point_xyz_);
-    std::ifstream inputFile2(group_id_); // 2_group_(随机)
+    std::ifstream inputFile2(group_id_ + std::to_string(randow_num) + ".txt"); // 2_group_(随机)
+    std::cout << "inputFile1" << point_xyz_ << std::endl;
+    std::cout << "inputFile2" << group_id_ + std::to_string(randow_num) + ".txt" << std::endl;
     std::ifstream inputFile3(leader_id_);
     std::vector<Eigen::Vector3d> data_all;
     std::vector<std::vector<int>> data_group;
@@ -394,6 +413,10 @@ public:
   }
   /*************************************暂时手动给定leader以及组内编队,传进来在大编队里的id，传回在小编队里的id以及小编队形状*********************************************/
 
+  bool get_plan_ok()
+  {
+    return judge_plan_ok;
+  }
   void outcome_vis(const double time_go)
   {
     std::vector<std::vector<Eigen::Vector3d>> traj_route;
@@ -429,6 +452,7 @@ public:
         {
           if (time_go > time_min)
           {
+            judge_plan_ok = true;
             agent_pos_ = traj_optim[id_in_group[i][j]].getPos(time_min);
             swarm_g_2[i].push_back(agent_pos_);
           }
@@ -546,6 +570,7 @@ private:
   std::vector<TrajContainer> traj_real;
   int id_chose_form;
   int a_num_;
+  bool judge_plan_ok;
 
   std::vector<std::shared_ptr<PolyTrajOptimizer>> formation_optim;
   std::vector<poly_traj::Trajectory> traj_optim;
@@ -571,7 +596,11 @@ private:
   std::string leader_id_;
 
 public:
-  ego_planner_node(ros::NodeHandle &nh_) : nh_m(nh_), vis_rviz(nh_) { grid_map_.reset(new GridMap); };
+  ego_planner_node(ros::NodeHandle &nh_) : nh_m(nh_), vis_rviz(nh_)
+  {
+    grid_map_.reset(new GridMap);
+    judge_plan_ok = false;
+  };
   ~ego_planner_node(){};
 
   void have_no_swarm()

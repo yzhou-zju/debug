@@ -37,8 +37,8 @@ public:
     Visualizer(ros::NodeHandle &nh_)
         : nh(nh_)
     {
-        swarmPub.resize(50);
-        routePub.resize(50);
+        swarmPub.resize(70);
+        routePub.resize(70);
         pathPub = nh.advertise<visualization_msgs::Marker>("/visualizer/astar_path", 10);
         wayPointsPub = nh.advertise<visualization_msgs::Marker>("/visualizer/agent", 10);
         routePub[0] = nh.advertise<visualization_msgs::Marker>("/visualizer/route0", 10);
@@ -72,6 +72,41 @@ public:
         routePub[28] = nh.advertise<visualization_msgs::Marker>("/visualizer/route28", 10);
         routePub[29] = nh.advertise<visualization_msgs::Marker>("/visualizer/route29", 10);
         routePub[30] = nh.advertise<visualization_msgs::Marker>("/visualizer/route30", 10);
+
+        routePub[31] = nh.advertise<visualization_msgs::Marker>("/visualizer/route31", 10);
+        routePub[32] = nh.advertise<visualization_msgs::Marker>("/visualizer/route32", 10);
+        routePub[33] = nh.advertise<visualization_msgs::Marker>("/visualizer/route33", 10);
+        routePub[34] = nh.advertise<visualization_msgs::Marker>("/visualizer/route34", 10);
+        routePub[35] = nh.advertise<visualization_msgs::Marker>("/visualizer/route35", 10);
+        routePub[36] = nh.advertise<visualization_msgs::Marker>("/visualizer/route36", 10);
+        routePub[37] = nh.advertise<visualization_msgs::Marker>("/visualizer/route37", 10);
+        routePub[38] = nh.advertise<visualization_msgs::Marker>("/visualizer/route38", 10);
+        routePub[39] = nh.advertise<visualization_msgs::Marker>("/visualizer/route39", 10);
+        routePub[40] = nh.advertise<visualization_msgs::Marker>("/visualizer/route40", 10);
+        routePub[41] = nh.advertise<visualization_msgs::Marker>("/visualizer/route41", 10);
+        routePub[42] = nh.advertise<visualization_msgs::Marker>("/visualizer/route42", 10);
+        routePub[43] = nh.advertise<visualization_msgs::Marker>("/visualizer/route43", 10);
+        routePub[44] = nh.advertise<visualization_msgs::Marker>("/visualizer/route44", 10);
+        routePub[45] = nh.advertise<visualization_msgs::Marker>("/visualizer/route45", 10);
+        routePub[46] = nh.advertise<visualization_msgs::Marker>("/visualizer/route46", 10);
+        routePub[47] = nh.advertise<visualization_msgs::Marker>("/visualizer/route47", 10);
+        routePub[48] = nh.advertise<visualization_msgs::Marker>("/visualizer/route48", 10);
+        routePub[49] = nh.advertise<visualization_msgs::Marker>("/visualizer/route49", 10);
+        routePub[50] = nh.advertise<visualization_msgs::Marker>("/visualizer/route50", 10);
+        routePub[51] = nh.advertise<visualization_msgs::Marker>("/visualizer/route51", 10);
+        routePub[52] = nh.advertise<visualization_msgs::Marker>("/visualizer/route52", 10);
+        routePub[53] = nh.advertise<visualization_msgs::Marker>("/visualizer/route53", 10);
+        routePub[54] = nh.advertise<visualization_msgs::Marker>("/visualizer/route54", 10);
+        routePub[55] = nh.advertise<visualization_msgs::Marker>("/visualizer/route55", 10);
+        routePub[56] = nh.advertise<visualization_msgs::Marker>("/visualizer/route56", 10);
+        routePub[57] = nh.advertise<visualization_msgs::Marker>("/visualizer/route57", 10);
+        routePub[58] = nh.advertise<visualization_msgs::Marker>("/visualizer/route58", 10);
+        routePub[59] = nh.advertise<visualization_msgs::Marker>("/visualizer/route59", 10);
+        routePub[60] = nh.advertise<visualization_msgs::Marker>("/visualizer/route60", 10);
+        routePub[61] = nh.advertise<visualization_msgs::Marker>("/visualizer/route61", 10);
+        routePub[62] = nh.advertise<visualization_msgs::Marker>("/visualizer/route62", 10);
+        routePub[63] = nh.advertise<visualization_msgs::Marker>("/visualizer/route63", 10);
+        routePub[64] = nh.advertise<visualization_msgs::Marker>("/visualizer/route64", 10);
         // routePub = nh.advertise<visualization_msgs::Marker>("/visualizer/route", 10);
         swarmPub[0] = nh.advertise<visualization_msgs::Marker>("/visualizer/swarm0", 10);
         swarmPub[1] = nh.advertise<visualization_msgs::Marker>("/visualizer/swarm1", 10);
@@ -104,6 +139,41 @@ public:
         swarmPub[28] = nh.advertise<visualization_msgs::Marker>("/visualizer/swarm28", 10);
         swarmPub[29] = nh.advertise<visualization_msgs::Marker>("/visualizer/swarm29", 10);
         swarmPub[30] = nh.advertise<visualization_msgs::Marker>("/visualizer/swarm30", 10);
+
+        swarmPub[31] = nh.advertise<visualization_msgs::Marker>("/visualizer/swarm31", 10);
+        swarmPub[32] = nh.advertise<visualization_msgs::Marker>("/visualizer/swarm32", 10);
+        swarmPub[33] = nh.advertise<visualization_msgs::Marker>("/visualizer/swarm33", 10);
+        swarmPub[34] = nh.advertise<visualization_msgs::Marker>("/visualizer/swarm34", 10);
+        swarmPub[35] = nh.advertise<visualization_msgs::Marker>("/visualizer/swarm35", 10);
+        swarmPub[36] = nh.advertise<visualization_msgs::Marker>("/visualizer/swarm36", 10);
+        swarmPub[37] = nh.advertise<visualization_msgs::Marker>("/visualizer/swarm37", 10);
+        swarmPub[38] = nh.advertise<visualization_msgs::Marker>("/visualizer/swarm38", 10);
+        swarmPub[39] = nh.advertise<visualization_msgs::Marker>("/visualizer/swarm39", 10);
+        swarmPub[40] = nh.advertise<visualization_msgs::Marker>("/visualizer/swarm40", 10);
+        swarmPub[41] = nh.advertise<visualization_msgs::Marker>("/visualizer/swarm41", 10);
+        swarmPub[42] = nh.advertise<visualization_msgs::Marker>("/visualizer/swarm42", 10);
+        swarmPub[43] = nh.advertise<visualization_msgs::Marker>("/visualizer/swarm43", 10);
+        swarmPub[44] = nh.advertise<visualization_msgs::Marker>("/visualizer/swarm44", 10);
+        swarmPub[45] = nh.advertise<visualization_msgs::Marker>("/visualizer/swarm45", 10);
+        swarmPub[46] = nh.advertise<visualization_msgs::Marker>("/visualizer/swarm46", 10);
+        swarmPub[47] = nh.advertise<visualization_msgs::Marker>("/visualizer/swarm47", 10);
+        swarmPub[48] = nh.advertise<visualization_msgs::Marker>("/visualizer/swarm48", 10);
+        swarmPub[49] = nh.advertise<visualization_msgs::Marker>("/visualizer/swarm49", 10);
+        swarmPub[50] = nh.advertise<visualization_msgs::Marker>("/visualizer/swarm50", 10);
+        swarmPub[51] = nh.advertise<visualization_msgs::Marker>("/visualizer/swarm51", 10);
+        swarmPub[52] = nh.advertise<visualization_msgs::Marker>("/visualizer/swarm52", 10);
+        swarmPub[53] = nh.advertise<visualization_msgs::Marker>("/visualizer/swarm53", 10);
+        swarmPub[54] = nh.advertise<visualization_msgs::Marker>("/visualizer/swarm54", 10);
+        swarmPub[55] = nh.advertise<visualization_msgs::Marker>("/visualizer/swarm55", 10);
+        swarmPub[56] = nh.advertise<visualization_msgs::Marker>("/visualizer/swarm56", 10);
+        swarmPub[57] = nh.advertise<visualization_msgs::Marker>("/visualizer/swarm57", 10);
+        swarmPub[58] = nh.advertise<visualization_msgs::Marker>("/visualizer/swarm58", 10);
+        swarmPub[59] = nh.advertise<visualization_msgs::Marker>("/visualizer/swarm59", 10);
+        swarmPub[60] = nh.advertise<visualization_msgs::Marker>("/visualizer/swarm60", 10);
+        swarmPub[61] = nh.advertise<visualization_msgs::Marker>("/visualizer/swarm61", 10);
+        swarmPub[62] = nh.advertise<visualization_msgs::Marker>("/visualizer/swarm62", 10);
+        swarmPub[63] = nh.advertise<visualization_msgs::Marker>("/visualizer/swarm63", 10);
+        swarmPub[64] = nh.advertise<visualization_msgs::Marker>("/visualizer/swarm64", 10);
         esdf_pub = nh.advertise<sensor_msgs::PointCloud2>("/esdf_map", 1);
         _all_map_pub = nh.advertise<sensor_msgs::PointCloud2>("/global_map", 1);
     }

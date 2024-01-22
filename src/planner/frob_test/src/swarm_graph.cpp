@@ -119,13 +119,14 @@ bool SwarmGraph::setDesiredForm(const std::vector<Eigen::Vector3d> &swarm_des,
 
     nodes_des_ = swarm_des;
     have_desired_ = true;
-
     // Update the adjacency relations
     adj_in_ = adj_in;
     adj_out_ = adj_out;
     adj_arr_.resize(swarm_des.size());
+
     for (int i = 0; i < adj_in_.size(); i++)
     {
+        // std::cout<<"adj_in_[i]"<<adj_in_[i]<<std::endl;
         adj_arr_[adj_in_[i]].push_back(adj_out_[i]);
         adj_arr_[adj_out_[i]].push_back(adj_in_[i]);
     }
@@ -136,6 +137,7 @@ bool SwarmGraph::setDesiredForm(const std::vector<Eigen::Vector3d> &swarm_des,
 
     // Update the desired matrix
     calcMatrices(nodes_des_, adj_in_, adj_out_, A_des_, D_des_, Lhat_des_);
+
     return have_desired_;
 }
 

@@ -149,6 +149,8 @@ namespace ego_planner
     double swarm_gather_threshold_; // threshold distance between uav and swarm center
     double max_vel_, max_acc_;      // dynamic limits
 
+    bool opt_num;
+
     bool is_set_swarm_advanced_;
 
     int formation_type_;
@@ -168,11 +170,12 @@ namespace ego_planner
   public:
     PolyTrajOptimizer() {
       grid_map_.reset(new GridMap);
-      grid_map_->init();}
+      opt_num = false;}
     ~PolyTrajOptimizer() {log_zy.close(); }
 
     /* set variables */
     void setlog(const int d_id_, const int s_num);
+    void close_log();
     void setParam(ros::NodeHandle &nh_opt ,vector<int> leader_id_, std::vector<Eigen::Vector3d> v_des);
     void setControlPoints(const Eigen::MatrixXd &points);
     void setSwarmTrajs(SwarmTrajData *swarm_trajs_ptr);
